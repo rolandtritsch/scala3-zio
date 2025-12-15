@@ -1,7 +1,6 @@
 import zio._
 
-object Main extends ZIOAppDefault {
-  
+object Main extends ZIOAppDefault:
   val program: ZIO[Any, Nothing, Unit] = for {
     _ <- Console.printLine("Hello from ZIO!")
            .catchAll(err => ZIO.succeed(println(s"Error: $err")))
@@ -10,4 +9,3 @@ object Main extends ZIOAppDefault {
   } yield ()
 
   def run = program
-}
