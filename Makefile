@@ -7,23 +7,23 @@ help: ## Show help for all targets
 
 .PHONY: compile
 compile: ## Compile the project
-	./mill compile
+	./mill app.compile
 
 .PHONY: run
 run: ## Run the application
-	./mill run
+	./mill app.run
 
 .PHONY: test
 test: ## Run tests
-	./mill test
+	./mill app.test
 
 .PHONY: console
 console: ## Start a REPL with dependencies loaded
-	./mill console
+	./mill app.console
 
 .PHONY: assembly
 assembly: ## Build an executable JAR
-	./mill assembly
+	./mill app.assembly
 
 .PHONY: clean
 clean: ## Clean build artifacts
@@ -31,8 +31,8 @@ clean: ## Clean build artifacts
 
 .PHONY: resolve
 resolve: ## Show all available tasks
-	./mill resolve _
+	./mill resolve app._
 
 .PHONY: watch
 watch: ## Continuously compile on file changes
-	./mill --watch compile
+	./mill --watch app.compile
