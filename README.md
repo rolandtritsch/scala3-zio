@@ -11,8 +11,9 @@ My first ZIO app/service
 ```
 .
 ├── build.sc           # Mill build configuration
-├── src/               # Application source code
-├── test/src/          # Test source code
+├── app/
+│   ├── src/           # Application source code
+│   └── test/src/      # Test source code
 └── out/               # Build output (generated)
 ```
 

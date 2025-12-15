@@ -4,4 +4,4 @@
 .metals/
 .vscode/
 out/
-app
+tmp/
