@@ -5,17 +5,21 @@ help: ## Show help for all targets
 	@echo "Available targets:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
+.PHONY: assembly
+assembly: ## Build an executable JAR
+	./mill app.assembly
+
+.PHONY: clean
+clean: ## Clean build artifacts
+	./mill clean
+
 .PHONY: compile
 compile: ## Compile the project
 	./mill app.compile
 
-.PHONY: run
-run: ## Run the application
-	./mill app.run
-
-.PHONY: test
-test: ## Run tests
-	./mill app.test
+.PHONY: console
+console: ## Start a REPL with dependencies loaded
+	./mill app.console
 
 .PHONY: format
 format: ## Format all source code
@@ -25,21 +29,25 @@ format: ## Format all source code
 format-check: ## Check if code is formatted correctly
 	./mill app.checkFormat
 
-.PHONY: console
-console: ## Start a REPL with dependencies loaded
-	./mill app.console
+.PHONY: lint
+lint: ## Auto-fix linting issues
+	./mill app.fix
 
-.PHONY: assembly
-assembly: ## Build an executable JAR
-	./mill app.assembly
-
-.PHONY: clean
-clean: ## Clean build artifacts
-	./mill clean
+.PHONY: lint-check
+lint-check: ## Check for linting issues (CI mode)
+	./mill app.fix --check
 
 .PHONY: resolve
 resolve: ## Show all available tasks
 	./mill resolve app._
+
+.PHONY: run
+run: ## Run the application
+	./mill app.run
+
+.PHONY: test
+test: ## Run tests
+	./mill app.test
 
 .PHONY: watch
 watch: ## Continuously compile on file changes
