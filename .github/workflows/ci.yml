@@ -22,16 +22,17 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Cache Mill dependencies
+      - name: Cache SBT dependencies
         uses: actions/cache@v4
         with:
           path: |
-            ~/.cache/mill
+            ~/.sbt
             ~/.cache/coursier
-            out/
-          key: ${{ runner.os }}-mill-${{ hashFiles('build.sc', '.mill-version') }}
+            target/
+            project/target/
+          key: ${{ runner.os }}-sbt-${{ hashFiles('build.sbt', 'project/build.properties', 'project/plugins.sbt') }}
           restore-keys: |
-            ${{ runner.os }}-mill-
+            ${{ runner.os }}-sbt-
 
       - name: Compile
         run: make compile

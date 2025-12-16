@@ -2,25 +2,30 @@
 
 ## Prerequisites
 
-- JVM (Java 8 or higher)
-- The `./mill` script handles all other dependencies automatically
+- JVM (Java 21 or higher)
+- SBT 1.10.5 (see installation instructions at [https://www.scala-sbt.org/download.html][])
 
 ## Project Structure
 
 ```text
 .
-├── build.sc           # Mill build configuration
-├── app/
-│   ├── src/           # Application source code
-│   └── test/src/      # Test source code
-└── out/               # Build output (generated)
+├── build.sbt          # SBT build configuration
+├── project/           # SBT project configuration
+│   ├── build.properties
+│   └── plugins.sbt
+├── src/
+│   ├── main/scala/    # Application source code
+│   └── test/scala/    # Test source code
+└── target/            # Build output (generated)
 ```
 
 ## Technology Stack
 
 - **Scala 3.3.4** - Modern Scala with improved syntax and features
 - **ZIO 2.1.13** - Functional effect system for type-safe, composable programs
-- **Mill** - Fast, simple build tool
+- **SBT** - Standard Scala build tool
+
+[https://www.scala-sbt.org/download.html]: https://www.scala-sbt.org/download.html
 
 ## Quick Start
 

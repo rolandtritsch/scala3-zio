@@ -3,5 +3,6 @@
 !.claude/settings.json
 .devcontainer
 .metals/
-out/
+target/
+project/target/
 tmp/

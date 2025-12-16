@@ -7,58 +7,58 @@ help: ## Show help for all targets
 
 .PHONY: assembly
 assembly: ## Build an executable JAR
-	./mill app.assembly
+	sbt assembly
 
 .PHONY: clean
 clean: ## Clean build artifacts
-	./mill clean
+	sbt clean
 
 .PHONY: compile
 compile: ## Compile the project
-	./mill app.compile
+	sbt compile
 
 .PHONY: console
 console: ## Start a REPL with dependencies loaded
-	./mill app.console
+	sbt console
 
 .PHONY: format
 format: ## Format all source code
-	./mill app.reformat
+	sbt scalafmtAll
 
 .PHONY: format-check
 format-check: ## Check if code is formatted correctly
-	./mill app.checkFormat
+	sbt scalafmtCheckAll
 
 .PHONY: lint
 lint: ## Auto-fix linting issues
-	./mill app.fix
+	sbt "scalafixAll --rules OrganizeImports"
 
 .PHONY: lint-check
 lint-check: ## Check for linting issues (CI mode)
-	./mill app.fix --check
+	sbt "scalafix --check --rules OrganizeImports"
 
 .PHONY: resolve
 resolve: ## Show all available tasks
-	./mill resolve app._
+	sbt tasks
 
 .PHONY: run
 run: ## Run the application
-	./mill app.run
+	sbt run
 
 .PHONY: scala-doc
 scala-doc: ## Generate Scaladoc API documentation to docs/
 	@echo "Generating Scaladoc..."
-	@./mill app.docJar
-	@echo "Extracting documentation to docs/..."
+	@sbt doc
+	@echo "Copying documentation to docs/..."
 	@rm -rf docs/
 	@mkdir -p docs/
-	@unzip -q $$(./mill show app.docJar | head -n1 | tr -d '"' | sed 's/.*://') -d docs/
+	@cp -r target/scala-3.3.4/api/* docs/
 	@echo "Documentation generated at docs/index.html"
 
 .PHONY: test
 test: ## Run tests
-	./mill app.test
+	sbt test
 
 .PHONY: watch
 watch: ## Continuously compile on file changes
-	./mill --watch app.compile
+	sbt ~compile
