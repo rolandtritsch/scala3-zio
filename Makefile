@@ -45,6 +45,16 @@ resolve: ## Show all available tasks
 run: ## Run the application
 	./mill app.run
 
+.PHONY: scala-doc
+scala-doc: ## Generate Scaladoc API documentation to docs/
+	@echo "Generating Scaladoc..."
+	@./mill app.docJar
+	@echo "Extracting documentation to docs/..."
+	@rm -rf docs/
+	@mkdir -p docs/
+	@unzip -q $$(./mill show app.docJar | head -n1 | tr -d '"' | sed 's/.*://') -d docs/
+	@echo "Documentation generated at docs/index.html"
+
 .PHONY: test
 test: ## Run tests
 	./mill app.test

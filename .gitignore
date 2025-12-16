@@ -3,5 +3,6 @@
 .devcontainer
 .metals/
 .vscode/
+docs/
 out/
 tmp/

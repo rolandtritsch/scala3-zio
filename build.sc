@@ -15,6 +15,12 @@ object app extends ScalaModule with ScalafmtModule with ScalafixModule {
     mvn"dev.zio::zio-streams:2.1.13"
   )
 
+  /** Scaladoc generation options for API documentation. */
+  def scaladocOptions = Seq(
+    "-project", "Scala 3 ZIO Application",
+    "-doc-root-content", "README.md"
+  )
+
   object test extends ScalaTests with ScalafmtModule with ScalafixModule {
     def mvnDeps = Seq(
       mvn"dev.zio::zio:2.1.13",

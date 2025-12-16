@@ -2,7 +2,19 @@ import zio._
 import zio.test._
 import zio.test.TestAspect._
 
+/** Test suite for the Main application.
+  *
+  * Verifies the behavior of the main program workflow using ZIO Test's
+  * TestConsole for capturing and asserting console output.
+  */
 object MainSpec extends ZIOSpecDefault:
+
+  /** Test specification suite for Main.
+    *
+    * Contains tests that verify the console output behavior of the main program.
+    *
+    * @return The test suite containing all Main-related tests
+    */
   def spec = suite("Main")(
     test("program should print welcome messages") {
       for {
