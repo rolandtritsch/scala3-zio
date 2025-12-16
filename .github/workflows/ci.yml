@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - trunk
+  pull_request:
+    branches:
+      - trunk
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Cache Mill dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/mill
+            ~/.cache/coursier
+            out/
+          key: ${{ runner.os }}-mill-${{ hashFiles('build.sc', '.mill-version') }}
+          restore-keys: |
+            ${{ runner.os }}-mill-
+
+      - name: Compile
+        run: make compile
+
+      - name: Check formatting
+        run: make format-check
+
+      - name: Check linting
+        run: make lint-check
+
+      - name: Run tests
+        run: make test
