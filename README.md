@@ -7,7 +7,7 @@
 
 ## Project Structure
 
-```
+```text
 .
 ├── build.sc           # Mill build configuration
 ├── app/
