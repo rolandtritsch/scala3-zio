@@ -24,5 +24,10 @@ lazy val root = (project in file("."))
     Compile / doc / scalacOptions ++= Seq(
       "-project", "Scala 3 ZIO Application",
       "-doc-root-content", "README.md"
-    )
+    ),
+
+    // Scoverage configuration
+    coverageMinimumStmtTotal := 60,
+    coverageFailOnMinimum := true,
+    coverageHighlighting := true
   )

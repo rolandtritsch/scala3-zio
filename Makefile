@@ -21,6 +21,21 @@ compile: ## Compile the project
 console: ## Start a REPL with dependencies loaded
 	sbt console
 
+.PHONY: coverage
+coverage: ## Run tests with coverage and generate report to docs/coverage
+	@echo "Running tests with coverage..."
+	@sbt clean coverage test coverageReport || true
+	@echo "Moving coverage report to docs/coverage..."
+	@rm -rf docs/coverage
+	@mkdir -p docs/coverage
+	@if [ -d target/scala-3.3.4/scoverage-report ]; then \
+		cp -r target/scala-3.3.4/scoverage-report/* docs/coverage/; \
+		echo "Coverage report generated at docs/coverage/index.html"; \
+	else \
+		echo "Error: Coverage report not found"; \
+		exit 1; \
+	fi
+
 .PHONY: format
 format: ## Format all source code
 	sbt scalafmtAll
