@@ -1,7 +1,7 @@
 .bsp/
-.claude/
+.claude/*
+!.claude/settings.json
 .devcontainer
 .metals/
-.vscode/
 out/
 tmp/

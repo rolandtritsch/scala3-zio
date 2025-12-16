@@ -1,0 +1,12 @@
+{
+  "hooks": {
+    "after-tool-call": [
+      {
+        "description": "Format and lint Scala files after code generation",
+        "condition": "(tool_name == 'Write' || tool_name == 'Edit') && tool_args.file_path.endsWith('.scala')",
+        "command": "make format && make lint",
+        "showOutput": "on-error"
+      }
+    ]
+  }
+}
