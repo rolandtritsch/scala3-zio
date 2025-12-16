@@ -17,6 +17,14 @@ run: ## Run the application
 test: ## Run tests
 	./mill app.test
 
+.PHONY: format
+format: ## Format all source code
+	./mill app.reformat
+
+.PHONY: format-check
+format-check: ## Check if code is formatted correctly
+	./mill app.checkFormat
+
 .PHONY: console
 console: ## Start a REPL with dependencies loaded
 	./mill app.console

@@ -1,5 +1,4 @@
-# scala3-zio
-My first ZIO app/service
+# scala3-zio - My first ZIO app/service
 
 ## Prerequisites
 
@@ -30,61 +29,3 @@ See all available commands:
 ```bash
 make help
 ```
-
-## Building
-
-Compile the project:
-
-```bash
-make compile
-```
-
-## Running
-
-Run the application:
-
-```bash
-make run
-```
-
-## Testing
-
-Run tests:
-
-```bash
-make test
-```
-
-## Other Useful Commands
-
-- **Start a REPL with dependencies loaded:**
-  ```bash
-  make console
-  ```
-
-- **Build an executable JAR:**
-  ```bash
-  make assembly
-  ```
-  The JAR will be created at `out/assembly.dest/out.jar`
-
-- **Clean build artifacts:**
-  ```bash
-  make clean
-  ```
-
-- **Show all available tasks:**
-  ```bash
-  make resolve
-  ```
-
-- **Continuously compile on file changes:**
-  ```bash
-  make watch
-  ```
-
-## IDE Support
-
-Mill works with:
-- **IntelliJ IDEA** - Install the Scala plugin and import the project
-- **VS Code** - Install the Metals extension for Scala support
