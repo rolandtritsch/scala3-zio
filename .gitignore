@@ -1,8 +1,9 @@
 .bsp/
-.claude/*
+.claude/
 !.claude/settings.json
 .devcontainer
 .metals/
-target/
+**/metals.sbt
 project/target/
+target/
 tmp/

@@ -1,6 +1,6 @@
 import zio._
-import zio.test._
 import zio.test.TestAspect._
+import zio.test._
 
 /** Test suite for the Main application.
   *
@@ -11,9 +11,11 @@ object MainSpec extends ZIOSpecDefault:
 
   /** Test specification suite for Main.
     *
-    * Contains tests that verify the console output behavior of the main program.
+    * Contains tests that verify the console output behavior of the main
+    * program.
     *
-    * @return The test suite containing all Main-related tests
+    * @return
+    *   The test suite containing all Main-related tests
     */
   def spec = suite("Main")(
     test("program should print welcome messages") {

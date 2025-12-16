@@ -31,11 +31,11 @@ format-check: ## Check if code is formatted correctly
 
 .PHONY: lint
 lint: ## Auto-fix linting issues
-	sbt "scalafixAll --rules OrganizeImports"
+	sbt scalafixAll
 
 .PHONY: lint-check
 lint-check: ## Check for linting issues (CI mode)
-	sbt "scalafix --check --rules OrganizeImports"
+	sbt "scalafix --check"
 
 .PHONY: resolve
 resolve: ## Show all available tasks
@@ -58,6 +58,10 @@ scala-doc: ## Generate Scaladoc API documentation to docs/
 .PHONY: test
 test: ## Run tests
 	sbt test
+
+.PHONY: watch-test
+watch-test: ## Continuously run tests on file changes
+	sbt ~test
 
 .PHONY: watch
 watch: ## Continuously compile on file changes
