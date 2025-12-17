@@ -1,0 +1,23 @@
+<configuration>
+  <!-- Console appender with JSON encoding -->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+      <!-- Include caller data (class, method, line number) -->
+      <includeCallerData>true</includeCallerData>
+      <!-- Include MDC (Mapped Diagnostic Context) for ZIO annotations -->
+      <includeMdc>true</includeMdc>
+      <!-- Pretty print JSON for readability (set to false for production) -->
+      <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
+    </encoder>
+  </appender>
+
+  <!-- Root logger configuration -->
+  <root level="INFO">
+    <appender-ref ref="STDOUT" />
+  </root>
+
+  <!-- Application-specific logger -->
+  <logger name="scala3-zio" level="DEBUG" additivity="false">
+    <appender-ref ref="STDOUT" />
+  </logger>
+</configuration>

@@ -1,27 +1,54 @@
 import zio._
+import zio.logging.backend.SLF4J
 
 /** Main application entry point demonstrating ZIO 2 with Scala 3.
   *
-  * This is a simple console application that prints welcome messages using
-  * ZIO's effect system with proper error handling.
+  * This is a simple console application that demonstrates structured JSON
+  * logging using ZIO's effect system with proper error handling.
   */
 object Main extends ZIOAppDefault:
 
-  /** The main program workflow that prints welcome messages to the console.
+  /** Configure JSON logging to stdout.
     *
-    * Executes two console operations sequentially with error handling for each.
-    * All errors are caught and handled gracefully without failing the program.
+    * Removes default loggers and sets up JSON-formatted logging for structured
+    * output via SLF4J backend (configured in logback.xml).
+    */
+  override val bootstrap: ZLayer[ZIOAppArgs, Any, Any] =
+    Runtime.removeDefaultLoggers >>> SLF4J.slf4j
+
+  /** The main program workflow demonstrating structured logging.
+    *
+    * Executes operations with structured logging including info, debug, and
+    * error levels with contextual annotations.
     *
     * @return
-    *   A ZIO effect that prints messages and always succeeds
+    *   A ZIO effect that demonstrates logging and always succeeds
     */
   val program: ZIO[Any, Nothing, Unit] = for {
-    _ <- Console
-      .printLine("Hello from ZIO!")
-      .catchAll(err => ZIO.succeed(println(s"Error: $err")))
-    _ <- Console
-      .printLine("Welcome to Scala 3 with ZIO 2")
-      .catchAll(err => ZIO.succeed(println(s"Error: $err")))
+    _ <- ZIO.logInfo("Application started")
+    _ <- ZIO.logInfo("Processing user request") @@ ZIOAspect.annotated(
+      "userId",
+      "12345"
+    )
+    _ <- ZIO.logDebug("Debug information") @@ ZIOAspect.annotated(
+      "component",
+      "main"
+    )
+    _ <- simulateWork()
+    _ <- ZIO.logInfo("Application completed successfully")
+  } yield ()
+
+  /** Simulates some work with structured logging.
+    *
+    * @return
+    *   A ZIO effect that simulates work with annotations
+    */
+  def simulateWork(): ZIO[Any, Nothing, Unit] = for {
+    _ <- ZIO.logInfo("Starting work simulation")
+    _ <- ZIO.logInfo("Work completed") @@ ZIOAspect.annotated(
+      "operation",
+      "calculation"
+    )
   } yield ()
 
   /** Runs the main program.
