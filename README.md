@@ -1,5 +1,7 @@
 # scala3-zio - My first ZIO app/service
 
+> **For Contributors**: See [CLAUDE.md][] for developer documentation, code style guidelines, and contribution workflow.
+
 ## Prerequisites
 
 - JVM (Java 21 or higher)
@@ -54,6 +56,7 @@ This project uses git hooks to maintain code quality. The hooks are stored in `g
 ### Pre-commit Hook
 
 The pre-commit hook runs automatically before each commit and:
+
 - Checks if code is properly formatted (`make format-check`)
 - Checks for linting issues (`make lint-check`)
 - Blocks the commit if checks fail
@@ -78,3 +81,5 @@ In rare cases where you need to bypass hooks (not recommended):
 ```bash
 git commit --no-verify
 ```
+
+[CLAUDE.md]: ./CLAUDE.md

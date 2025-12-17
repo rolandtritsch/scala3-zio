@@ -5,7 +5,14 @@
     "makefile.configureOnOpen": false,
     "editor.formatOnSave": true,
     "[scala]": {
-        "editor.formatOnSave": true,
         "editor.defaultFormatter": "scalameta.metals"
+    },
+    "[markdown]": {
+        "editor.codeActionsOnSave": {
+            "source.fixAll.markdownlint": "explicit"
+        }
+    },
+    "markdownlint.config": {
+        "extends": ".markdownlint.jsonc"
     }
 }

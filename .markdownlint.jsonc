@@ -1,0 +1,36 @@
+{
+  // Enable all rules by default
+  "default": true,
+
+  // MD013: Line length
+  // Disabled because it's often impractical for links and code blocks
+  "MD013": false,
+
+  // MD033: Inline HTML
+  // Allow inline HTML elements (can restrict to specific elements if needed)
+  "MD033": false,
+
+  // MD034: Bare URL used
+  // Enforce that URLs must use markdown link syntax
+  "MD034": true,
+
+  // MD041: First line in file should be a top level heading
+  // Disabled as some files may have front matter or other content first
+  "MD041": false,
+
+  // MD042: No empty links
+  // Ensure all links have content
+  "MD042": true,
+
+  // MD052: Reference links and images should use a label that is defined
+  // Ensures reference-style links point to valid definitions
+  "MD052": {
+    "shortcut_syntax": false
+  },
+
+  // MD053: Link and image reference definitions should be needed
+  // Ensures no unused reference definitions exist
+  "MD053": {
+    "ignored_definitions": []
+  }
+}

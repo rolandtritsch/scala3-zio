@@ -3,27 +3,14 @@ set -e
 
 echo "Running pre-commit checks..."
 
-# Check if there are any staged Scala files
-STAGED_SCALA_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.scala$' || true)
+# Get the repository root directory
+REPO_ROOT=$(git rev-parse --show-toplevel)
 
-if [ -z "$STAGED_SCALA_FILES" ]; then
-  echo "No Scala files to check."
-  exit 0
-fi
+# Run markdown checks
+"$REPO_ROOT/scripts/pre-commit_check-markdown.sh"
 
-echo "Checking format..."
-if ! make format-check; then
-  echo "❌ Code is not properly formatted."
-  echo "Run 'make format' to fix formatting issues."
-  exit 1
-fi
-
-echo "Checking lint..."
-if ! make lint-check; then
-  echo "❌ Code has linting issues."
-  echo "Run 'make lint' to fix linting issues."
-  exit 1
-fi
+# Run Scala checks
+"$REPO_ROOT/scripts/pre-commit_check-scala.sh"
 
 echo "✅ All pre-commit checks passed!"
 exit 0

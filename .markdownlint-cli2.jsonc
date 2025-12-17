@@ -1,0 +1,11 @@
+{
+  // Configuration file for markdownlint-cli2
+  // See: https://github.com/DavidAnson/markdownlint-cli2#configuration
+  // Rules configuration file
+  "config": ".markdownlint.jsonc",
+  // Files and directories to ignore
+  "ignores": [
+    ".metals/**",
+    "target/**"
+  ]
+}

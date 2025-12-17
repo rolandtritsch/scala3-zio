@@ -48,6 +48,14 @@ lint: ## Auto-fix linting issues
 lint-check: ## Check for linting issues (CI mode)
 	sbt "scalafix --check"
 
+.PHONY: markdownlint
+markdownlint: ## Format and fix all markdown files
+	markdownlint-cli2 --fix '**/*.md'
+
+.PHONY: markdownlint-check
+markdownlint-check: ## Check if markdown is formatted correctly
+	markdownlint-cli2 '**/*.md'
+
 .PHONY: resolve
 resolve: ## Show all available tasks
 	sbt tasks
