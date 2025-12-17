@@ -1,5 +1,4 @@
 import zio._
-import zio.test.TestAspect._
 import zio.test._
 
 /** Test suite for the Main application.
