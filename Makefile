@@ -1,5 +1,7 @@
 .DEFAULT_GOAL := help
 
+SCALA_VERSION := $(shell sbt -Dsbt.log.noformat=true -error 'print scalaVersion')
+
 .PHONY: help
 help: ## Show help for all targets
 	@echo "Available targets:"
@@ -22,19 +24,13 @@ console: ## Start a REPL with dependencies loaded
 	sbt console
 
 .PHONY: coverage
-coverage: ## Run tests with coverage and generate report to docs/coverage
-	@echo "Running tests with coverage..."
-	@sbt clean coverage test coverageReport || true
-	@echo "Moving coverage report to docs/coverage..."
-	@rm -rf docs/coverage
-	@mkdir -p docs/coverage
-	@if [ -d target/scala-3.3.4/scoverage-report ]; then \
-		cp -r target/scala-3.3.4/scoverage-report/* docs/coverage/; \
-		echo "Coverage report generated at docs/coverage/index.html"; \
-	else \
-		echo "Error: Coverage report not found"; \
-		exit 1; \
-	fi
+coverage: ## Run tests with coverage
+	sbt clean coverage test coverageReport
+
+.PHONY: coverage-doc
+coverage-doc: coverage ## Run tests with coverage and generate report to docs/coverage
+	rm -rf docs/coverage && mkdir -p docs/coverage
+	cp -r target/scala-$(SCALA_VERSION)/scoverage-report/* docs/coverage
 
 .PHONY: format
 format: ## Format all source code
@@ -62,13 +58,9 @@ run: ## Run the application
 
 .PHONY: scala-doc
 scala-doc: ## Generate Scaladoc API documentation to docs/
-	@echo "Generating Scaladoc..."
-	@sbt doc
-	@echo "Copying documentation to docs/..."
-	@rm -rf docs/
-	@mkdir -p docs/
-	@cp -r target/scala-3.3.4/api/* docs/
-	@echo "Documentation generated at docs/index.html"
+	sbt doc
+	rm -rf docs/ && mkdir -p docs/
+	cp -r target/scala-$(SCALA_VERSION)/api/* docs/
 
 .PHONY: test
 test: ## Run tests

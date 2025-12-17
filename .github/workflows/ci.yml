@@ -22,7 +22,7 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Setup sbt
+      - name: Setup SBT
         uses: sbt/setup-sbt@v1
 
       - name: Cache SBT dependencies
@@ -46,15 +46,5 @@ jobs:
       - name: Check linting
         run: make lint-check
 
-      - name: Run tests
-        run: make test
-
-      - name: Generate coverage report
+      - name: Run tests (and check coverage)
         run: make coverage
-
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: docs/coverage/
-          retention-days: 30
