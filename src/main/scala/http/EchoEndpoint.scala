@@ -1,4 +1,4 @@
-package http
+package org.roland.scala3_zio_template.http
 
 import zio.http._
 

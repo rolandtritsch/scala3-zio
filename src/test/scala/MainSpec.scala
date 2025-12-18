@@ -1,3 +1,5 @@
+package org.roland.scala3_zio_template
+
 import zio._
 import zio.test._
 
