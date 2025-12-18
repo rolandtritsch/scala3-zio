@@ -9,8 +9,8 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
   private val routes = Routes(HealthDeepEndpoint.route)
 
   def spec = suite("HealthDeepEndpoint")(
-    test("should respond with OK status to POST requests on /health-deep") {
-      val request = Request.post(URL.root / "health-deep", Body.empty)
+    test("should respond with OK status to GET requests on /health-deep") {
+      val request = Request.get(URL.root / "health-deep")
 
       for {
         response <- routes(request)
@@ -19,7 +19,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
       )
     },
     test("should respond with 200 status code") {
-      val request = Request.post(URL.root / "health-deep", Body.empty)
+      val request = Request.get(URL.root / "health-deep")
 
       for {
         response <- routes(request)
@@ -28,7 +28,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
       )
     },
     test("should respond with empty body") {
-      val request = Request.post(URL.root / "health-deep", Body.empty)
+      val request = Request.get(URL.root / "health-deep")
 
       for {
         response <- routes(request)
@@ -37,9 +37,8 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
         body.isEmpty
       )
     },
-    test("should respond to POST with request body") {
-      val request = Request
-        .post(URL.root / "health-deep", Body.fromString("deep check"))
+    test("should respond to GET with consistent results") {
+      val request = Request.get(URL.root / "health-deep")
 
       for {
         response <- routes(request)
@@ -47,8 +46,8 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
         response.status == Status.Ok
       )
     },
-    test("should not respond to GET requests") {
-      val request = Request.get(URL.root / "health-deep")
+    test("should not respond to POST requests") {
+      val request = Request.post(URL.root / "health-deep", Body.empty)
 
       for {
         response <- routes(request)
@@ -84,7 +83,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
       )
     },
     test("should respond consistently to multiple requests") {
-      val request = Request.post(URL.root / "health-deep", Body.empty)
+      val request = Request.get(URL.root / "health-deep")
 
       for {
         response1 <- routes(request)
@@ -97,7 +96,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
       )
     },
     test("should handle rapid successive requests") {
-      val request = Request.post(URL.root / "health-deep", Body.empty)
+      val request = Request.get(URL.root / "health-deep")
 
       for {
         responses <- ZIO.collectAll(List.fill(5)(

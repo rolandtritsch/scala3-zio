@@ -9,8 +9,8 @@ object RootEndpointSpec extends ZIOSpecDefault:
   private val routes = Routes(RootEndpoint.route)
 
   def spec = suite("RootEndpoint")(
-    test("should respond to POST requests on root path") {
-      val request = Request.post(URL.root, Body.empty)
+    test("should respond to GET requests on root path") {
+      val request = Request.get(URL.root)
 
       for {
         response <- routes(request)
@@ -21,7 +21,7 @@ object RootEndpointSpec extends ZIOSpecDefault:
       )
     },
     test("should return expected greeting message") {
-      val request = Request.post(URL.root, Body.empty)
+      val request = Request.get(URL.root)
 
       for {
         response <- routes(request)
@@ -32,7 +32,7 @@ object RootEndpointSpec extends ZIOSpecDefault:
       )
     },
     test("should respond with 200 status code") {
-      val request = Request.post(URL.root, Body.empty)
+      val request = Request.get(URL.root)
 
       for {
         response <- routes(request)
@@ -41,7 +41,7 @@ object RootEndpointSpec extends ZIOSpecDefault:
       )
     },
     test("should return text content type") {
-      val request = Request.post(URL.root, Body.empty)
+      val request = Request.get(URL.root)
 
       for {
         response <- routes(request)
@@ -50,9 +50,8 @@ object RootEndpointSpec extends ZIOSpecDefault:
         contentType.isDefined
       )
     },
-    test("should respond regardless of request body") {
-      val request = Request
-        .post(URL.root, Body.fromString("ignored content"))
+    test("should respond consistently") {
+      val request = Request.get(URL.root)
 
       for {
         response <- routes(request)
@@ -62,8 +61,8 @@ object RootEndpointSpec extends ZIOSpecDefault:
         body == "Hello, Root Endpoint!"
       )
     },
-    test("should not respond to GET requests") {
-      val request = Request.get(URL.root)
+    test("should not respond to POST requests") {
+      val request = Request.post(URL.root, Body.empty)
 
       for {
         response <- routes(request)
@@ -99,7 +98,7 @@ object RootEndpointSpec extends ZIOSpecDefault:
       )
     },
     test("should respond consistently to multiple requests") {
-      val request = Request.post(URL.root, Body.empty)
+      val request = Request.get(URL.root)
 
       for {
         response1 <- routes(request)
@@ -117,7 +116,7 @@ object RootEndpointSpec extends ZIOSpecDefault:
       )
     },
     test("should handle concurrent requests") {
-      val request = Request.post(URL.root, Body.empty)
+      val request = Request.get(URL.root)
 
       for {
         responses <- ZIO.collectAll(List.fill(10)(

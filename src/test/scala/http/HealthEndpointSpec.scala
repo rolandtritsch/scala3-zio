@@ -9,8 +9,8 @@ object HealthEndpointSpec extends ZIOSpecDefault:
   private val routes = Routes(HealthEndpoint.route)
 
   def spec = suite("HealthEndpoint")(
-    test("should respond with OK status to POST requests on /health") {
-      val request = Request.post(URL.root / "health", Body.empty)
+    test("should respond with OK status to GET requests on /health") {
+      val request = Request.get(URL.root / "health")
 
       for {
         response <- routes(request)
@@ -19,7 +19,7 @@ object HealthEndpointSpec extends ZIOSpecDefault:
       )
     },
     test("should respond with 200 status code") {
-      val request = Request.post(URL.root / "health", Body.empty)
+      val request = Request.get(URL.root / "health")
 
       for {
         response <- routes(request)
@@ -28,7 +28,7 @@ object HealthEndpointSpec extends ZIOSpecDefault:
       )
     },
     test("should respond with empty body") {
-      val request = Request.post(URL.root / "health", Body.empty)
+      val request = Request.get(URL.root / "health")
 
       for {
         response <- routes(request)
@@ -37,9 +37,8 @@ object HealthEndpointSpec extends ZIOSpecDefault:
         body.isEmpty
       )
     },
-    test("should respond to POST with request body") {
-      val request = Request
-        .post(URL.root / "health", Body.fromString("test body"))
+    test("should respond to GET with consistent results") {
+      val request = Request.get(URL.root / "health")
 
       for {
         response <- routes(request)
@@ -47,8 +46,8 @@ object HealthEndpointSpec extends ZIOSpecDefault:
         response.status == Status.Ok
       )
     },
-    test("should not respond to GET requests") {
-      val request = Request.get(URL.root / "health")
+    test("should not respond to POST requests") {
+      val request = Request.post(URL.root / "health", Body.empty)
 
       for {
         response <- routes(request)
@@ -84,7 +83,7 @@ object HealthEndpointSpec extends ZIOSpecDefault:
       )
     },
     test("should respond consistently to multiple requests") {
-      val request = Request.post(URL.root / "health", Body.empty)
+      val request = Request.get(URL.root / "health")
 
       for {
         response1 <- routes(request)

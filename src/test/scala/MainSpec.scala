@@ -20,7 +20,7 @@ object MainSpec extends ZIOSpecDefault:
       )
     },
     test("routes should include HealthEndpoint") {
-      val request = Request.post(URL.root / "health", Body.empty)
+      val request = Request.get(URL.root / "health")
 
       for {
         response <- Main.routes(request)
@@ -29,7 +29,7 @@ object MainSpec extends ZIOSpecDefault:
       )
     },
     test("routes should include HealthDeepEndpoint") {
-      val request = Request.post(URL.root / "health-deep", Body.empty)
+      val request = Request.get(URL.root / "health-deep")
 
       for {
         response <- Main.routes(request)
@@ -38,7 +38,7 @@ object MainSpec extends ZIOSpecDefault:
       )
     },
     test("routes should include RootEndpoint") {
-      val request = Request.post(URL.root, Body.empty)
+      val request = Request.get(URL.root)
 
       for {
         response <- Main.routes(request)
@@ -106,7 +106,7 @@ object MainSpec extends ZIOSpecDefault:
 
       for {
         responses <- ZIO.foreach(healthPaths) { path =>
-          val request = Request.post(URL.root / path, Body.empty)
+          val request = Request.get(URL.root / path)
           Main.routes(request)
         }
       } yield assertTrue(
