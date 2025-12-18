@@ -5,4 +5,4 @@ import zio.http._
 object HealthDeepEndpoint extends Endpoint:
   override protected final val handler = Handler.ok
   override val route =
-    Method.POST / "health-deep" -> handler
+    Method.GET / "health-deep" -> handler

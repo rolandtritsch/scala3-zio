@@ -5,4 +5,4 @@ import zio.http._
 object RootEndpoint extends Endpoint:
   override protected final val handler = Handler.text("Hello, Root Endpoint!")
   override val route =
-    Method.POST / Root -> handler
+    Method.GET / Root -> handler
