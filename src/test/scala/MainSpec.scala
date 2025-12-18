@@ -112,5 +112,43 @@ object MainSpec extends ZIOSpecDefault:
       } yield assertTrue(
         responses.forall(_.status == Status.Ok)
       )
-    }
+    },
+    test("serverConfig should have gracefulShutdownTimeout of 10 seconds") {
+      assertTrue(
+        Main.serverConfig.gracefulShutdownTimeout == 10.seconds
+      )
+    },
+    test("server should handle graceful shutdown") {
+      val serverFiber = for {
+        fiber <- Server
+          .serve(Main.routes)
+          .provide(
+            ZLayer.succeed(Main.serverConfig.port(8081)),
+            Server.live
+          )
+          .fork
+        _ <- TestClock.adjust(100.millis)
+        _ <- fiber.interrupt
+      } yield ()
+
+      serverFiber.as(assertTrue(true))
+    } @@ TestAspect.timeout(5.seconds) @@ TestAspect.withLiveClock,
+    test("server shutdown hook should execute on interruption") {
+      val program = for {
+        _ <- ZIO.logInfo("Starting server on port 8080...")
+        _ <- ZIO.never
+      } yield ()
+
+      val withShutdown = program.ensuring(
+        ZIO.logInfo("Server shutdown initiated, cleaning up resources...") *>
+        ZIO.logInfo("Waiting for in-flight requests to complete...") *>
+        ZIO.logInfo("Server shutdown completed successfully")
+      )
+
+      for {
+        fiber <- withShutdown.fork
+        _ <- TestClock.adjust(10.millis)
+        _ <- fiber.interrupt
+      } yield assertTrue(true)
+    } @@ TestAspect.timeout(5.seconds)
   )

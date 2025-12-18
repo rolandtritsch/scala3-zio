@@ -18,6 +18,7 @@ object Main extends ZIOAppDefault:
     .keepAlive(true)
     .idleTimeout(30.seconds)
     .maxHeaderSize(16 * 1024)
+    .gracefulShutdownTimeout(10.seconds)
 
   val routes = Routes(
     EchoEndpoint.route,
@@ -26,9 +27,16 @@ object Main extends ZIOAppDefault:
     RootEndpoint.route
   )
 
-  def run = Server
-    .serve(routes)
-    .provide(
-      ZLayer.succeed(serverConfig),
-      Server.live
-    )
+  private val shutdownHook: UIO[Unit] =
+    ZIO.logInfo("Server shutdown initiated, cleaning up resources...") *>
+    ZIO.logInfo("Waiting for in-flight requests to complete...") *>
+    ZIO.logInfo("Server shutdown completed successfully")
+
+  def run =
+    (ZIO.logInfo("Starting server on port 8080...") *>
+    Server.serve(routes))
+      .ensuring(shutdownHook)
+      .provide(
+        ZLayer.succeed(serverConfig),
+        Server.live
+      )
