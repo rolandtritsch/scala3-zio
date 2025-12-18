@@ -3,20 +3,8 @@ package org.roland.scala3_zio_template
 import zio._
 import zio.test._
 
-/** Test suite for the Main application.
-  *
-  * Verifies the behavior of the main program workflow using ZIO Test's logging
-  * facilities to capture and assert log output.
-  */
 object MainSpec extends ZIOSpecDefault:
 
-  /** Test specification suite for Main.
-    *
-    * Contains tests that verify the logging behavior of the main program.
-    *
-    * @return
-    *   The test suite containing all Main-related tests
-    */
   def spec = suite("Main")(
     test("program should log application lifecycle messages") {
       for {
