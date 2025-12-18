@@ -1,0 +1,655 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          Main.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>import zio._
+</span>2 <span style=''>import zio.logging.backend.SLF4J
+</span>3 <span style=''>
+</span>4 <span style=''>/** Main application entry point demonstrating ZIO 2 with Scala 3.
+</span>5 <span style=''>  *
+</span>6 <span style=''>  * This is a simple console application that demonstrates structured JSON
+</span>7 <span style=''>  * logging using ZIO's effect system with proper error handling.
+</span>8 <span style=''>  */
+</span>9 <span style=''>object Main extends ZIOAppDefault:
+</span>10 <span style=''>
+</span>11 <span style=''>  /** Configure JSON logging to stdout.
+</span>12 <span style=''>    *
+</span>13 <span style=''>    * Removes default loggers and sets up JSON-formatted logging for structured
+</span>14 <span style=''>    * output via SLF4J backend (configured in logback.xml).
+</span>15 <span style=''>    */
+</span>16 <span style=''>  override val bootstrap: ZLayer[ZIOAppArgs, Any, Any] =
+</span>17 <span style=''>    </span><span style='background: #AEF1AE'>Runtime.removeDefaultLoggers &gt;&gt;&gt; </span><span style='background: #F0ADAD'>SLF4J.slf4j</span><span style=''>
+</span>18 <span style=''>
+</span>19 <span style=''>  /** The main program workflow demonstrating structured logging.
+</span>20 <span style=''>    *
+</span>21 <span style=''>    * Executes operations with structured logging including info, debug, and
+</span>22 <span style=''>    * error levels with contextual annotations.
+</span>23 <span style=''>    *
+</span>24 <span style=''>    * @return
+</span>25 <span style=''>    *   A ZIO effect that demonstrates logging and always succeeds
+</span>26 <span style=''>    */
+</span>27 <span style=''>  val program: ZIO[Any, Nothing, Unit] = </span><span style='background: #AEF1AE'>for {
+</span>28 <span style=''></span><span style='background: #AEF1AE'>    _ &lt;- ZIO.logInfo(&quot;Application started&quot;)
+</span>29 <span style=''></span><span style='background: #AEF1AE'>    _ &lt;- ZIO.logInfo(&quot;Processing user request&quot;) @@ ZIOAspect.annotated(
+</span>30 <span style=''></span><span style='background: #AEF1AE'>      &quot;userId&quot;,
+</span>31 <span style=''></span><span style='background: #AEF1AE'>      &quot;12345&quot;
+</span>32 <span style=''></span><span style='background: #AEF1AE'>    )
+</span>33 <span style=''></span><span style='background: #AEF1AE'>    _ &lt;- ZIO.logDebug(&quot;Debug information&quot;) @@ ZIOAspect.annotated(
+</span>34 <span style=''></span><span style='background: #AEF1AE'>      &quot;component&quot;,
+</span>35 <span style=''></span><span style='background: #AEF1AE'>      &quot;main&quot;
+</span>36 <span style=''></span><span style='background: #AEF1AE'>    )
+</span>37 <span style=''></span><span style='background: #AEF1AE'>    _ &lt;- simulateWork()
+</span>38 <span style=''></span><span style='background: #AEF1AE'>    _ &lt;- ZIO.logInfo(&quot;Application completed successfully&quot;)
+</span>39 <span style=''></span><span style='background: #AEF1AE'>  } yield ()</span><span style=''>
+</span>40 <span style=''>
+</span>41 <span style=''>  /** Simulates some work with structured logging.
+</span>42 <span style=''>    *
+</span>43 <span style=''>    * @return
+</span>44 <span style=''>    *   A ZIO effect that simulates work with annotations
+</span>45 <span style=''>    */
+</span>46 <span style=''>  </span><span style='background: #AEF1AE'>def simulateWork</span><span style=''>(): ZIO[Any, Nothing, Unit] = </span><span style='background: #AEF1AE'>for {
+</span>47 <span style=''></span><span style='background: #AEF1AE'>    _ &lt;- ZIO.logInfo(&quot;Starting work simulation&quot;)
+</span>48 <span style=''></span><span style='background: #AEF1AE'>    _ &lt;- ZIO.logInfo(&quot;Work completed&quot;) @@ ZIOAspect.annotated(
+</span>49 <span style=''></span><span style='background: #AEF1AE'>      &quot;operation&quot;,
+</span>50 <span style=''></span><span style='background: #AEF1AE'>      &quot;calculation&quot;
+</span>51 <span style=''></span><span style='background: #AEF1AE'>    )
+</span>52 <span style=''></span><span style='background: #AEF1AE'>  } yield ()</span><span style=''>
+</span>53 <span style=''>
+</span>54 <span style=''>  /** Runs the main program.
+</span>55 <span style=''>    *
+</span>56 <span style=''>    * Entry point for the ZIO application that executes the program workflow.
+</span>57 <span style=''>    *
+</span>58 <span style=''>    * @return
+</span>59 <span style=''>    *   The program effect to execute
+</span>60 <span style=''>    */
+</span>61 <span style=''>  </span><span style='background: #F0ADAD'>def run</span><span style=''> = program
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Tests</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          1
+        </td>
+        <td>
+          587
+          -
+          598
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          slf4j
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          SLF4J.slf4j
+        </td>
+      </tr><tr>
+        <td>
+          17
+        </td>
+        <td>
+          0
+        </td>
+        <td>
+          554
+          -
+          598
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &gt;&gt;&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Runtime.removeDefaultLoggers &gt;&gt;&gt; SLF4J.slf4j
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          2
+        </td>
+        <td>
+          932
+          -
+          1290
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          for {\n    _ &lt;- ZIO.logInfo(&quot;Application started&quot;)\n    _ &lt;- ZIO.logInfo(&quot;Processing user request&quot;) @@ ZIOAspect.annotated(\n      &quot;userId&quot;,\n      &quot;12345&quot;\n    )\n    _ &lt;- ZIO.logDebug(&quot;Debug information&quot;) @@ ZIOAspect.annotated(\n      &quot;component&quot;,\n      &quot;main&quot;\n    )\n    _ &lt;- simulateWork()\n    _ &lt;- ZIO.logInfo(&quot;Application completed successfully&quot;)\n  } yield ()
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          14
+        </td>
+        <td>
+          986
+          -
+          1290
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _ &lt;- ZIO.logInfo(&quot;Processing user request&quot;) @@ ZIOAspect.annotated(\n      &quot;userId&quot;,\n      &quot;12345&quot;\n    )\n    _ &lt;- ZIO.logDebug(&quot;Debug information&quot;) @@ ZIOAspect.annotated(\n      &quot;component&quot;,\n      &quot;main&quot;\n    )\n    _ &lt;- simulateWork()\n    _ &lt;- ZIO.logInfo(&quot;Application completed successfully&quot;)\n  } yield ()
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          4
+        </td>
+        <td>
+          1033
+          -
+          1089
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          annotated
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          ZIOAspect.annotated(\n      &quot;userId&quot;,\n      &quot;12345&quot;\n    )
+        </td>
+      </tr><tr>
+        <td>
+          29
+        </td>
+        <td>
+          3
+        </td>
+        <td>
+          986
+          -
+          1290
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _ &lt;- ZIO.logInfo(&quot;Processing user request&quot;) @@ ZIOAspect.annotated(\n      &quot;userId&quot;,\n      &quot;12345&quot;\n    )\n    _ &lt;- ZIO.logDebug(&quot;Debug information&quot;) @@ ZIOAspect.annotated(\n      &quot;component&quot;,\n      &quot;main&quot;\n    )\n    _ &lt;- simulateWork()\n    _ &lt;- ZIO.logInfo(&quot;Application completed successfully&quot;)\n  } yield ()
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          5
+        </td>
+        <td>
+          1094
+          -
+          1290
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _ &lt;- ZIO.logDebug(&quot;Debug information&quot;) @@ ZIOAspect.annotated(\n      &quot;component&quot;,\n      &quot;main&quot;\n    )\n    _ &lt;- simulateWork()\n    _ &lt;- ZIO.logInfo(&quot;Application completed successfully&quot;)\n  } yield ()
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          13
+        </td>
+        <td>
+          1094
+          -
+          1290
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _ &lt;- ZIO.logDebug(&quot;Debug information&quot;) @@ ZIOAspect.annotated(\n      &quot;component&quot;,\n      &quot;main&quot;\n    )\n    _ &lt;- simulateWork()\n    _ &lt;- ZIO.logInfo(&quot;Application completed successfully&quot;)\n  } yield ()
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          6
+        </td>
+        <td>
+          1136
+          -
+          1194
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          annotated
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          ZIOAspect.annotated(\n      &quot;component&quot;,\n      &quot;main&quot;\n    )
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          7
+        </td>
+        <td>
+          1199
+          -
+          1290
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _ &lt;- simulateWork()\n    _ &lt;- ZIO.logInfo(&quot;Application completed successfully&quot;)\n  } yield ()
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          12
+        </td>
+        <td>
+          1199
+          -
+          1290
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _ &lt;- simulateWork()\n    _ &lt;- ZIO.logInfo(&quot;Application completed successfully&quot;)\n  } yield ()
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          8
+        </td>
+        <td>
+          1223
+          -
+          1290
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _ &lt;- ZIO.logInfo(&quot;Application completed successfully&quot;)\n  } yield ()
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          11
+        </td>
+        <td>
+          1223
+          -
+          1290
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _ &lt;- ZIO.logInfo(&quot;Application completed successfully&quot;)\n  } yield ()
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          10
+        </td>
+        <td>
+          1288
+          -
+          1290
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          9
+        </td>
+        <td>
+          1288
+          -
+          1290
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          21
+        </td>
+        <td>
+          1430
+          -
+          1446
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          simulateWork
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def simulateWork
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          15
+        </td>
+        <td>
+          1476
+          -
+          1651
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          for {\n    _ &lt;- ZIO.logInfo(&quot;Starting work simulation&quot;)\n    _ &lt;- ZIO.logInfo(&quot;Work completed&quot;) @@ ZIOAspect.annotated(\n      &quot;operation&quot;,\n      &quot;calculation&quot;\n    )\n  } yield ()
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          17
+        </td>
+        <td>
+          1573
+          -
+          1638
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          annotated
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          ZIOAspect.annotated(\n      &quot;operation&quot;,\n      &quot;calculation&quot;\n    )
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          20
+        </td>
+        <td>
+          1535
+          -
+          1651
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _ &lt;- ZIO.logInfo(&quot;Work completed&quot;) @@ ZIOAspect.annotated(\n      &quot;operation&quot;,\n      &quot;calculation&quot;\n    )\n  } yield ()
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          16
+        </td>
+        <td>
+          1535
+          -
+          1651
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _ &lt;- ZIO.logInfo(&quot;Work completed&quot;) @@ ZIOAspect.annotated(\n      &quot;operation&quot;,\n      &quot;calculation&quot;\n    )\n  } yield ()
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          19
+        </td>
+        <td>
+          1649
+          -
+          1651
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          18
+        </td>
+        <td>
+          1649
+          -
+          1651
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          22
+        </td>
+        <td>
+          1833
+          -
+          1840
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          run
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def run
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

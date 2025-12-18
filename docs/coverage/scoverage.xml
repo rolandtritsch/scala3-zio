@@ -1,0 +1,185 @@
+<scoverage 
+statement-count="34" statements-invoked="21" statement-rate="61.76" branch-rate="100.00" version="1.0" timestamp="1766033788310">
+    <packages>
+        <package name="&lt;empty&gt;" statement-count="23" statements-invoked="21" statement-rate="91.30">
+            <classes>
+                <class 
+                name="&lt;empty&gt;.Main" filename="Main.scala" statement-count="23" statements-invoked="21" statement-rate="91.30" branch-rate="100.00">
+                    <methods>
+                        <method 
+                        name="&lt;empty&gt;/Main/$anonfun" statement-count="17" statements-invoked="17" statement-rate="100.00" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="$anonfun" start="1223" end="1290" line="38" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="$anonfun" start="1573" end="1638" line="48" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="$anonfun" start="1223" end="1290" line="38" branch="true" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="$anonfun" start="1535" end="1651" line="48" branch="true" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="$anonfun" start="1094" end="1290" line="33" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="$anonfun" start="986" end="1290" line="29" branch="true" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="$anonfun" start="1033" end="1089" line="29" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="$anonfun" start="1094" end="1290" line="33" branch="true" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="$anonfun" start="1199" end="1290" line="37" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="$anonfun" start="1535" end="1651" line="48" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="$anonfun" start="1288" end="1290" line="39" branch="true" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="$anonfun" start="1649" end="1651" line="52" branch="true" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="$anonfun" start="1288" end="1290" line="39" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="$anonfun" start="1649" end="1651" line="52" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="$anonfun" start="1199" end="1290" line="37" branch="true" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="$anonfun" start="986" end="1290" line="29" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="$anonfun" start="1136" end="1194" line="33" branch="false" invocation-count="1" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="&lt;empty&gt;/Main/&lt;init&gt;" statement-count="3" statements-invoked="2" statement-rate="66.67" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="&lt;init&gt;" start="932" end="1290" line="27" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="&lt;init&gt;" start="587" end="598" line="17" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="&lt;init&gt;" start="554" end="598" line="17" branch="false" invocation-count="1" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="&lt;empty&gt;/Main/run" statement-count="1" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                            <statements>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="run" start="1833" end="1840" line="61" branch="false" invocation-count="0" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="&lt;empty&gt;/Main/simulateWork" statement-count="2" statements-invoked="2" statement-rate="100.00" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="simulateWork" start="1430" end="1446" line="46" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="&lt;empty&gt;" class="Main" class-type="Object" full-class-name="&lt;empty&gt;.Main" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/Main.scala" method="simulateWork" start="1476" end="1651" line="46" branch="false" invocation-count="1" ignored="false">
+</statement>
+                            </statements>
+</method>
+                    </methods>
+</class>
+            </classes>
+        </package>
+        <package name="http" statement-count="11" statements-invoked="0" statement-rate="0.00">
+            <classes>
+                <class 
+                name="http.EchoEndpoint" filename="http/EchoEndpoint.scala" statement-count="5" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                    <methods>
+                        <method 
+                        name="http/EchoEndpoint/&lt;init&gt;" statement-count="3" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                            <statements>
+                                <statement 
+                                package="http" class="EchoEndpoint" class-type="Object" full-class-name="http.EchoEndpoint" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/http/EchoEndpoint.scala" method="&lt;init&gt;" start="80" end="123" line="6" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="http" class="EchoEndpoint" class-type="Object" full-class-name="http.EchoEndpoint" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/http/EchoEndpoint.scala" method="&lt;init&gt;" start="152" end="235" line="7" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="http" class="EchoEndpoint" class-type="Object" full-class-name="http.EchoEndpoint" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/http/EchoEndpoint.scala" method="&lt;init&gt;" start="94" end="100" line="6" branch="false" invocation-count="0" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="http/EchoEndpoint/$anonfun" statement-count="2" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                            <statements>
+                                <statement 
+                                package="http" class="EchoEndpoint" class-type="Object" full-class-name="http.EchoEndpoint" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/http/EchoEndpoint.scala" method="$anonfun" start="188" end="231" line="8" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="http" class="EchoEndpoint" class-type="Object" full-class-name="http.EchoEndpoint" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/http/EchoEndpoint.scala" method="$anonfun" start="214" end="230" line="8" branch="false" invocation-count="0" ignored="false">
+</statement>
+                            </statements>
+</method>
+                    </methods>
+</class>
+                <class 
+                name="http.RootEndpoint" filename="http/RootEndpoint.scala" statement-count="2" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                    <methods>
+                        <method 
+                        name="http/RootEndpoint/&lt;init&gt;" statement-count="2" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                            <statements>
+                                <statement 
+                                package="http" class="RootEndpoint" class-type="Object" full-class-name="http.RootEndpoint" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/http/RootEndpoint.scala" method="&lt;init&gt;" start="84" end="125" line="7" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="http" class="RootEndpoint" class-type="Object" full-class-name="http.RootEndpoint" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/http/RootEndpoint.scala" method="&lt;init&gt;" start="154" end="191" line="8" branch="false" invocation-count="0" ignored="false">
+</statement>
+                            </statements>
+</method>
+                    </methods>
+</class>
+                <class 
+                name="http.HealthDeepEndpoint" filename="http/HealthDeepEndpoint.scala" statement-count="2" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                    <methods>
+                        <method 
+                        name="http/HealthDeepEndpoint/&lt;init&gt;" statement-count="2" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                            <statements>
+                                <statement 
+                                package="http" class="HealthDeepEndpoint" class-type="Object" full-class-name="http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/http/HealthDeepEndpoint.scala" method="&lt;init&gt;" start="110" end="123" line="7" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="http" class="HealthDeepEndpoint" class-type="Object" full-class-name="http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/http/HealthDeepEndpoint.scala" method="&lt;init&gt;" start="96" end="152" line="7" branch="false" invocation-count="0" ignored="false">
+</statement>
+                            </statements>
+</method>
+                    </methods>
+</class>
+                <class 
+                name="http.HealthEndpoint" filename="http/HealthEndpoint.scala" statement-count="2" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                    <methods>
+                        <method 
+                        name="http/HealthEndpoint/&lt;init&gt;" statement-count="2" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                            <statements>
+                                <statement 
+                                package="http" class="HealthEndpoint" class-type="Object" full-class-name="http.HealthEndpoint" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/http/HealthEndpoint.scala" method="&lt;init&gt;" start="102" end="110" line="7" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="http" class="HealthEndpoint" class-type="Object" full-class-name="http.HealthEndpoint" source="/home/yoda/Development/Home/scala3-zio/src/main/scala/http/HealthEndpoint.scala" method="&lt;init&gt;" start="88" end="135" line="7" branch="false" invocation-count="0" ignored="false">
+</statement>
+                            </statements>
+</method>
+                    </methods>
+</class>
+            </classes>
+        </package>
+    </packages>
+</scoverage>
