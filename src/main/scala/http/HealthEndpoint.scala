@@ -2,7 +2,7 @@ package org.roland.scala3_zio_template.http
 
 import zio.http._
 
-object HealthEndpoint:
-  val healthEndpointRoute =
-    Method.POST / "health" -> healthEndpointHandler
-  val healthEndpointHandler = Handler.ok
+object HealthEndpoint extends Endpoint:
+  override protected final val handler = Handler.ok
+  override val route =
+    Method.POST / "health" -> handler
