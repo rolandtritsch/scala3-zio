@@ -7,13 +7,14 @@ import zio.http._
   *
   * This abstract class provides common functionality for all HTTP endpoints,
   * including automatic request logging with timing information. Concrete
-  * endpoint implementations should extend this class and define their route
-  * and handler.
+  * endpoint implementations should extend this class and define their route and
+  * handler.
   *
   * The `withLogging` method can be used to wrap any handler with automatic
   * logging of request start, completion, duration, and HTTP status code.
   *
-  * @see [[withLogging]] for request logging functionality
+  * @see
+  *   [[withLogging]] for request logging functionality
   */
 abstract class Endpoint:
   val route: Route[Any, Nothing]

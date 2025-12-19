@@ -1,24 +1,31 @@
 package org.roland.scala3_zio_template.service
 
+import javax.sql.DataSource
+
 import io.getquill._
 import io.getquill.jdbczio.Quill
-import zio._
 
-import javax.sql.DataSource
+import zio._
 
 /** Configuration for PostgreSQL database connection.
   *
-  * This case class holds all necessary parameters to establish a JDBC connection
-  * to a PostgreSQL database. Configuration values are typically loaded from
-  * environment variables via `DatabaseService.loadConfig`.
+  * This case class holds all necessary parameters to establish a JDBC
+  * connection to a PostgreSQL database. Configuration values are typically
+  * loaded from environment variables via `DatabaseService.loadConfig`.
   *
-  * @param host PostgreSQL server hostname or IP address
-  * @param port PostgreSQL server port (default: 5432)
-  * @param database Name of the database to connect to
-  * @param username Database user for authentication
-  * @param password Database password for authentication
+  * @param host
+  *   PostgreSQL server hostname or IP address
+  * @param port
+  *   PostgreSQL server port (default: 5432)
+  * @param database
+  *   Name of the database to connect to
+  * @param username
+  *   Database user for authentication
+  * @param password
+  *   Database password for authentication
   *
-  * @see [[DatabaseService.loadConfig]] for loading from environment variables
+  * @see
+  *   [[DatabaseService.loadConfig]] for loading from environment variables
   */
 case class DatabaseConfig(
     host: String,
@@ -29,7 +36,9 @@ case class DatabaseConfig(
 ):
   /** Constructs a JDBC URL from the configuration parameters.
     *
-    * @return JDBC connection string in the format: jdbc:postgresql://host:port/database
+    * @return
+    *   JDBC connection string in the format:
+    *   jdbc:postgresql://host:port/database
     */
   def jdbcUrl: String =
     s"jdbc:postgresql://$host:$port/$database"
@@ -44,46 +53,61 @@ case class DatabaseConfig(
   * resource management. Database operations are executed using Quill for
   * compile-time query validation.
   *
-  * @see [[DatabaseService.live]] for the production implementation
+  * @see
+  *   [[DatabaseService.live]] for the production implementation
   */
 trait DatabaseService:
   /** Performs a basic database health check by executing SELECT 1.
     *
-    * This method validates that the database connection is alive and can execute
-    * queries. It's used by the /health-deep endpoint to verify database availability.
+    * This method validates that the database connection is alive and can
+    * execute queries. It's used by the /health-deep endpoint to verify database
+    * availability.
     *
-    * @return ZIO effect that succeeds with true if the database is healthy, or fails with an error
+    * @return
+    *   ZIO effect that succeeds with true if the database is healthy, or fails
+    *   with an error
     */
   def healthCheck(): ZIO[Any, Throwable, Boolean]
 
   /** Executes a raw SQL statement without returning results.
     *
-    * Useful for DDL statements (CREATE, ALTER, DROP) or DML statements (INSERT, UPDATE, DELETE)
-    * where the return value is not needed.
+    * Useful for DDL statements (CREATE, ALTER, DROP) or DML statements (INSERT,
+    * UPDATE, DELETE) where the return value is not needed.
     *
-    * @param sql Raw SQL statement to execute
-    * @return ZIO effect that succeeds with Unit or fails with an error
+    * @param sql
+    *   Raw SQL statement to execute
+    * @return
+    *   ZIO effect that succeeds with Unit or fails with an error
     */
   def execute(sql: String): ZIO[Any, Throwable, Unit]
 
   /** Executes a SQL query and returns at most one result.
     *
-    * '''Note:''' This method is not yet implemented and will fail with UnsupportedOperationException.
-    * Use `healthCheck` for basic database validation.
+    * '''Note:''' This method is not yet implemented and will fail with
+    * UnsupportedOperationException. Use `healthCheck` for basic database
+    * validation.
     *
-    * @param sql Raw SQL query to execute
-    * @tparam T The expected result type
-    * @return ZIO effect that succeeds with Some(result) or None, or fails with an error
+    * @param sql
+    *   Raw SQL query to execute
+    * @tparam T
+    *   The expected result type
+    * @return
+    *   ZIO effect that succeeds with Some(result) or None, or fails with an
+    *   error
     */
   def selectOne[T](sql: String): ZIO[Any, Throwable, Option[T]]
 
   /** Executes a SQL query and returns all results as a list.
     *
-    * '''Note:''' This method is not yet implemented and will fail with UnsupportedOperationException.
+    * '''Note:''' This method is not yet implemented and will fail with
+    * UnsupportedOperationException.
     *
-    * @param sql Raw SQL query to execute
-    * @tparam T The expected result type
-    * @return ZIO effect that succeeds with a list of results, or fails with an error
+    * @param sql
+    *   Raw SQL query to execute
+    * @tparam T
+    *   The expected result type
+    * @return
+    *   ZIO effect that succeeds with a list of results, or fails with an error
     */
   def selectAll[T](sql: String): ZIO[Any, Throwable, List[T]]
 
@@ -108,7 +132,9 @@ object DatabaseService:
     * The user and password variables are required and the application will fail
     * to start if they are not provided.
     *
-    * @return ZIO effect that succeeds with DatabaseConfig or fails with an error message
+    * @return
+    *   ZIO effect that succeeds with DatabaseConfig or fails with an error
+    *   message
     */
   def loadConfig: IO[String, DatabaseConfig] =
     (for {
@@ -147,7 +173,8 @@ object DatabaseService:
     * is configured but not validated at this stage - validation happens in the
     * service layer.
     *
-    * @return ZLayer that provides a javax.sql.DataSource instance
+    * @return
+    *   ZLayer that provides a javax.sql.DataSource instance
     */
   val dataSourceLayer: ZLayer[Any, Throwable, DataSource] =
     ZLayer.fromZIO(
@@ -172,15 +199,16 @@ object DatabaseService:
   /** ZLayer that provides the DatabaseService implementation.
     *
     * This layer requires both a Quill context and a DataSource to be provided.
-    * It performs connection validation at startup by executing a simple SELECT 1
-    * query. If validation fails, the application will not start.
+    * It performs connection validation at startup by executing a simple SELECT
+    * 1 query. If validation fails, the application will not start.
     *
     * The returned service implementation provides:
     *   - Health check via SELECT 1
     *   - Raw SQL execution (for future use)
     *   - Query methods (not yet implemented)
     *
-    * @return ZLayer that provides DatabaseService, requiring Quill and DataSource
+    * @return
+    *   ZLayer that provides DatabaseService, requiring Quill and DataSource
     */
   private val serviceLayer: ZLayer[
     Quill.Postgres[SnakeCase.type] & DataSource,
@@ -193,22 +221,26 @@ object DatabaseService:
         ds <- ZIO.service[DataSource]
 
         // Validate connection at startup
-        _ <- ZIO.attemptBlocking {
-          val conn = ds.getConnection()
-          try {
-            val stmt = conn.createStatement()
-            val rs = stmt.executeQuery("SELECT 1")
-            if (rs.next() && rs.getInt(1) == 1) {
-              ()
-            } else {
-              throw new RuntimeException(
-                "Database connection validation failed: unexpected result"
-              )
+        _ <- ZIO
+          .attemptBlocking {
+            val conn = ds.getConnection()
+            try {
+              val stmt = conn.createStatement()
+              val rs = stmt.executeQuery("SELECT 1")
+              if (rs.next() && rs.getInt(1) == 1) {
+                Right(())
+              } else {
+                Left(
+                  new RuntimeException(
+                    "Database connection validation failed: unexpected result"
+                  )
+                )
+              }
+            } finally {
+              conn.close()
             }
-          } finally {
-            conn.close()
           }
-        }
+          .flatMap(ZIO.fromEither)
         _ <- ZIO.logInfo("Database connection validated successfully")
 
         service = new DatabaseService {
@@ -252,11 +284,12 @@ object DatabaseService:
     *   - Quill PostgreSQL context with SnakeCase naming strategy
     *   - Service implementation with startup validation
     *
-    * This is the primary layer to use when providing DatabaseService to your application.
-    * It handles all dependency wiring and ensures the database is accessible before
-    * the application starts serving requests.
+    * This is the primary layer to use when providing DatabaseService to your
+    * application. It handles all dependency wiring and ensures the database is
+    * accessible before the application starts serving requests.
     *
-    * @return ZLayer that provides DatabaseService with no external dependencies
+    * @return
+    *   ZLayer that provides DatabaseService with no external dependencies
     */
   val live: ZLayer[Any, Throwable, DatabaseService] =
     ZLayer.make[DatabaseService](

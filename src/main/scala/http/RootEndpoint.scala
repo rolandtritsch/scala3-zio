@@ -4,9 +4,9 @@ import zio.http._
 
 /** Root endpoint that provides a simple welcome message.
   *
-  * This endpoint responds to GET requests at the root path (/) with a
-  * plain text greeting. It serves as a basic sanity check that the server
-  * is running and responding to requests.
+  * This endpoint responds to GET requests at the root path (/) with a plain
+  * text greeting. It serves as a basic sanity check that the server is running
+  * and responding to requests.
   *
   * '''Endpoint:''' GET /
   *

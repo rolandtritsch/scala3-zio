@@ -6,9 +6,9 @@ import software.amazon.awssdk.auth.credentials.{
   StaticCredentialsProvider
 }
 import software.amazon.awssdk.regions.Region
-import zio.aws.core.AwsError
 
 import zio._
+import zio.aws.core.AwsError
 import zio.aws.core.config.{AwsConfig => ZioAwsConfig}
 import zio.aws.netty.NettyHttpClient
 import zio.aws.s3.S3
@@ -16,7 +16,8 @@ import zio.aws.s3.model.ListBucketsRequest
 import zio.http._
 import zio.json._
 
-/** Comprehensive health check endpoint that validates all external dependencies.
+/** Comprehensive health check endpoint that validates all external
+  * dependencies.
   *
   * This endpoint performs deep health checks on:
   *   - External URL availability (https://tedn.life)
@@ -38,22 +39,28 @@ import zio.json._
   * }}}
   *
   * '''Configuration Required:'''
-  *   - `AWS_ACCESS_KEY_ID` - AWS access key (optional but required for S3 check)
-  *   - `AWS_SECRET_ACCESS_KEY` - AWS secret key (optional but required for S3 check)
+  *   - `AWS_ACCESS_KEY_ID` - AWS access key (optional but required for S3
+  *     check)
+  *   - `AWS_SECRET_ACCESS_KEY` - AWS secret key (optional but required for S3
+  *     check)
   *   - `AWS_REGION` - AWS region (default: us-east-1)
-  *   - Database credentials (always required, see [[org.roland.scala3_zio_template.service.DatabaseService]])
+  *   - Database credentials (always required, see
+  *     [[org.roland.scala3_zio_template.service.DatabaseService]])
   *
-  * If AWS credentials are missing, the endpoint returns HTTP 500 with error details
-  * but the application continues running.
+  * If AWS credentials are missing, the endpoint returns HTTP 500 with error
+  * details but the application continues running.
   *
-  * @see [[HealthEndpoint]] for basic liveness checks without external dependencies
+  * @see
+  *   [[HealthEndpoint]] for basic liveness checks without external dependencies
   */
 object HealthDeepEndpoint:
 
   /** Health check result for a single service.
     *
-    * @param status Either "healthy" or "unhealthy"
-    * @param message Descriptive message about the check result
+    * @param status
+    *   Either "healthy" or "unhealthy"
+    * @param message
+    *   Descriptive message about the check result
     */
   case class ServiceHealthCheck(
       status: String,
@@ -66,9 +73,12 @@ object HealthDeepEndpoint:
 
   /** Complete health check response containing all service statuses.
     *
-    * @param url Health status of external URL check
-    * @param s3 Health status of AWS S3 connectivity check
-    * @param database Health status of PostgreSQL database check
+    * @param url
+    *   Health status of external URL check
+    * @param s3
+    *   Health status of AWS S3 connectivity check
+    * @param database
+    *   Health status of PostgreSQL database check
     */
   case class HealthCheckResponse(
       url: ServiceHealthCheck,
@@ -82,9 +92,12 @@ object HealthDeepEndpoint:
 
   /** AWS configuration loaded from environment variables.
     *
-    * @param accessKeyId AWS access key ID
-    * @param secretAccessKey AWS secret access key
-    * @param region AWS region (default: us-east-1)
+    * @param accessKeyId
+    *   AWS access key ID
+    * @param secretAccessKey
+    *   AWS secret access key
+    * @param region
+    *   AWS region (default: us-east-1)
     */
   case class AwsConfig(
       accessKeyId: String,
@@ -99,7 +112,8 @@ object HealthDeepEndpoint:
     *   - AWS_SECRET_ACCESS_KEY
     *   - AWS_REGION (optional, defaults to us-east-1)
     *
-    * @return ZIO effect that succeeds with AwsConfig or fails with error message
+    * @return
+    *   ZIO effect that succeeds with AwsConfig or fails with error message
     */
   private def loadAwsConfig: IO[String, AwsConfig] =
     (for {
@@ -125,8 +139,10 @@ object HealthDeepEndpoint:
     *   - Configured AWS region
     *   - Netty HTTP client for async operations
     *
-    * @param config AWS configuration containing credentials and region
-    * @return ZLayer that provides an S3 client instance
+    * @param config
+    *   AWS configuration containing credentials and region
+    * @return
+    *   ZLayer that provides an S3 client instance
     */
   private def createS3Layer(config: AwsConfig): ZLayer[Any, Throwable, S3] =
     val credentials = AwsBasicCredentials.create(
@@ -155,8 +171,10 @@ object HealthDeepEndpoint:
     * The check succeeds if the URL returns a successful HTTP status (2xx).
     * Includes a 5-second timeout to prevent hanging on unresponsive servers.
     *
-    * @param url The URL to check (e.g., "https://tedn.life")
-    * @return ZIO effect that always succeeds with a ServiceHealthCheck result
+    * @param url
+    *   The URL to check (e.g., "https://tedn.life")
+    * @return
+    *   ZIO effect that always succeeds with a ServiceHealthCheck result
     */
   private def checkUrl(
       url: String
@@ -195,8 +213,10 @@ object HealthDeepEndpoint:
     * The check succeeds if the S3 client can authenticate and list buckets.
     * Includes a 10-second timeout to prevent hanging on network issues.
     *
-    * @param s3Layer ZLayer providing the configured S3 client
-    * @return ZIO effect that always succeeds with a ServiceHealthCheck result
+    * @param s3Layer
+    *   ZLayer providing the configured S3 client
+    * @return
+    *   ZIO effect that always succeeds with a ServiceHealthCheck result
     */
   private def checkS3(
       s3Layer: ZLayer[Any, Throwable, S3]
@@ -234,7 +254,9 @@ object HealthDeepEndpoint:
     * The check succeeds if the database can execute a simple SELECT 1 query.
     * Includes a 5-second timeout to prevent hanging on connection issues.
     *
-    * @return ZIO effect that always succeeds with a ServiceHealthCheck result, requires DatabaseService
+    * @return
+    *   ZIO effect that always succeeds with a ServiceHealthCheck result,
+    *   requires DatabaseService
     */
   private val checkDatabase: ZIO[DatabaseService, Nothing, ServiceHealthCheck] =
     (for {
@@ -261,15 +283,16 @@ object HealthDeepEndpoint:
         )
       }
 
-  /** HTTP handler that performs all health checks and returns a combined response.
+  /** HTTP handler that performs all health checks and returns a combined
+    * response.
     *
     * This handler:
-    *   1. Loads AWS configuration from environment variables
-    *   2. Runs URL, S3, and database checks in sequence
-    *   3. Combines results into a JSON response
-    *   4. Returns HTTP 200 if all checks pass, HTTP 500 if any fail
+    *   1. Loads AWS configuration from environment variables 2. Runs URL, S3,
+    *      and database checks in sequence 3. Combines results into a JSON
+    *      response 4. Returns HTTP 200 if all checks pass, HTTP 500 if any fail
     *
-    * If AWS configuration is missing, returns HTTP 500 with configuration error.
+    * If AWS configuration is missing, returns HTTP 500 with configuration
+    * error.
     */
   protected final val handler
       : Handler[DatabaseService, Nothing, Request, Response] =
