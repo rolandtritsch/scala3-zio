@@ -6,8 +6,6 @@
       <includeCallerData>true</includeCallerData>
       <!-- Include MDC (Mapped Diagnostic Context) for ZIO annotations -->
       <includeMdc>true</includeMdc>
-      <!-- Pretty print JSON for readability (set to false for production) -->
-      <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
     </encoder>
   </appender>
 
