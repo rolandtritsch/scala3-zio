@@ -46,11 +46,14 @@ object Main extends ZIOAppDefault:
       server <- Server
         .serve(allRoutes)
         .race(shutdownPromise.await *> performGracefulShutdown)
-        .onInterrupt(ZIO.logInfo("Interrupt received, shutting down...") *> performGracefulShutdown)
+        .onInterrupt(
+          ZIO.logInfo(
+            "Interrupt received, shutting down..."
+          ) *> performGracefulShutdown
+        )
         .fork
       _ <- server.join
-    } yield ())
-      .provide(
-        ZLayer.succeed(serverConfig),
-        Server.live
-      )
+    } yield ()).provide(
+      ZLayer.succeed(serverConfig),
+      Server.live
+    )
