@@ -15,7 +15,9 @@ lazy val root = (project in file(".")).settings(
     "dev.zio" %% "zio-test-sbt" % "2.1.13" % Test,
     "dev.zio" %% "zio-test" % "2.1.13" % Test,
     "dev.zio" %% "zio" % "2.1.13",
-    "net.logstash.logback" % "logstash-logback-encoder" % "7.4"
+    "net.logstash.logback" % "logstash-logback-encoder" % "7.4",
+    "dev.zio" %% "zio-aws-s3" % "7.40.10.1",
+    "dev.zio" %% "zio-aws-netty" % "7.40.10.1"
   ),
   testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework"),
   scalacOptions ++= Seq(

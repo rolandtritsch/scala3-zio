@@ -9,80 +9,83 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
   private val routes = Routes(HealthDeepEndpoint.route)
 
-  case class HealthCheckResult(
-      success: Boolean,
-      statusCode: Option[Int],
-      error: Option[String]
+  case class ServiceHealthCheck(
+      status: String,
+      message: String
   )
 
-  object HealthCheckResult:
-    given JsonDecoder[HealthCheckResult] = DeriveJsonDecoder.gen[HealthCheckResult]
+  object ServiceHealthCheck:
+    given JsonDecoder[ServiceHealthCheck] = DeriveJsonDecoder
+      .gen[ServiceHealthCheck]
 
-  private val testLayer = Client.default ++ Scope.default
+  case class HealthCheckResponse(
+      url: ServiceHealthCheck,
+      s3: ServiceHealthCheck
+  )
+
+  object HealthCheckResponse:
+    given JsonDecoder[HealthCheckResponse] = DeriveJsonDecoder
+      .gen[HealthCheckResponse]
 
   def spec = suite("HealthDeepEndpoint")(
-    test("should respond with OK status when tedn.life is reachable") {
+    test("should respond with JSON body containing both url and s3 checks") {
       val request = Request.get(URL.root / "health-deep")
 
       for {
-        response <- routes(request).provideLayer(testLayer)
+        response <- routes(request)
         body <- response.body.asString
-        result <- ZIO.fromEither(body.fromJson[HealthCheckResult])
+        result <- ZIO.fromEither(body.fromJson[HealthCheckResponse])
       } yield assertTrue(
-        response.status == Status.Ok || response.status == Status.InternalServerError,
-        result.statusCode.isDefined || result.error.isDefined
+        result.url.status == "healthy" || result.url.status == "unhealthy",
+        result.s3.status == "healthy" || result.s3.status == "unhealthy",
+        result.url.message.nonEmpty,
+        result.s3.message.nonEmpty
       )
     },
-    test("should respond with JSON body containing health check result") {
+    test("should respond with appropriate status code") {
       val request = Request.get(URL.root / "health-deep")
 
       for {
-        response <- routes(request).provideLayer(testLayer)
+        response <- routes(request)
         body <- response.body.asString
-        result <- ZIO.fromEither(body.fromJson[HealthCheckResult])
+        result <- ZIO.fromEither(body.fromJson[HealthCheckResponse])
       } yield assertTrue(
-        body.nonEmpty,
-        result.statusCode.isDefined || result.error.isDefined
+        response.status == Status.Ok || response.status == Status
+          .InternalServerError,
+        // If 500, at least one check should be unhealthy
+        response.status != Status.InternalServerError ||
+          result.url.status == "unhealthy" || result.s3.status == "unhealthy"
       )
     },
-    test("should include success field in response") {
+    test("should include proper status field values") {
       val request = Request.get(URL.root / "health-deep")
 
       for {
-        response <- routes(request).provideLayer(testLayer)
+        response <- routes(request)
         body <- response.body.asString
-        result <- ZIO.fromEither(body.fromJson[HealthCheckResult])
+        result <- ZIO.fromEither(body.fromJson[HealthCheckResponse])
       } yield assertTrue(
-        result.success == true || result.success == false
+        Set("healthy", "unhealthy").contains(result.url.status),
+        Set("healthy", "unhealthy").contains(result.s3.status)
       )
     },
-    test("should include statusCode when check succeeds") {
+    test("should include non-empty messages for both checks") {
       val request = Request.get(URL.root / "health-deep")
 
       for {
-        response <- routes(request).provideLayer(testLayer)
+        response <- routes(request)
         body <- response.body.asString
-        result <- ZIO.fromEither(body.fromJson[HealthCheckResult])
+        result <- ZIO.fromEither(body.fromJson[HealthCheckResponse])
       } yield assertTrue(
-        !result.success || result.statusCode.isDefined
-      )
-    },
-    test("should include error message when check fails") {
-      val request = Request.get(URL.root / "health-deep")
-
-      for {
-        response <- routes(request).provideLayer(testLayer)
-        body <- response.body.asString
-        result <- ZIO.fromEither(body.fromJson[HealthCheckResult])
-      } yield assertTrue(
-        result.success || result.error.isDefined
+        result.url.message.nonEmpty,
+        result.s3.message.nonEmpty
       )
     },
     test("should not respond to POST requests") {
       val request = Request.post(URL.root / "health-deep", Body.empty)
 
       for {
-        response <- routes(request).provideLayer(testLayer)
+        response <- routes(request)
       } yield assertTrue(
         response.status == Status.NotFound
       )
@@ -91,7 +94,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
       val request = Request.put(URL.root / "health-deep", Body.empty)
 
       for {
-        response <- routes(request).provideLayer(testLayer)
+        response <- routes(request)
       } yield assertTrue(
         response.status == Status.NotFound
       )
@@ -100,7 +103,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
       val request = Request.delete(URL.root / "health-deep")
 
       for {
-        response <- routes(request).provideLayer(testLayer)
+        response <- routes(request)
       } yield assertTrue(
         response.status == Status.NotFound
       )
@@ -109,7 +112,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
       val request = Request.patch(URL.root / "health-deep", Body.empty)
 
       for {
-        response <- routes(request).provideLayer(testLayer)
+        response <- routes(request)
       } yield assertTrue(
         response.status == Status.NotFound
       )
@@ -119,12 +122,12 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
       for {
         responses <- ZIO.collectAll(
-          List.fill(3)(
-            routes(request).provideLayer(testLayer)
-          )
+          List.fill(3)(routes(request))
         )
       } yield assertTrue(
-        responses.forall(r => r.status == Status.Ok || r.status == Status.InternalServerError)
+        responses.forall(r =>
+          r.status == Status.Ok || r.status == Status.InternalServerError
+        )
       )
     }
-  )
+  ) @@ TestAspect.withLiveClock @@ TestAspect.timeout(60.seconds)

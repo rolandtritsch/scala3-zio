@@ -1,70 +1,182 @@
 package org.roland.scala3_zio_template.http
 
+import software.amazon.awssdk.auth.credentials.{
+  AwsBasicCredentials,
+  StaticCredentialsProvider
+}
+import software.amazon.awssdk.regions.Region
+
 import zio._
+import zio.aws.core.config.{AwsConfig => ZioAwsConfig}
+import zio.aws.netty.NettyHttpClient
+import zio.aws.s3.S3
+import zio.aws.s3.model.ListBucketsRequest
 import zio.http._
 import zio.json._
 
 object HealthDeepEndpoint extends Endpoint:
 
-  case class HealthCheckResult(
-      success: Boolean,
-      statusCode: Option[Int],
-      error: Option[String]
+  case class ServiceHealthCheck(
+      status: String,
+      message: String
   )
 
-  object HealthCheckResult:
-    given JsonEncoder[HealthCheckResult] = DeriveJsonEncoder.gen[HealthCheckResult]
+  object ServiceHealthCheck:
+    given JsonEncoder[ServiceHealthCheck] = DeriveJsonEncoder
+      .gen[ServiceHealthCheck]
 
-  private def checkUrl(url: String): ZIO[Client & Scope, Nothing, HealthCheckResult] =
+  case class HealthCheckResponse(
+      url: ServiceHealthCheck,
+      s3: ServiceHealthCheck
+  )
+
+  object HealthCheckResponse:
+    given JsonEncoder[HealthCheckResponse] = DeriveJsonEncoder
+      .gen[HealthCheckResponse]
+
+  case class AwsConfig(
+      accessKeyId: String,
+      secretAccessKey: String,
+      region: String
+  )
+
+  private def loadAwsConfig: IO[String, AwsConfig] =
+    (for {
+      accessKeyId <- ZIO
+        .attempt(java.lang.System.getenv("AWS_ACCESS_KEY_ID"))
+        .filterOrFail(Option(_).exists(_.nonEmpty))("Missing AWS_ACCESS_KEY_ID")
+      secretAccessKey <- ZIO
+        .attempt(java.lang.System.getenv("AWS_SECRET_ACCESS_KEY"))
+        .filterOrFail(Option(_).exists(_.nonEmpty))(
+          "Missing AWS_SECRET_ACCESS_KEY"
+        )
+      region <- ZIO
+        .attempt(java.lang.System.getenv("AWS_REGION"))
+        .filterOrFail(Option(_).exists(_.nonEmpty))("Missing AWS_REGION")
+        .orElse(ZIO.succeed("us-east-1"))
+    } yield AwsConfig(accessKeyId, secretAccessKey, region)).mapError(_.toString)
+
+  private def createS3Layer(config: AwsConfig): ZLayer[Any, Throwable, S3] =
+    val credentials = AwsBasicCredentials.create(
+      config.accessKeyId,
+      config.secretAccessKey
+    )
+
+    val commonConfig = ZLayer.succeed(
+      zio.aws.core.config.CommonAwsConfig(
+        region = Some(Region.of(config.region)),
+        credentialsProvider = StaticCredentialsProvider.create(credentials),
+        endpointOverride = None,
+        commonClientConfig = None
+      )
+    )
+
+    (NettyHttpClient.default ++ commonConfig) >>> ZioAwsConfig.configured() >>> S3.live
+
+  private def checkUrl(
+      url: String
+  ): ZIO[Client & Scope, Nothing, ServiceHealthCheck] =
     Client
       .request(Request.get(url))
       .timeout(5.seconds)
       .map {
+        case Some(resp) if resp.status.isSuccess =>
+          ServiceHealthCheck(
+            status = "healthy",
+            message = s"URL returned status ${resp.status.code}"
+          )
         case Some(resp) =>
-          HealthCheckResult(
-            success = resp.status.isSuccess,
-            statusCode = Some(resp.status.code),
-            error = if resp.status.isSuccess then None
-            else Some(s"Received non-success status: ${resp.status}")
+          ServiceHealthCheck(
+            status = "unhealthy",
+            message = s"URL returned non-success status: ${resp.status.code}"
           )
         case None =>
-          HealthCheckResult(
-            success = false,
-            statusCode = None,
-            error = Some("Request timed out after 5 seconds")
+          ServiceHealthCheck(
+            status = "unhealthy",
+            message = "URL request timed out after 5 seconds"
           )
       }
       .catchAll { error =>
         ZIO.succeed(
-          HealthCheckResult(
-            success = false,
-            statusCode = None,
-            error = Some(s"Request failed: ${error.getMessage}")
+          ServiceHealthCheck(
+            status = "unhealthy",
+            message = s"URL check failed: ${error.getMessage}"
+          )
+        )
+      }
+
+  private def checkS3(
+      s3Layer: ZLayer[Any, Throwable, S3]
+  ): ZIO[Any, Nothing, ServiceHealthCheck] =
+    (for {
+      buckets <- S3
+        .listBuckets(ListBucketsRequest())
+        .runCollect
+      bucketCount = buckets.size
+    } yield ServiceHealthCheck(
+      status = "healthy",
+      message = s"Successfully listed $bucketCount bucket(s)"
+    ))
+      .timeout(10.seconds)
+      .map {
+        case Some(result) => result
+        case None =>
+          ServiceHealthCheck(
+            status = "unhealthy",
+            message = "S3 list-buckets operation timed out after 10 seconds"
+          )
+      }
+      .provideLayer(s3Layer)
+      .catchAll { error =>
+        val errorMsg = error match {
+          case t: Throwable => t.getMessage
+          case e => e.toString
+        }
+        ZIO.succeed(
+          ServiceHealthCheck(
+            status = "unhealthy",
+            message = s"S3 check failed: $errorMsg"
           )
         )
       }
 
   override protected final val handler = withLogging:
     Handler.fromFunctionZIO[Request] { _ =>
-      checkUrl("https://tedn.life")
-        .provideLayer(Client.default ++ Scope.default)
-        .flatMap { result =>
-          if result.success then ZIO.succeed(Response.json(result.toJson))
-          else
-            ZIO.succeed(
-              Response.json(result.toJson).copy(status = Status.InternalServerError)
+      loadAwsConfig
+        .flatMap { awsConfig =>
+          val s3Layer = createS3Layer(awsConfig)
+
+          // Run both checks in parallel
+          val urlCheck = checkUrl("https://tedn.life")
+            .provideLayer(Client.default ++ Scope.default)
+          val s3Check = checkS3(s3Layer)
+
+          for {
+            (urlResult, s3Result) <- urlCheck.zipPar(s3Check)
+            response = HealthCheckResponse(
+              url = urlResult,
+              s3 = s3Result
             )
+            isHealthy = urlResult.status == "healthy" && s3Result
+              .status == "healthy"
+            statusCode =
+              if isHealthy then Status.Ok else Status.InternalServerError
+          } yield Response.json(response.toJson).copy(status = statusCode)
         }
-        .catchAllCause { cause =>
+        .catchAll { missingConfigError =>
+          val errorResponse = HealthCheckResponse(
+            url = ServiceHealthCheck(
+              "unhealthy",
+              "Check skipped due to configuration error"
+            ),
+            s3 = ServiceHealthCheck(
+              "unhealthy",
+              s"Configuration error: $missingConfigError"
+            )
+          )
           ZIO.succeed(
             Response
-              .json(
-                HealthCheckResult(
-                  success = false,
-                  statusCode = None,
-                  error = Some(s"Unexpected error: ${cause.prettyPrint}")
-                ).toJson
-              )
+              .json(errorResponse.toJson)
               .copy(status = Status.InternalServerError)
           )
         }
