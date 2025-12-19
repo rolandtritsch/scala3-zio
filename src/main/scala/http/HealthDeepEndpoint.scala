@@ -1,5 +1,6 @@
 package org.roland.scala3_zio_template.http
 
+import org.roland.scala3_zio_template.service.DatabaseService
 import software.amazon.awssdk.auth.credentials.{
   AwsBasicCredentials,
   StaticCredentialsProvider
@@ -14,7 +15,7 @@ import zio.aws.s3.model.ListBucketsRequest
 import zio.http._
 import zio.json._
 
-object HealthDeepEndpoint extends Endpoint:
+object HealthDeepEndpoint:
 
   case class ServiceHealthCheck(
       status: String,
@@ -27,7 +28,8 @@ object HealthDeepEndpoint extends Endpoint:
 
   case class HealthCheckResponse(
       url: ServiceHealthCheck,
-      s3: ServiceHealthCheck
+      s3: ServiceHealthCheck,
+      database: ServiceHealthCheck
   )
 
   object HealthCheckResponse:
@@ -54,7 +56,8 @@ object HealthDeepEndpoint extends Endpoint:
         .attempt(java.lang.System.getenv("AWS_REGION"))
         .filterOrFail(Option(_).exists(_.nonEmpty))("Missing AWS_REGION")
         .orElse(ZIO.succeed("us-east-1"))
-    } yield AwsConfig(accessKeyId, secretAccessKey, region)).mapError(_.toString)
+    } yield AwsConfig(accessKeyId, secretAccessKey, region))
+      .mapError(_.toString)
 
   private def createS3Layer(config: AwsConfig): ZLayer[Any, Throwable, S3] =
     val credentials = AwsBasicCredentials.create(
@@ -63,15 +66,20 @@ object HealthDeepEndpoint extends Endpoint:
     )
 
     val commonConfig = ZLayer.succeed(
-      zio.aws.core.config.CommonAwsConfig(
-        region = Some(Region.of(config.region)),
-        credentialsProvider = StaticCredentialsProvider.create(credentials),
-        endpointOverride = None,
-        commonClientConfig = None
-      )
+      zio
+        .aws
+        .core
+        .config
+        .CommonAwsConfig(
+          region = Some(Region.of(config.region)),
+          credentialsProvider = StaticCredentialsProvider.create(credentials),
+          endpointOverride = None,
+          commonClientConfig = None
+        )
     )
 
-    (NettyHttpClient.default ++ commonConfig) >>> ZioAwsConfig.configured() >>> S3.live
+    (NettyHttpClient.default ++ commonConfig) >>> ZioAwsConfig
+      .configured() >>> S3.live
 
   private def checkUrl(
       url: String
@@ -109,15 +117,12 @@ object HealthDeepEndpoint extends Endpoint:
       s3Layer: ZLayer[Any, Throwable, S3]
   ): ZIO[Any, Nothing, ServiceHealthCheck] =
     (for {
-      buckets <- S3
-        .listBuckets(ListBucketsRequest())
-        .runCollect
+      buckets <- S3.listBuckets(ListBucketsRequest()).runCollect
       bucketCount = buckets.size
     } yield ServiceHealthCheck(
       status = "healthy",
       message = s"Successfully listed $bucketCount bucket(s)"
-    ))
-      .timeout(10.seconds)
+    )).timeout(10.seconds)
       .map {
         case Some(result) => result
         case None =>
@@ -130,7 +135,7 @@ object HealthDeepEndpoint extends Endpoint:
       .catchAll { error =>
         val errorMsg = error match {
           case t: Throwable => t.getMessage
-          case e => e.toString
+          case e            => e.toString
         }
         ZIO.succeed(
           ServiceHealthCheck(
@@ -140,25 +145,59 @@ object HealthDeepEndpoint extends Endpoint:
         )
       }
 
-  override protected final val handler = withLogging:
+  private val checkDatabase: ZIO[DatabaseService, Nothing, ServiceHealthCheck] =
+    (for {
+      service <- ZIO.service[DatabaseService]
+      result <- service.healthCheck()
+    } yield ServiceHealthCheck(
+      status = "healthy",
+      message = "Database connection successful"
+    )).timeout(5.seconds)
+      .map {
+        case Some(result) => result
+        case None =>
+          ServiceHealthCheck(
+            status = "unhealthy",
+            message = "Database health check timed out after 5 seconds"
+          )
+      }
+      .catchAll { error =>
+        val errorMsg = error match {
+          case t: Throwable => t.getMessage
+          case e            => e.toString
+        }
+        ZIO.succeed(
+          ServiceHealthCheck(
+            status = "unhealthy",
+            message = s"Database check failed: $errorMsg"
+          )
+        )
+      }
+
+  protected final val handler
+      : Handler[DatabaseService, Nothing, Request, Response] =
     Handler.fromFunctionZIO[Request] { _ =>
       loadAwsConfig
         .flatMap { awsConfig =>
           val s3Layer = createS3Layer(awsConfig)
 
-          // Run both checks in parallel
+          // Run all three checks in parallel
           val urlCheck = checkUrl("https://tedn.life")
             .provideLayer(Client.default ++ Scope.default)
           val s3Check = checkS3(s3Layer)
 
           for {
-            (urlResult, s3Result) <- urlCheck.zipPar(s3Check)
+            urlResult <- urlCheck
+            s3Result <- s3Check
+            dbResult <- checkDatabase
             response = HealthCheckResponse(
               url = urlResult,
-              s3 = s3Result
+              s3 = s3Result,
+              database = dbResult
             )
-            isHealthy = urlResult.status == "healthy" && s3Result
-              .status == "healthy"
+            isHealthy = urlResult.status == "healthy" &&
+              s3Result.status == "healthy" &&
+              dbResult.status == "healthy"
             statusCode =
               if isHealthy then Status.Ok else Status.InternalServerError
           } yield Response.json(response.toJson).copy(status = statusCode)
@@ -172,6 +211,10 @@ object HealthDeepEndpoint extends Endpoint:
             s3 = ServiceHealthCheck(
               "unhealthy",
               s"Configuration error: $missingConfigError"
+            ),
+            database = ServiceHealthCheck(
+              "unhealthy",
+              "Check skipped due to configuration error"
             )
           )
           ZIO.succeed(
@@ -182,5 +225,5 @@ object HealthDeepEndpoint extends Endpoint:
         }
     }
 
-  override val route =
+  val route: Route[DatabaseService, Nothing] =
     Method.GET / "health-deep" -> handler

@@ -1,10 +1,21 @@
 package org.roland.scala3_zio_template
 
+import org.roland.scala3_zio_template.service.DatabaseService
 import zio._
 import zio.http._
 import zio.test._
 
 object MainSpec extends ZIOSpecDefault:
+
+  case class MockDatabaseService(shouldSucceed: Boolean) extends DatabaseService:
+    override def healthCheck(): ZIO[Any, Throwable, Boolean] =
+      if shouldSucceed then ZIO.succeed(true)
+      else ZIO.fail(new RuntimeException("Mock database failure"))
+    override def execute(sql: String): ZIO[Any, Throwable, Unit] = ZIO.unit
+    override def selectOne[T](sql: String): ZIO[Any, Throwable, Option[T]] = ZIO.succeed(None)
+    override def selectAll[T](sql: String): ZIO[Any, Throwable, List[T]] = ZIO.succeed(List.empty)
+
+  private val mockDbLayer = ZLayer.succeed[DatabaseService](MockDatabaseService(shouldSucceed = true))
 
   def spec = suite("Main")(
     test("routes should include EchoEndpoint") {
@@ -13,7 +24,7 @@ object MainSpec extends ZIOSpecDefault:
       for {
         promise <- Promise.make[Nothing, Unit]
         routes = Main.routes(promise)
-        response <- routes(request)
+        response <- routes(request).provide(mockDbLayer, ZLayer.succeed(Scope.global))
         body <- response.body.asString
       } yield assertTrue(
         response.status == Status.Ok,
@@ -26,7 +37,7 @@ object MainSpec extends ZIOSpecDefault:
       for {
         promise <- Promise.make[Nothing, Unit]
         routes = Main.routes(promise)
-        response <- routes(request)
+        response <- routes(request).provide(mockDbLayer, ZLayer.succeed(Scope.global))
       } yield assertTrue(
         response.status == Status.Ok
       )
@@ -37,9 +48,10 @@ object MainSpec extends ZIOSpecDefault:
       for {
         promise <- Promise.make[Nothing, Unit]
         routes = Main.routes(promise)
-        response <- routes(request)
+        response <- routes(request).provide(mockDbLayer, ZLayer.succeed(Scope.global))
       } yield assertTrue(
-        response.status == Status.Ok || response.status == Status.InternalServerError
+        response.status == Status.Ok || response
+          .status == Status.InternalServerError
       )
     },
     test("routes should include RootEndpoint") {
@@ -48,7 +60,7 @@ object MainSpec extends ZIOSpecDefault:
       for {
         promise <- Promise.make[Nothing, Unit]
         routes = Main.routes(promise)
-        response <- routes(request)
+        response <- routes(request).provide(mockDbLayer, ZLayer.succeed(Scope.global))
         body <- response.body.asString
       } yield assertTrue(
         response.status == Status.Ok,
@@ -61,7 +73,7 @@ object MainSpec extends ZIOSpecDefault:
       for {
         promise <- Promise.make[Nothing, Unit]
         routes = Main.routes(promise)
-        response <- routes(request)
+        response <- routes(request).provide(mockDbLayer, ZLayer.succeed(Scope.global))
       } yield assertTrue(
         response.status == Status.NotFound
       )
@@ -72,7 +84,7 @@ object MainSpec extends ZIOSpecDefault:
       for {
         promise <- Promise.make[Nothing, Unit]
         routes = Main.routes(promise)
-        response <- routes(request)
+        response <- routes(request).provide(mockDbLayer, ZLayer.succeed(Scope.global))
       } yield assertTrue(
         response.status == Status.NotFound
       )
@@ -105,7 +117,7 @@ object MainSpec extends ZIOSpecDefault:
         routes = Main.routes(promise)
         responses <- ZIO.foreach(messages) { msg =>
           val request = Request.post(URL.root / "echo", Body.fromString(msg))
-          routes(request).flatMap { response =>
+          routes(request).provide(mockDbLayer, ZLayer.succeed(Scope.global)).flatMap { response =>
             response.body.asString.map(body => (response.status, body))
           }
         }
@@ -122,10 +134,12 @@ object MainSpec extends ZIOSpecDefault:
         routes = Main.routes(promise)
         responses <- ZIO.foreach(healthPaths) { path =>
           val request = Request.get(URL.root / path)
-          routes(request)
+          routes(request).provide(mockDbLayer, ZLayer.succeed(Scope.global))
         }
       } yield assertTrue(
-        responses.forall(r => r.status == Status.Ok || r.status == Status.InternalServerError)
+        responses.forall(r =>
+          r.status == Status.Ok || r.status == Status.InternalServerError
+        )
       )
     },
     test("serverConfig should have gracefulShutdownTimeout of 30 seconds") {
@@ -141,7 +155,8 @@ object MainSpec extends ZIOSpecDefault:
           .serve(routes)
           .provide(
             ZLayer.succeed(Main.serverConfig.port(8081)),
-            Server.live
+            Server.live,
+            mockDbLayer
           )
           .fork
         _ <- TestClock.adjust(100.millis)

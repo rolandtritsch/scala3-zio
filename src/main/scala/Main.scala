@@ -1,6 +1,7 @@
 package org.roland.scala3_zio_template
 
 import org.roland.scala3_zio_template.http._
+import org.roland.scala3_zio_template.service.DatabaseService
 
 import zio._
 import zio.http._
@@ -20,7 +21,9 @@ object Main extends ZIOAppDefault:
     .maxHeaderSize(16 * 1024)
     .gracefulShutdownTimeout(30.seconds)
 
-  def routes(shutdownPromise: Promise[Nothing, Unit]): Routes[Any, Nothing] =
+  def routes(
+      shutdownPromise: Promise[Nothing, Unit]
+  ): Routes[DatabaseService, Nothing] =
     Routes(
       EchoEndpoint.route,
       HealthEndpoint.route,
@@ -55,5 +58,6 @@ object Main extends ZIOAppDefault:
       _ <- server.join
     } yield ()).provide(
       ZLayer.succeed(serverConfig),
-      Server.live
+      Server.live,
+      DatabaseService.live
     )
