@@ -2,7 +2,7 @@
 
 A production-ready HTTP service template built with Scala 3 and ZIO. Features comprehensive health monitoring, database integration, AWS S3 support, and containerized deployment.
 
-> **For Contributors**: See [CLAUDE.md][] for developer documentation, code style guidelines, and contribution workflow.
+> **For Contributors**: See [CONTRIBUTING.md][] for development workflow and [CLAUDE.md][] for implementation details and architecture.
 
 ## What This Template Provides
 
@@ -52,9 +52,15 @@ The service provides the following endpoints:
 
 ## Quick Start
 
-### Initial Setup
+### Installation
 
-1. Clone the repository
+1. Clone the repository:
+
+```bash
+git clone <repository-url>
+cd scala3-zio-template
+```
+
 2. Set up environment variables:
 
 ```bash
@@ -62,15 +68,7 @@ cp .env.example .env
 # Edit .env with your AWS and database credentials
 ```
 
-3. Set up git hooks for code quality:
-
-```bash
-./scripts/git-hooks-setup.sh
-```
-
-### Running Locally
-
-Run the application:
+3. Run the application:
 
 ```bash
 make run
@@ -80,50 +78,75 @@ The server will start on [http://localhost:8080][]
 
 [http://localhost:8080]: http://localhost:8080
 
-### Development Commands
+### Using the API
 
-See all available commands:
-
-```bash
-make help
-```
-
-## Git Hooks
-
-This project uses git hooks to maintain code quality. The hooks are stored in `git-hooks/` and symlinked to `.git/hooks/` during setup.
-
-### Pre-commit Hook
-
-The pre-commit hook runs automatically before each commit and:
-
-- Checks if code is properly formatted (`make format-check`)
-- Checks for linting issues (`make lint-check`)
-- Blocks the commit if checks fail
-
-If the pre-commit hook fails:
+Test the endpoints:
 
 ```bash
-# Fix formatting issues
-make format
+# Basic health check
+curl http://localhost:8080/health
 
-# Fix linting issues
-make lint
+# Comprehensive health check
+curl http://localhost:8080/health-deep
 
-# Retry the commit
-git commit
+# Echo endpoint
+curl -X POST http://localhost:8080/echo -d "Hello, World!"
+
+# Root endpoint
+curl http://localhost:8080/
 ```
 
-### Bypassing Hooks
+## Configuration
 
-In rare cases where you need to bypass hooks (not recommended):
+### Environment Variables
+
+The application requires configuration via environment variables. Create a `.env` file based on `.env.example`:
+
+#### Required Configuration
 
 ```bash
-git commit --no-verify
+# Database Configuration (REQUIRED - app will not start without these)
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_NAME=postgres
+DATABASE_USER=your_username
+DATABASE_PASSWORD=your_password
 ```
+
+#### Optional Configuration
+
+```bash
+# AWS Configuration (optional - required for S3 health check)
+AWS_ACCESS_KEY_ID=<your-key-id>
+AWS_SECRET_ACCESS_KEY=<your-secret-key>
+AWS_DEFAULT_REGION=us-east-1
+```
+
+**Note**: Database credentials are mandatory. The application will fail to start without them. AWS credentials are optional; the `/health-deep` endpoint will report S3 as unhealthy if missing, but the application will continue running.
 
 ## Docker Deployment
 
-### Building and Running
+### Quick Start with Docker
+
+Start the application with docker-compose:
+
+```bash
+make docker-up
+```
+
+This will:
+
+- Start a PostgreSQL database container
+- Build and start the application container
+- Expose the API on [http://localhost:8080][]
+
+Stop the services:
+
+```bash
+make docker-down
+```
+
+### Build Your Own Image
 
 Build the Docker image:
 
@@ -131,73 +154,28 @@ Build the Docker image:
 make docker-build
 ```
 
-Run with docker-compose (recommended):
+Run directly with Docker:
 
 ```bash
-make docker-up
+make docker-run
 ```
 
-View logs:
+## Contributing
 
-```bash
-make docker-logs-compose
-```
+Contributions are welcome! Please see [CONTRIBUTING.md][] for:
 
-Stop services:
+- Development workflow
+- Branch naming conventions
+- Testing requirements
+- Code quality standards
+- Pull request process
 
-```bash
-make docker-down
-```
+## Documentation
 
-### Environment Variables
+- **[README.md][]** (this file): What the project is and how to use it
+- **[CONTRIBUTING.md][]**: How to contribute and development workflow
+- **[CLAUDE.md][]**: Implementation details and architectural decisions
 
-Create a `.env` file based on `.env.example`:
-
-```bash
-# AWS Configuration (required for /health-deep endpoint)
-AWS_ACCESS_KEY_ID=<your-key-id>
-AWS_SECRET_ACCESS_KEY=<your-secret-key>
-AWS_DEFAULT_REGION=us-east-1
-
-# Database Configuration (REQUIRED - app will not start without these)
-DATABASE_HOST=postgres
-DATABASE_PORT=5432
-DATABASE_NAME=postgres
-DATABASE_USER=postgres
-DATABASE_PASSWORD=postgres123
-```
-
-**Note**: The application requires valid database credentials to start. The health-deep endpoint will fail gracefully if AWS credentials are missing, but database connectivity is mandatory.
-
-### Container Configuration
-
-- **Port**: 8080 (mapped to host 8080)
-- **Memory**: 2GB limit, 512MB reserved
-- **CPU**: 2.0 CPUs limit, 0.5 reserved
-- **Health Check**: GET /health every 30s
-
-### Available Docker Commands
-
-```bash
-make docker-build          # Build Docker image
-make docker-build-no-cache # Build without cache
-make docker-run            # Run container directly
-make docker-stop           # Stop container
-make docker-logs           # Follow container logs
-make docker-up             # Start with docker-compose
-make docker-down           # Stop docker-compose
-make docker-ps             # Show service status
-make docker-shell          # Open shell in container
-make docker-health         # Check health status
-make docker-clean          # Clean Docker resources
-```
-
-### Testing Docker Setup
-
-Run the automated test suite:
-
-```bash
-./scripts/docker-test.sh
-```
-
+[README.md]: ./README.md
+[CONTRIBUTING.md]: ./CONTRIBUTING.md
 [CLAUDE.md]: ./CLAUDE.md

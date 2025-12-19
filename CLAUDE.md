@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This document provides guidance for developers working on this codebase. For user-facing documentation, see [README.md][].
+This document explains the implementation details and architectural decisions of this codebase. For user-facing documentation, see [README.md][]. For contribution guidelines, see [CONTRIBUTING.md][].
 
 ## Technology Stack
 
@@ -125,222 +125,237 @@ Server configuration is defined in Main.scala:288-295:
 - **Max Header Size**: 16 KB
 - **Graceful Shutdown Timeout**: 30 seconds
 
-## Development Workflow
+## Implementation Rationale
 
-### Making Changes
+### Why ZIO?
 
-1. **Ensure hooks are installed**: Run `./scripts/git-hooks-setup.sh` if you haven't already
-2. **Make your changes** in appropriate source files
-3. **Format code**: `make format`
-4. **Run linter**: `make lint`
-5. **Run tests**: `make test`
-6. **Check coverage**: `make coverage`
-7. **Commit**: Git hooks will automatically verify formatting and linting
+This template uses ZIO as the core effect system for several reasons:
 
-### Build Commands
+1. **Type Safety**: All side effects are tracked in the type system, making it impossible to silently fail
+2. **Composability**: Effects can be combined using for-comprehensions and operators
+3. **Testability**: ZIO's environment system allows full dependency injection and mocking
+4. **Resource Safety**: ZIO automatically handles resource cleanup, even during failures
+5. **Performance**: ZIO's fiber-based concurrency provides excellent performance
 
-See `Makefile` for all available commands:
+### Why ZIO HTTP?
 
-- `make build` / `make compile` - Compile the project
-- `make run` - Run the application
-- `make test` - Run all tests
-- `make watch-test` - Continuously run tests on file changes
-- `make coverage` - Generate test coverage report (requires ≥60%)
-- `make format` - Format code with scalafmt
-- `make format-check` - Check if code is formatted correctly
-- `make lint` - Auto-fix linting issues with scalafix
-- `make lint-check` - Check for linting issues (CI mode)
-- `make clean` - Clean build artifacts
-- `make console` - Start a REPL with dependencies loaded
-- `make watch` - Continuously compile on file changes
+ZIO HTTP was chosen over alternatives (http4s, Akka HTTP) because:
 
-### Running a Single Test
+1. **Native ZIO Integration**: Works seamlessly with ZIO effects
+2. **Performance**: Built for high-throughput scenarios
+3. **Simplicity**: Minimal boilerplate for route definitions
+4. **Type Safety**: Routes are fully type-safe at compile time
 
-To run a specific test suite:
+### Why Quill?
 
-```bash
-sbt "testOnly *MainSpec"
+Quill provides compile-time query generation, which means:
+
+1. **SQL Validation**: Queries are validated at compile time
+2. **Type Safety**: Query results are fully typed
+3. **Performance**: No runtime query parsing or reflection
+4. **IDE Support**: Full autocomplete and refactoring support
+
+### Why Multi-Stage Docker Builds?
+
+The Dockerfile uses multi-stage builds to:
+
+1. **Optimize Cache**: Dependencies are cached separately from source code
+2. **Reduce Size**: Final image only contains the runtime JAR
+3. **Speed Up Builds**: Most builds only rebuild changed layers
+4. **Security**: Build tools and source code are not in the final image
+
+## Design Patterns
+
+### ZIO Patterns
+
+**Effect Composition**: Use `for`-comprehensions for sequential effects:
+
+```scala
+for
+  config <- loadConfig
+  db <- initDatabase(config)
+  server <- startServer(db)
+yield server
 ```
 
-To run a specific test within a suite:
+**Error Handling**: Use `.catchAll()` for explicit error recovery:
 
-```bash
-sbt 'testOnly *MainSpec -- -t "program should print welcome messages"'
+```scala
+fetchUser(id)
+  .catchAll(err => ZIO.logError(s"Failed: $err") *> ZIO.succeed(None))
 ```
 
-### Interactive Development
+**Resource Management**: Use `ZIO.acquireRelease` for automatic cleanup:
 
-#### REPL/Console
-
-Start an interactive Scala console with project dependencies loaded:
-
-```bash
-make console
+```scala
+ZIO.acquireRelease(
+  acquire = openConnection
+)(
+  release = conn => closeConnection(conn).orDie
+)
 ```
 
-#### Watch Mode
+**Testing**: Use test services for deterministic I/O:
 
-Automatically recompile on file changes:
-
-```bash
-make watch
+```scala
+for
+  _ <- Console.printLine("Hello")
+  output <- TestConsole.output
+yield assert(output)(contains("Hello"))
 ```
 
-Automatically run tests on file changes:
+### Endpoint Patterns
 
-```bash
-make watch-test
+All endpoints follow a consistent pattern:
+
+1. **Handler Definition**: Wrap business logic in `Handler.fromFunctionZIO`
+2. **Request Logging**: Log at the start of each request
+3. **Completion Logging**: Log success or failure at the end
+4. **Error Recovery**: Use `.catchAll()` to handle and log errors
+5. **Route Definition**: Map HTTP method and path to handler
+
+This pattern ensures:
+- Consistent observability across all endpoints
+- Graceful error handling without crashes
+- Easy testing and debugging
+
+## Testing Strategy
+
+### Test Pyramid
+
+This codebase follows the testing pyramid:
+
+1. **Unit Tests** (most): Test individual functions and classes in isolation
+2. **Integration Tests** (some): Test interactions between components (e.g., database queries)
+3. **End-to-End Tests** (few): Test full HTTP request/response cycles
+
+### Testing with ZIO
+
+ZIO's testing approach uses test services to make I/O operations testable:
+
+**Console Output Testing**:
+
+```scala
+for
+  _ <- Console.printLine("Hello, World!")
+  output <- TestConsole.output
+yield assertTrue(output.head == "Hello, World!\n")
 ```
 
-### CI/CD
+**Clock Testing** (for time-dependent code):
 
-The project uses GitHub Actions for continuous integration:
-
-- **On push/PR**: Runs formatting checks, linting, tests, and coverage
-- **Configuration**: See `.github/workflows/` for pipeline definitions
-
-## Code Style
-
-### Scala
-
-- **Formatting**: Enforced by scalafmt (configuration in `.scalafmt.conf`)
-- **Linting**: Enforced by scalafix (configuration in `.scalafix.conf`)
-- **Language**: American English for all identifiers, comments, and documentation
-- **Scala 3 Syntax**: Use Scala 3 features (indentation-based syntax, `given`/`using`, etc.)
-- **ZIO Patterns**:
-  - Use `for`-comprehensions for sequential effects
-  - Use `.catchAll()` for error handling
-  - Extend `ZIOAppDefault` for main applications
-  - Extend `ZIOSpecDefault` for test suites
-
-### Markdown
-
-- **Links**: Use reference-style links (`[word][]`) with references at the bottom of the file
-  - ✅ Preferred: `[ZIO][]` with `[ZIO]: https://zio.dev` at bottom
-  - ❌ Avoid: `[ZIO](https://zio.dev)` inline links
-- **Linting**: Configured via `.markdownlint.jsonc`
-  - Run: `markdownlint '**/*.md'` to check
-  - Run: `markdownlint --fix '**/*.md'` to auto-fix
-
-## Testing
-
-### Running Tests
-
-```bash
-make test                           # Run all tests
-make watch-test                     # Run tests continuously
-make coverage                       # Generate coverage report
-sbt "testOnly *MainSpec"           # Run specific test suite
-sbt 'testOnly *MainSpec -- -t "test name"'  # Run specific test
+```scala
+for
+  fiber <- ZIO.sleep(1.hour).fork
+  _ <- TestClock.adjust(1.hour)
+  _ <- fiber.join
+yield assertCompletes
 ```
 
-### Test Organization
+**Environment Testing** (for configuration):
 
-- Unit tests should be colocated with the code they test
-- Test files follow the naming convention: `*Spec.scala`
-- Use ZIO Test framework for writing tests
-- Tests should extend `ZIOSpecDefault`
-- Use `TestConsole` and other test services for testable I/O
-
-### Coverage Requirements
-
-- **Minimum statement coverage**: 70%
-- **Build fails** if coverage drops below minimum
-- Coverage report generated at: `target/scala-3.7.4/scoverage-report/`
-- Coverage is enforced in CI/CD pipeline
-
-## Making Sure Changes Work
-
-Before submitting changes:
-
-1. ✅ All tests pass (`make test`)
-2. ✅ Code coverage is ≥70% (`make coverage`)
-3. ✅ Code is formatted (`make format-check`)
-4. ✅ No linting issues (`make lint-check`)
-5. ✅ Pre-commit hook passes
-6. ✅ CI/CD pipeline passes on GitHub
-7. ✅ Docker build succeeds (`make docker-build`)
-8. ✅ Application starts successfully in Docker (`make docker-up`)
-
-## Docker Development
-
-### Building Docker Images
-
-```bash
-make docker-build         # Standard build
-make docker-build-no-cache # Force rebuild without cache
+```scala
+test("reads config from environment") {
+  for
+    _ <- TestSystem.putEnv("DATABASE_HOST", "testhost")
+    host <- System.env("DATABASE_HOST")
+  yield assertTrue(host.contains("testhost"))
+}
 ```
 
-### Running Locally
+### Why 80% Coverage?
 
-Using docker-compose (recommended):
+The 80% coverage threshold ensures:
 
-```bash
-make docker-up            # Start services
-make docker-down          # Stop services
-make docker-restart       # Restart services
+1. **High Confidence**: Most code paths are tested
+2. **Pragmatic**: Allows for boilerplate and trivial code
+3. **Enforceable**: Automated checks prevent coverage regression
+4. **Maintainable**: Not so high that tests become brittle
+
+## Docker Implementation Details
+
+### Multi-Stage Build Strategy
+
+The Dockerfile uses three stages to optimize build performance:
+
+**Stage 1: Build Configuration** (Dockerfile:1-8)
+
+```dockerfile
+COPY build.sbt project/ ./
+RUN sbt update
 ```
 
-Direct docker run:
+- Copies build configuration files
+- Downloads all dependencies
+- **Cache Key**: `build.sbt` and `project/` contents
+- **Rebuild When**: Dependencies change or build config changes
 
-```bash
-make docker-run           # Start container
-make docker-stop          # Stop container
+**Stage 2: Source Compilation** (Dockerfile:9-10)
+
+```dockerfile
+COPY src/ ./src/
+RUN sbt assembly
 ```
 
-### Debugging
+- Copies source code
+- Compiles and creates fat JAR
+- **Cache Key**: `src/` contents
+- **Rebuild When**: Source code changes
 
-```bash
-make docker-logs          # Follow container logs
-make docker-shell         # Open shell in running container
-make docker-health        # Check health status
-make docker-ps            # Show service status
+**Stage 3: Runtime Image** (Dockerfile:12-20)
+
+```dockerfile
+FROM eclipse-temurin:21-jre-alpine
+COPY --from=builder /app/target/scala-3.7.4/*-assembly-*.jar app.jar
 ```
 
-### Docker Build Optimization
-
-The Dockerfile uses multi-stage builds with optimized layer caching:
-
-1. **Build configuration layer** (rarely changes): `build.sbt`, `project/`
-2. **Dependencies layer** (changes when dependencies update): `sbt update`
-3. **Source code layer** (changes frequently): `src/`
-
-To maximize cache hits:
-- Modify source code: Only last layer rebuilds (~45 seconds)
-- Add dependencies: Last two layers rebuild (~2 minutes)
-- Change build config: All layers rebuild (~3-4 minutes)
+- Uses minimal JRE image (not JDK)
+- Only copies final JAR
+- **Size**: ~200MB vs ~800MB with JDK
 
 ### Assembly Merge Strategy
 
-The project uses a minimal merge strategy for sbt-assembly. If you encounter conflicts during `make assembly` or Docker builds:
+The fat JAR assembly process can encounter duplicate files from different dependencies. The strategy in `build.sbt` handles this:
 
-1. Note the conflicting file from the error message
-2. Add a specific merge rule to `build.sbt` in the `assemblyMergeStrategy` section
-3. Common merge strategies:
-   - `MergeStrategy.discard` - Ignore the file
-   - `MergeStrategy.first` - Use first occurrence
-   - `MergeStrategy.concat` - Concatenate all occurrences
-   - `MergeStrategy.deduplicate` - Remove duplicates
-
-### Testing Docker Locally
-
-Run the automated test suite:
-
-```bash
-./scripts/docker-test.sh  # Automated test suite
+```scala
+assembly / assemblyMergeStrategy := {
+  case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
+  case PathList("META-INF", xs @ _*) if xs.last.endsWith(".SF") => MergeStrategy.discard
+  case "application.conf" => MergeStrategy.concat
+  case "reference.conf" => MergeStrategy.concat
+  case x => MergeStrategy.first
+}
 ```
 
-Manual testing:
+**Why These Rules?**
 
-```bash
-make docker-build
-make docker-up
-sleep 40  # Wait for startup
-curl http://localhost:8080/health  # Should return 200
-curl http://localhost:8080/        # Test application
-make docker-logs-compose           # Check logs
-make docker-down
+- `MANIFEST.MF` and `.SF` files: Security signatures break when merged; discard them
+- `application.conf`/`reference.conf`: Lightbend Config requires concatenation to merge settings
+- Default: Use first occurrence (safer than concatenating arbitrary files)
+
+### Graceful Shutdown Implementation
+
+The shutdown mechanism uses a ZIO Promise to coordinate:
+
+```scala
+// Create shutdown promise
+shutdownSignal <- Promise.make[Nothing, Unit]
+
+// Trigger on /shutdown endpoint
+ShutdownEndpoint.route(shutdownSignal)
+
+// Server waits for in-flight requests
+server.install(routes)
+  *> shutdownSignal.await  // Block until shutdown triggered
+  *> ZIO.log("Shutting down gracefully")
+  *> ZIO.sleep(30.seconds)  // Grace period for cleanup
 ```
+
+This ensures:
+1. In-flight requests complete successfully
+2. New requests are rejected after shutdown starts
+3. Resources are cleaned up properly
+4. No abrupt termination mid-request
 
 ## Adding New Features
 
@@ -424,10 +439,15 @@ make docker-logs-compose  # Docker compose
 
 Log format includes timestamp, level, thread, logger name, and message.
 
-## Documentation
+## Documentation Structure
 
-- **README.md**: User-facing documentation (what, why, how to use)
-- **CLAUDE.md**: Developer documentation (how to contribute, architecture, workflow)
-- Keep these files mutually exclusive and reference each other as appropriate
+This repository maintains three separate documentation files:
+
+- **[README.md][]**: What the project is, how to use it, how to install it
+- **[CLAUDE.md][]** (this file): How it's implemented, why architectural decisions were made
+- **[CONTRIBUTING.md][]**: How to contribute, development workflow, testing guidelines
+
+These files reference each other but remain mutually exclusive in content.
 
 [README.md]: ./README.md
+[CONTRIBUTING.md]: ./CONTRIBUTING.md
