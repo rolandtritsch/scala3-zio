@@ -6,6 +6,7 @@ import software.amazon.awssdk.auth.credentials.{
   StaticCredentialsProvider
 }
 import software.amazon.awssdk.regions.Region
+import zio.aws.core.AwsError
 
 import zio._
 import zio.aws.core.config.{AwsConfig => ZioAwsConfig}
@@ -40,7 +41,7 @@ import zio.json._
   *   - `AWS_ACCESS_KEY_ID` - AWS access key (optional but required for S3 check)
   *   - `AWS_SECRET_ACCESS_KEY` - AWS secret key (optional but required for S3 check)
   *   - `AWS_REGION` - AWS region (default: us-east-1)
-  *   - Database credentials (always required, see [[DatabaseService]])
+  *   - Database credentials (always required, see [[org.roland.scala3_zio_template.service.DatabaseService]])
   *
   * If AWS credentials are missing, the endpoint returns HTTP 500 with error details
   * but the application continues running.
@@ -217,10 +218,9 @@ object HealthDeepEndpoint:
       }
       .provideLayer(s3Layer)
       .catchAll { error =>
-        val errorMsg = error match {
+        val errorMsg = error match
+          case e: AwsError  => e.toString
           case t: Throwable => t.getMessage
-          case e            => e.toString
-        }
         ZIO.succeed(
           ServiceHealthCheck(
             status = "unhealthy",
@@ -253,14 +253,10 @@ object HealthDeepEndpoint:
           )
       }
       .catchAll { error =>
-        val errorMsg = error match {
-          case t: Throwable => t.getMessage
-          case e            => e.toString
-        }
         ZIO.succeed(
           ServiceHealthCheck(
             status = "unhealthy",
-            message = s"Database check failed: $errorMsg"
+            message = s"Database check failed: ${error.getMessage}"
           )
         )
       }

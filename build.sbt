@@ -23,7 +23,8 @@ lazy val root = (project in file(".")).settings(
   ),
   testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework"),
   scalacOptions ++= Seq(
-    "-Wunused:imports"
+    "-Wunused:imports",
+    "-deprecation"
   ),
 
   // Scaladoc generation options for API documentation
