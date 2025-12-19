@@ -11,7 +11,9 @@ object MainSpec extends ZIOSpecDefault:
       val request = Request.post(URL.root / "echo", Body.fromString("test"))
 
       for {
-        response <- Main.routes(request)
+        promise <- Promise.make[Nothing, Unit]
+        routes = Main.routes(promise)
+        response <- routes(request)
         body <- response.body.asString
       } yield assertTrue(
         response.status == Status.Ok,
@@ -22,7 +24,9 @@ object MainSpec extends ZIOSpecDefault:
       val request = Request.get(URL.root / "health")
 
       for {
-        response <- Main.routes(request)
+        promise <- Promise.make[Nothing, Unit]
+        routes = Main.routes(promise)
+        response <- routes(request)
       } yield assertTrue(
         response.status == Status.Ok
       )
@@ -31,7 +35,9 @@ object MainSpec extends ZIOSpecDefault:
       val request = Request.get(URL.root / "health-deep")
 
       for {
-        response <- Main.routes(request)
+        promise <- Promise.make[Nothing, Unit]
+        routes = Main.routes(promise)
+        response <- routes(request)
       } yield assertTrue(
         response.status == Status.Ok
       )
@@ -40,7 +46,9 @@ object MainSpec extends ZIOSpecDefault:
       val request = Request.get(URL.root)
 
       for {
-        response <- Main.routes(request)
+        promise <- Promise.make[Nothing, Unit]
+        routes = Main.routes(promise)
+        response <- routes(request)
         body <- response.body.asString
       } yield assertTrue(
         response.status == Status.Ok,
@@ -51,7 +59,9 @@ object MainSpec extends ZIOSpecDefault:
       val request = Request.post(URL.root / "unknown", Body.empty)
 
       for {
-        response <- Main.routes(request)
+        promise <- Promise.make[Nothing, Unit]
+        routes = Main.routes(promise)
+        response <- routes(request)
       } yield assertTrue(
         response.status == Status.NotFound
       )
@@ -60,7 +70,9 @@ object MainSpec extends ZIOSpecDefault:
       val request = Request.get(URL.root / "echo")
 
       for {
-        response <- Main.routes(request)
+        promise <- Promise.make[Nothing, Unit]
+        routes = Main.routes(promise)
+        response <- routes(request)
       } yield assertTrue(
         response.status == Status.NotFound
       )
@@ -89,13 +101,13 @@ object MainSpec extends ZIOSpecDefault:
       val messages = List("msg1", "msg2", "msg3")
 
       for {
+        promise <- Promise.make[Nothing, Unit]
+        routes = Main.routes(promise)
         responses <- ZIO.foreach(messages) { msg =>
           val request = Request.post(URL.root / "echo", Body.fromString(msg))
-          Main
-            .routes(request)
-            .flatMap { response =>
-              response.body.asString.map(body => (response.status, body))
-            }
+          routes(request).flatMap { response =>
+            response.body.asString.map(body => (response.status, body))
+          }
         }
       } yield assertTrue(
         responses.forall(_._1 == Status.Ok),
@@ -106,23 +118,27 @@ object MainSpec extends ZIOSpecDefault:
       val healthPaths = List("health", "health-deep")
 
       for {
+        promise <- Promise.make[Nothing, Unit]
+        routes = Main.routes(promise)
         responses <- ZIO.foreach(healthPaths) { path =>
           val request = Request.get(URL.root / path)
-          Main.routes(request)
+          routes(request)
         }
       } yield assertTrue(
         responses.forall(_.status == Status.Ok)
       )
     },
-    test("serverConfig should have gracefulShutdownTimeout of 10 seconds") {
+    test("serverConfig should have gracefulShutdownTimeout of 30 seconds") {
       assertTrue(
-        Main.serverConfig.gracefulShutdownTimeout == 10.seconds
+        Main.serverConfig.gracefulShutdownTimeout == 30.seconds
       )
     },
     test("server should handle graceful shutdown") {
       val serverFiber = for {
+        promise <- Promise.make[Nothing, Unit]
+        routes = Main.routes(promise)
         fiber <- Server
-          .serve(Main.routes)
+          .serve(routes)
           .provide(
             ZLayer.succeed(Main.serverConfig.port(8081)),
             Server.live
