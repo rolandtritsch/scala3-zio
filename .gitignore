@@ -3,6 +3,7 @@
 .claude/
 !.claude/settings.json
 .devcontainer
+.env
 .metals/
 **/metals.sbt
 project/target/
