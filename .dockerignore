@@ -1,0 +1,49 @@
+# Build artifacts
+target/
+project/target/
+project/project/
+
+# IDE and editor files
+.bloop/
+.bsp/
+.metals/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# CI/CD
+.github/
+
+# Scripts and hooks
+scripts/
+git-hooks/
+
+# Environment and secrets
+.env
+.env.*
+
+# Temporary files
+tmp/
+*.log
+
+# Development container
+.devcontainer
+
+# Claude
+.claude/
+
+# Other
+*.class
+*.jar

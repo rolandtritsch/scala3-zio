@@ -82,4 +82,73 @@ In rare cases where you need to bypass hooks (not recommended):
 git commit --no-verify
 ```
 
+## Docker Deployment
+
+### Building and Running
+
+Build the Docker image:
+
+```bash
+make docker-build
+```
+
+Run with docker-compose (recommended):
+
+```bash
+make docker-up
+```
+
+View logs:
+
+```bash
+make docker-logs-compose
+```
+
+Stop services:
+
+```bash
+make docker-down
+```
+
+### Environment Variables
+
+The Docker setup requires a `.env` file with AWS credentials:
+
+```bash
+AWS_ACCESS_KEY_ID=<your-key-id>
+AWS_SECRET_ACCESS_KEY=<your-secret-key>
+AWS_DEFAULT_REGION=us-east-1
+```
+
+### Container Configuration
+
+- **Port**: 8080 (mapped to host 8080)
+- **Memory**: 2GB limit, 512MB reserved
+- **CPU**: 2.0 CPUs limit, 0.5 reserved
+- **Health Check**: GET /health every 30s
+
+### Available Docker Commands
+
+```bash
+make docker-build          # Build Docker image
+make docker-build-no-cache # Build without cache
+make docker-run            # Run container directly
+make docker-stop           # Stop container
+make docker-logs           # Follow container logs
+make docker-up             # Start with docker-compose
+make docker-down           # Stop docker-compose
+make docker-ps             # Show service status
+make docker-shell          # Open shell in container
+make docker-health         # Check health status
+make docker-clean          # Clean Docker resources
+```
+
+### Testing Docker Setup
+
+Run the automated test suite:
+
+```bash
+./scripts/docker-test.sh
+```
+
 [CLAUDE.md]: ./CLAUDE.md

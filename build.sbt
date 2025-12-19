@@ -35,5 +35,24 @@ lazy val root = (project in file(".")).settings(
   // Scoverage configuration
   coverageMinimumStmtTotal := 70,
   coverageFailOnMinimum := true,
-  coverageHighlighting := true
+  coverageHighlighting := true,
+
+  // Assembly configuration for creating fat JARs
+  assembly / assemblyJarName := "scala3-zio-template.jar",
+  assembly / mainClass := Some("org.roland.scala3_zio_template.Main"),
+  assembly / assemblyMergeStrategy := {
+    case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+    case PathList("module-info.class") => MergeStrategy.discard
+    case PathList("io", "netty", xs @ _*) =>
+      MergeStrategy.first // Netty version conflicts - use first found
+    case PathList("scala", "annotation", xs @ _*) =>
+      MergeStrategy.first // Scala annotation conflicts - prefer standard library
+    case "application.conf"     => MergeStrategy.concat
+    case "reference.conf"       => MergeStrategy.concat
+    case PathList("logback.xml") => MergeStrategy.first
+    case x if x.endsWith(".proto") => MergeStrategy.first
+    case x if x.contains("io.netty.versions.properties") =>
+      MergeStrategy.first
+    case _ => MergeStrategy.deduplicate
+  }
 )

@@ -175,6 +175,86 @@ Before submitting changes:
 5. ✅ Pre-commit hook passes
 6. ✅ CI/CD pipeline passes on GitHub
 
+## Docker Development
+
+### Building Docker Images
+
+```bash
+make docker-build         # Standard build
+make docker-build-no-cache # Force rebuild without cache
+```
+
+### Running Locally
+
+Using docker-compose (recommended):
+
+```bash
+make docker-up            # Start services
+make docker-down          # Stop services
+make docker-restart       # Restart services
+```
+
+Direct docker run:
+
+```bash
+make docker-run           # Start container
+make docker-stop          # Stop container
+```
+
+### Debugging
+
+```bash
+make docker-logs          # Follow container logs
+make docker-shell         # Open shell in running container
+make docker-health        # Check health status
+make docker-ps            # Show service status
+```
+
+### Docker Build Optimization
+
+The Dockerfile uses multi-stage builds with optimized layer caching:
+
+1. **Build configuration layer** (rarely changes): `build.sbt`, `project/`
+2. **Dependencies layer** (changes when dependencies update): `sbt update`
+3. **Source code layer** (changes frequently): `src/`
+
+To maximize cache hits:
+- Modify source code: Only last layer rebuilds (~45 seconds)
+- Add dependencies: Last two layers rebuild (~2 minutes)
+- Change build config: All layers rebuild (~3-4 minutes)
+
+### Assembly Merge Strategy
+
+The project uses a minimal merge strategy for sbt-assembly. If you encounter conflicts during `make assembly` or Docker builds:
+
+1. Note the conflicting file from the error message
+2. Add a specific merge rule to `build.sbt` in the `assemblyMergeStrategy` section
+3. Common merge strategies:
+   - `MergeStrategy.discard` - Ignore the file
+   - `MergeStrategy.first` - Use first occurrence
+   - `MergeStrategy.concat` - Concatenate all occurrences
+   - `MergeStrategy.deduplicate` - Remove duplicates
+
+### Testing Docker Locally
+
+Run the automated test suite:
+
+```bash
+./scripts/docker-test.sh  # Automated test suite
+```
+
+Manual testing:
+
+```bash
+make docker-build
+make docker-up
+sleep 40  # Wait for startup
+curl http://localhost:8080/health  # Should return 200
+curl http://localhost:8080/        # Test application
+make docker-logs-compose           # Check logs
+make docker-down
+```
+
 ## Documentation
 
 - **README.md**: User-facing documentation (what, why, how to use)
