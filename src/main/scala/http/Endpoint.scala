@@ -3,6 +3,18 @@ package org.roland.scala3_zio_template.http
 import zio._
 import zio.http._
 
+/** Base class for HTTP endpoint implementations.
+  *
+  * This abstract class provides common functionality for all HTTP endpoints,
+  * including automatic request logging with timing information. Concrete
+  * endpoint implementations should extend this class and define their route
+  * and handler.
+  *
+  * The `withLogging` method can be used to wrap any handler with automatic
+  * logging of request start, completion, duration, and HTTP status code.
+  *
+  * @see [[withLogging]] for request logging functionality
+  */
 abstract class Endpoint:
   val route: Route[Any, Nothing]
   protected val handler: Handler[Any, Nothing, Request, Response]

@@ -3,6 +3,25 @@ package org.roland.scala3_zio_template.http
 import zio._
 import zio.http._
 
+/** HTTP endpoint that triggers graceful server shutdown.
+  *
+  * This endpoint accepts POST requests at `/shutdown` and initiates a graceful
+  * shutdown sequence. When called:
+  *   1. Immediately returns HTTP 202 Accepted
+  *   2. Signals the server to begin shutdown via the provided Promise
+  *   3. Allows in-flight requests to complete (30-second timeout)
+  *   4. Cleanly terminates the application
+  *
+  * '''Endpoint:''' POST /shutdown
+  *
+  * '''Response:''' HTTP 202 Accepted with "Shutdown initiated" message
+  *
+  * '''Security Note:''' This endpoint has no authentication. In production,
+  * you should protect it with authentication/authorization or restrict access
+  * via network policies.
+  *
+  * @see [[Main.performGracefulShutdown]] for the shutdown implementation
+  */
 object ShutdownEndpoint:
 
   /** Creates a shutdown route that triggers graceful server shutdown
