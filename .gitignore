@@ -1,3 +1,4 @@
+.bloop/
 .bsp/
 .claude/
 !.claude/settings.json
