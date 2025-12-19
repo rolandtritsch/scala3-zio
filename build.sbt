@@ -5,6 +5,7 @@ ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 
 lazy val root = (project in file(".")).settings(
   name := "scala3-zio-template",
+  run / fork := true,
   libraryDependencies ++= Seq(
     "ch.qos.logback" % "logback-classic" % "1.4.14",
     "dev.zio" %% "zio-http" % "3.6.0",
