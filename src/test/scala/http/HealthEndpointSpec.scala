@@ -1,8 +1,8 @@
 package org.roland.scala3_zio_template.http
 
 import zio._
-import zio.test._
 import zio.http._
+import zio.test._
 
 object HealthEndpointSpec extends ZIOSpecDefault:
 

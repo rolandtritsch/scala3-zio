@@ -1,10 +1,10 @@
 package org.roland.scala3_zio_template
 
+import org.roland.scala3_zio_template.http._
+
 import zio._
 import zio.http._
 import zio.logging.backend.SLF4J
-
-import org.roland.scala3_zio_template.http._
 
 object Main extends ZIOAppDefault:
 
@@ -29,12 +29,12 @@ object Main extends ZIOAppDefault:
 
   private val shutdownHook: UIO[Unit] =
     ZIO.logInfo("Server shutdown initiated, cleaning up resources...") *>
-    ZIO.logInfo("Waiting for in-flight requests to complete...") *>
-    ZIO.logInfo("Server shutdown completed successfully")
+      ZIO.logInfo("Waiting for in-flight requests to complete...") *>
+      ZIO.logInfo("Server shutdown completed successfully")
 
   def run =
     (ZIO.logInfo("Starting server on port 8080...") *>
-    Server.serve(routes))
+      Server.serve(routes))
       .ensuring(shutdownHook)
       .provide(
         ZLayer.succeed(serverConfig),

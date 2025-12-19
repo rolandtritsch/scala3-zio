@@ -1,8 +1,8 @@
 package org.roland.scala3_zio_template.http
 
 import zio._
-import zio.test._
 import zio.http._
+import zio.test._
 
 object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
@@ -99,9 +99,11 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
       val request = Request.get(URL.root / "health-deep")
 
       for {
-        responses <- ZIO.collectAll(List.fill(5)(
-          routes(request)
-        ))
+        responses <- ZIO.collectAll(
+          List.fill(5)(
+            routes(request)
+          )
+        )
       } yield assertTrue(
         responses.forall(_.status == Status.Ok)
       )

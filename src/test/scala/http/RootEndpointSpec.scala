@@ -1,8 +1,8 @@
 package org.roland.scala3_zio_template.http
 
 import zio._
-import zio.test._
 import zio.http._
+import zio.test._
 
 object RootEndpointSpec extends ZIOSpecDefault:
 
@@ -119,9 +119,11 @@ object RootEndpointSpec extends ZIOSpecDefault:
       val request = Request.get(URL.root)
 
       for {
-        responses <- ZIO.collectAll(List.fill(10)(
-          routes(request)
-        ))
+        responses <- ZIO.collectAll(
+          List.fill(10)(
+            routes(request)
+          )
+        )
         bodies <- ZIO.collectAll(responses.map(_.body.asString))
       } yield assertTrue(
         responses.forall(_.status == Status.Ok),

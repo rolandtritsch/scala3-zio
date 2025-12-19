@@ -1,8 +1,8 @@
 package org.roland.scala3_zio_template.http
 
 import zio._
-import zio.test._
 import zio.http._
+import zio.test._
 
 object EchoEndpointSpec extends ZIOSpecDefault:
 
@@ -11,8 +11,8 @@ object EchoEndpointSpec extends ZIOSpecDefault:
   def spec = suite("EchoEndpoint")(
     test("should respond to POST requests on /echo") {
       val testMessage = "Hello, World!"
-      val request = Request
-        .post(URL.root / "echo", Body.fromString(testMessage))
+      val request =
+        Request.post(URL.root / "echo", Body.fromString(testMessage))
 
       for {
         response <- routes(request)
@@ -23,8 +23,7 @@ object EchoEndpointSpec extends ZIOSpecDefault:
       )
     },
     test("should echo empty string when body is empty") {
-      val request = Request
-        .post(URL.root / "echo", Body.empty)
+      val request = Request.post(URL.root / "echo", Body.empty)
 
       for {
         response <- routes(request)
@@ -36,8 +35,8 @@ object EchoEndpointSpec extends ZIOSpecDefault:
     },
     test("should echo multi-line text") {
       val testMessage = "Line 1\nLine 2\nLine 3"
-      val request = Request
-        .post(URL.root / "echo", Body.fromString(testMessage))
+      val request =
+        Request.post(URL.root / "echo", Body.fromString(testMessage))
 
       for {
         response <- routes(request)
@@ -62,8 +61,8 @@ object EchoEndpointSpec extends ZIOSpecDefault:
     },
     test("should echo unicode characters") {
       val testMessage = "Unicode: 你好世界 🌍 émojis 🎉"
-      val request = Request
-        .post(URL.root / "echo", Body.fromString(testMessage))
+      val request =
+        Request.post(URL.root / "echo", Body.fromString(testMessage))
 
       for {
         response <- routes(request)
@@ -75,8 +74,8 @@ object EchoEndpointSpec extends ZIOSpecDefault:
     },
     test("should echo large text body") {
       val testMessage = "a" * 10000
-      val request = Request
-        .post(URL.root / "echo", Body.fromString(testMessage))
+      val request =
+        Request.post(URL.root / "echo", Body.fromString(testMessage))
 
       for {
         response <- routes(request)
@@ -89,8 +88,8 @@ object EchoEndpointSpec extends ZIOSpecDefault:
     },
     test("should echo JSON content") {
       val testMessage = """{"name": "test", "value": 123}"""
-      val request = Request
-        .post(URL.root / "echo", Body.fromString(testMessage))
+      val request =
+        Request.post(URL.root / "echo", Body.fromString(testMessage))
 
       for {
         response <- routes(request)
@@ -110,8 +109,7 @@ object EchoEndpointSpec extends ZIOSpecDefault:
       )
     },
     test("should not respond to PUT requests") {
-      val request = Request
-        .put(URL.root / "echo", Body.fromString("test"))
+      val request = Request.put(URL.root / "echo", Body.fromString("test"))
 
       for {
         response <- routes(request)

@@ -1,15 +1,14 @@
 package org.roland.scala3_zio_template
 
 import zio._
-import zio.test._
 import zio.http._
+import zio.test._
 
 object MainSpec extends ZIOSpecDefault:
 
   def spec = suite("Main")(
     test("routes should include EchoEndpoint") {
-      val request = Request
-        .post(URL.root / "echo", Body.fromString("test"))
+      val request = Request.post(URL.root / "echo", Body.fromString("test"))
 
       for {
         response <- Main.routes(request)
@@ -92,9 +91,11 @@ object MainSpec extends ZIOSpecDefault:
       for {
         responses <- ZIO.foreach(messages) { msg =>
           val request = Request.post(URL.root / "echo", Body.fromString(msg))
-          Main.routes(request).flatMap { response =>
-            response.body.asString.map(body => (response.status, body))
-          }
+          Main
+            .routes(request)
+            .flatMap { response =>
+              response.body.asString.map(body => (response.status, body))
+            }
         }
       } yield assertTrue(
         responses.forall(_._1 == Status.Ok),
@@ -141,8 +142,8 @@ object MainSpec extends ZIOSpecDefault:
 
       val withShutdown = program.ensuring(
         ZIO.logInfo("Server shutdown initiated, cleaning up resources...") *>
-        ZIO.logInfo("Waiting for in-flight requests to complete...") *>
-        ZIO.logInfo("Server shutdown completed successfully")
+          ZIO.logInfo("Waiting for in-flight requests to complete...") *>
+          ZIO.logInfo("Server shutdown completed successfully")
       )
 
       for {
