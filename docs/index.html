@@ -1,4 +1,179 @@
-<!DOCTYPE html><html data-pathToRoot="" data-rawLocation="index" data-dynamicSideMenu="false"><head><meta charset="utf-8"></meta><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"></meta><title>app</title><link rel="shortcut icon" type="image/x-icon" href="favicon.ico"></link><script type="text/javascript" src="scripts/theme.js"></script><script type="text/javascript" src="scripts/searchData.js" defer="true"></script><script type="text/javascript" src="scripts/scastieConfiguration.js" defer="true"></script><link rel="stylesheet" href="styles/theme/bundle.css"></link><link rel="stylesheet" href="styles/theme/components/bundle.css"></link><link rel="stylesheet" href="styles/theme/components/button/bundle.css"></link><link rel="stylesheet" href="styles/theme/layout/bundle.css"></link><link rel="stylesheet" href="styles/nord-light.css"></link><link rel="stylesheet" href="styles/dotty-icons.css"></link><link rel="stylesheet" href="styles/filter-bar.css"></link><link rel="stylesheet" href="styles/code-snippets.css"></link><link rel="stylesheet" href="styles/searchbar.css"></link><link rel="stylesheet" href="styles/social-links.css"></link><link rel="stylesheet" href="styles/versions-dropdown.css"></link><link rel="stylesheet" href="styles/content-contributors.css"></link><link rel="stylesheet" href="styles/fontawesome.css"></link><script type="text/javascript" src="hljs/highlight.pack.js" defer="true"></script><script type="text/javascript" src="scripts/hljs-scala3.js" defer="true"></script><script type="text/javascript" src="scripts/ux.js" defer="true"></script><script type="text/javascript" src="scripts/common/component.js" defer="true"></script><script type="text/javascript" src="scripts/common/utils.js" defer="true"></script><script type="text/javascript" src="scripts/components/FilterBar.js" defer="true"></script><script type="text/javascript" src="scripts/components/DocumentableList.js" defer="true"></script><script type="text/javascript" src="scripts/components/Input.js" defer="true"></script><script type="text/javascript" src="scripts/components/FilterGroup.js" defer="true"></script><script type="text/javascript" src="scripts/components/Filter.js" defer="true"></script><script type="text/javascript" src="scripts/scaladoc-scalajs.js" defer="true"></script><script type="text/javascript" src="scripts/contributors.js" defer="true"></script><script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js" defer="true"></script><script type="text/javascript" src="https://d3js.org/d3.v6.min.js" defer="true"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/graphlib-dot@0.6.2/dist/graphlib-dot.min.js" defer="true"></script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dagre-d3/0.6.1/dagre-d3.min.js" defer="true"></script><script type="text/javascript" src="https://scastie.scala-lang.org/embedded.js" defer="true"></script><script type="text/javascript" src="scripts/data.js" defer="true"></script><link rel="stylesheet" href="styles/apistyles.css"></link><script>var pathToRoot = "";</script></head><body><div id=""><div id="header" class="body-small"><div class="header-container-left"><a href="" class="logo-container"><span class="project-name h300">app</span></a><span onclick="dropdownHandler(event)" class="text-button with-arrow" id="dropdown-trigger"><a></a></span><div id="version-dropdown" class="dropdown-menu"></div></div><div class="header-container-right"><button id="search-toggle" class="icon-button"></button><span id="theme-toggle" class="icon-button"></span><span id="mobile-menu-toggle" class="icon-button hamburger"></span></div></div><div id="mobile-menu"><div class="mobile-menu-header body-small"><span class="mobile-menu-logo"><span class="project-name h300">app</span></span><button id="mobile-menu-close" class="icon-button close"></button></div><div class="mobile-menu-container body-medium"><input id="mobile-scaladoc-searchbar-input" class="scaladoc-searchbar-input" type="search" placeholder="Find anything"></input><span id="mobile-theme-toggle" class="mobile-menu-item mode"></span></div></div><span id="mobile-sidebar-toggle" class="floating-button"></span><div id="leftColumn" class="body-small"><div class="switcher-container"><a id="api-nav-button" class="switcher h100 selected" href="index.html">API</a></div><nav id="api-nav" class="side-menu"><div class="ni n0 "><span class="nh "><a href="$lessempty$greater$/Main$.html"><span class="micon ob"></span><span>Main</span></a></span></div></nav></div><div id="footer" class="body-small"><div class="left-container">Generated with</div><div class="right-container"><div class="text"></div></div><div class="text-mobile"></div></div><div id="scaladoc-searchBar"></div><div id="main"><div class="breadcrumbs container"><a href="index.html">app</a></div><div id="content" class="body-medium"><div><h1 class="h600">app</h1>
+<!DOCTYPE html><html data-pathToRoot="" data-rawLocation="index" data-dynamicSideMenu="false"><head><meta charset="utf-8"></meta><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"></meta><title>Scala3 ZIO Template</title><link rel="shortcut icon" type="image/x-icon" href="favicon.ico"></link><script type="text/javascript" src="scripts/theme.js"></script><script type="text/javascript" src="scripts/searchData.js" defer="true"></script><script type="text/javascript" src="scripts/scastieConfiguration.js" defer="true"></script><link rel="stylesheet" href="styles/theme/bundle.css"></link><link rel="stylesheet" href="styles/theme/components/bundle.css"></link><link rel="stylesheet" href="styles/theme/components/button/bundle.css"></link><link rel="stylesheet" href="styles/theme/layout/bundle.css"></link><link rel="stylesheet" href="styles/nord-light.css"></link><link rel="stylesheet" href="styles/dotty-icons.css"></link><link rel="stylesheet" href="styles/filter-bar.css"></link><link rel="stylesheet" href="styles/code-snippets.css"></link><link rel="stylesheet" href="styles/searchbar.css"></link><link rel="stylesheet" href="styles/social-links.css"></link><link rel="stylesheet" href="styles/versions-dropdown.css"></link><link rel="stylesheet" href="styles/content-contributors.css"></link><link rel="stylesheet" href="styles/fontawesome.css"></link><script type="text/javascript" src="hljs/highlight.pack.js" defer="true"></script><script type="text/javascript" src="scripts/hljs-scala3.js" defer="true"></script><script type="text/javascript" src="scripts/ux.js" defer="true"></script><script type="text/javascript" src="scripts/common/component.js" defer="true"></script><script type="text/javascript" src="scripts/common/utils.js" defer="true"></script><script type="text/javascript" src="scripts/components/FilterBar.js" defer="true"></script><script type="text/javascript" src="scripts/components/DocumentableList.js" defer="true"></script><script type="text/javascript" src="scripts/components/Input.js" defer="true"></script><script type="text/javascript" src="scripts/components/FilterGroup.js" defer="true"></script><script type="text/javascript" src="scripts/components/Filter.js" defer="true"></script><script type="text/javascript" src="scripts/scaladoc-scalajs.js" defer="true"></script><script type="text/javascript" src="scripts/contributors.js" defer="true"></script><script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js" defer="true"></script><script type="text/javascript" src="https://d3js.org/d3.v6.min.js" defer="true"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/graphlib-dot@0.6.2/dist/graphlib-dot.min.js" defer="true"></script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dagre-d3/0.6.1/dagre-d3.min.js" defer="true"></script><script type="text/javascript" src="https://scastie.scala-lang.org/embedded.js" defer="true"></script><script type="text/javascript" src="scripts/data.js" defer="true"></script><link rel="stylesheet" href="styles/apistyles.css"></link><script>var pathToRoot = "";</script></head><body><div id=""><div id="header" class="body-small"><div class="header-container-left"><a href="" class="logo-container"><span class="project-name h300">Scala3 ZIO Template</span></a><span onclick="dropdownHandler(event)" class="text-button with-arrow" id="dropdown-trigger"><a></a></span><div id="version-dropdown" class="dropdown-menu"></div></div><div class="header-container-right"><button id="search-toggle" class="icon-button"></button><span id="theme-toggle" class="icon-button"></span><span id="mobile-menu-toggle" class="icon-button hamburger"></span></div></div><div id="mobile-menu"><div class="mobile-menu-header body-small"><span class="mobile-menu-logo"><span class="project-name h300">Scala3 ZIO Template</span></span><button id="mobile-menu-close" class="icon-button close"></button></div><div class="mobile-menu-container body-medium"><input id="mobile-scaladoc-searchbar-input" class="scaladoc-searchbar-input" type="search" placeholder="Find anything"></input><span id="mobile-theme-toggle" class="mobile-menu-item mode"></span></div></div><span id="mobile-sidebar-toggle" class="floating-button"></span><div id="leftColumn" class="body-small"><div class="switcher-container"><a id="api-nav-button" class="switcher h100 selected" href="index.html">API</a></div><nav id="api-nav" class="side-menu"><div class="ni n0"><span class="nh "><button class="ar icon-button "></button><a href="org/roland/scala3_zio_template.html"><span class="micon pa"></span><span>org.roland.scala3_zio_template</span></a></span><div class="ni n1"><span class="nh "><button class="ar icon-button "></button><a href="org/roland/scala3_zio_template/http.html"><span class="micon pa"></span><span>http</span></a></span><div class="ni n2 "><span class="nh "><a href="org/roland/scala3_zio_template/http/EchoEndpoint$.html"><span class="micon ob"></span><span>EchoEndpoint</span></a></span></div><div class="ni n2 "><span class="nh "><a href="org/roland/scala3_zio_template/http/Endpoint.html"><span class="micon cl"></span><span>Endpoint</span></a></span></div><div class="ni n2"><span class="nh "><button class="ar icon-button "></button><a href="org/roland/scala3_zio_template/http/HealthDeepEndpoint$.html"><span class="micon ob"></span><span>HealthDeepEndpoint</span></a></span><div class="ni n3 "><span class="nh "><a href="org/roland/scala3_zio_template/http/HealthDeepEndpoint$$AwsConfig.html"><span class="micon cl"></span><span>AwsConfig</span></a></span></div><div class="ni n3 "><span class="nh "><a href="org/roland/scala3_zio_template/http/HealthDeepEndpoint$$HealthCheckResponse.html"><span class="micon cl"></span><span>HealthCheckResponse</span></a></span></div><div class="ni n3 "><span class="nh "><a href="org/roland/scala3_zio_template/http/HealthDeepEndpoint$$HealthCheckResponse$.html"><span class="micon ob"></span><span>HealthCheckResponse</span></a></span></div><div class="ni n3 "><span class="nh "><a href="org/roland/scala3_zio_template/http/HealthDeepEndpoint$$ServiceHealthCheck.html"><span class="micon cl"></span><span>ServiceHealthCheck</span></a></span></div><div class="ni n3 "><span class="nh "><a href="org/roland/scala3_zio_template/http/HealthDeepEndpoint$$ServiceHealthCheck$.html"><span class="micon ob"></span><span>ServiceHealthCheck</span></a></span></div></div><div class="ni n2 "><span class="nh "><a href="org/roland/scala3_zio_template/http/HealthEndpoint$.html"><span class="micon ob"></span><span>HealthEndpoint</span></a></span></div><div class="ni n2 "><span class="nh "><a href="org/roland/scala3_zio_template/http/RootEndpoint$.html"><span class="micon ob"></span><span>RootEndpoint</span></a></span></div><div class="ni n2 "><span class="nh "><a href="org/roland/scala3_zio_template/http/ShutdownEndpoint$.html"><span class="micon ob"></span><span>ShutdownEndpoint</span></a></span></div></div><div class="ni n1"><span class="nh "><button class="ar icon-button "></button><a href="org/roland/scala3_zio_template/service.html"><span class="micon pa"></span><span>service</span></a></span><div class="ni n2 "><span class="nh "><a href="org/roland/scala3_zio_template/service/DatabaseConfig.html"><span class="micon cl"></span><span>DatabaseConfig</span></a></span></div><div class="ni n2 "><span class="nh "><a href="org/roland/scala3_zio_template/service/DatabaseService.html"><span class="micon tr"></span><span>DatabaseService</span></a></span></div><div class="ni n2 "><span class="nh "><a href="org/roland/scala3_zio_template/service/DatabaseService$.html"><span class="micon ob"></span><span>DatabaseService</span></a></span></div></div><div class="ni n1 "><span class="nh "><a href="org/roland/scala3_zio_template/Main$.html"><span class="micon ob"></span><span>Main</span></a></span></div></div></nav></div><div id="footer" class="body-small"><div class="left-container">Generated with</div><div class="right-container"><div class="text"></div></div><div class="text-mobile"></div></div><div id="scaladoc-searchBar"></div><div id="main"><div class="breadcrumbs container"><a href="index.html">Scala3 ZIO Template</a></div><div id="content" class="body-medium"><div><h1 class="h600">Scala3 ZIO Template</h1>
+<div class="cover">
+ <div class="doc">
+  <h1><a href="#scala3-zio-template" id="scala3-zio-template">scala3-zio-template</a></h1>
+  <p>A production-ready HTTP service template built with Scala 3 and ZIO. Features comprehensive health monitoring, database integration, AWS S3 support, and containerized deployment.</p>
+  <blockquote>
+   <p><strong>For Contributors</strong>: See <a href="./CONTRIBUTING.md">CONTRIBUTING.md</a> for development workflow and <a href="./CLAUDE.md">CLAUDE.md</a> for implementation details and architecture.</p>
+  </blockquote>
+  <h2><a href="#what-this-template-provides" id="what-this-template-provides">What This Template Provides</a></h2>
+  <p>This template solves the problem of building production-ready, cloud-native Scala services by providing:</p>
+  <ul>
+   <li><strong>HTTP Server</strong>: RESTful API with multiple endpoints</li>
+   <li><strong>Health Monitoring</strong>: Basic and deep health checks for dependencies</li>
+   <li><strong>Database Integration</strong>: PostgreSQL support using Quill</li>
+   <li><strong>Cloud Integration</strong>: AWS S3 connectivity and health verification</li>
+   <li><strong>Observability</strong>: Structured JSON logging with request tracking</li>
+   <li><strong>Containerization</strong>: Docker and docker-compose ready</li>
+   <li><strong>Graceful Shutdown</strong>: Proper cleanup on termination</li>
+   <li><strong>Code Quality</strong>: Automated formatting, linting, and test coverage enforcement</li>
+  </ul>
+  <h2><a href="#prerequisites" id="prerequisites">Prerequisites</a></h2>
+  <ul>
+   <li>JVM (Java 21 or higher)</li>
+   <li>SBT 1.11.7 or higher (<a href="https://www.scala-sbt.org/download.html">installation instructions</a>)</li>
+   <li>Docker and docker-compose (for containerized deployment)</li>
+   <li>PostgreSQL (for database features)</li>
+   <li>AWS account with S3 access (for AWS features)</li>
+  </ul>
+  <h2><a href="#technology-stack" id="technology-stack">Technology Stack</a></h2>
+  <ul>
+   <li><strong>Scala 3.7.4</strong> - Modern Scala with improved syntax and type system</li>
+   <li><strong>ZIO 2.1.13</strong> - Functional effect system for type-safe, composable programs</li>
+   <li><strong>ZIO HTTP 3.6.0</strong> - High-performance HTTP server</li>
+   <li><strong>ZIO AWS S3</strong> - AWS S3 client integration</li>
+   <li><strong>Quill 4.8.6</strong> - Compile-time query generation for PostgreSQL</li>
+   <li><strong>Logback</strong> - Structured JSON logging</li>
+   <li><strong>SBT 1.11.7</strong> - Scala build tool</li>
+  </ul>
+  <h2><a href="#api-endpoints" id="api-endpoints">API Endpoints</a></h2>
+  <p>The service provides the following endpoints:</p>
+  <ul>
+   <li><code>GET /</code> - Root endpoint returning welcome message</li>
+   <li><code>POST /echo</code> - Echo endpoint that returns the request body</li>
+   <li><code>GET /health</code> - Basic health check (always returns 200)</li>
+   <li><code>GET /health-deep</code> - Comprehensive health check validating: 
+    <ul>
+     <li>External URL connectivity (<a href="https://tedn.life">https://tedn.life</a>)</li>
+     <li>AWS S3 access (list-buckets operation)</li>
+     <li>PostgreSQL database connection</li>
+    </ul></li>
+   <li><code>POST /shutdown</code> - Gracefully shutdown the server</li>
+  </ul>
+  <h2><a href="#quick-start" id="quick-start">Quick Start</a></h2>
+  <h3><a href="#installation" id="installation">Installation</a></h3>
+  <ol>
+   <li>Clone the repository:</li>
+  </ol>
+  <div class="snippet mono-small-block">
+   <pre><code class="language-bash"><span line-number="1" class=""><span class="tooltip-container"></span>git clone &lt;repository-url&gt;
+</span><span line-number="2" class=""><span class="tooltip-container"></span>cd scala3-zio-template
+</span></code></pre>
+   <div class="buttons"></div>
+  </div>
+  <ol start="2">
+   <li>Set up environment variables:</li>
+  </ol>
+  <div class="snippet mono-small-block">
+   <pre><code class="language-bash"><span line-number="1" class=""><span class="tooltip-container"></span>cp .env.example .env
+</span><span line-number="2" class=""><span class="tooltip-container"></span># Edit .env with your AWS and database credentials
+</span></code></pre>
+   <div class="buttons"></div>
+  </div>
+  <ol start="3">
+   <li>Run the application:</li>
+  </ol>
+  <div class="snippet mono-small-block">
+   <pre><code class="language-bash"><span line-number="1" class=""><span class="tooltip-container"></span>make run
+</span></code></pre>
+   <div class="buttons"></div>
+  </div>
+  <p>The server will start on <a href="http://localhost:8080">http://localhost:8080</a></p>
+  <h3><a href="#using-the-api" id="using-the-api">Using the API</a></h3>
+  <p>Test the endpoints:</p>
+  <div class="snippet mono-small-block">
+   <pre><code class="language-bash"><span line-number="1" class=""><span class="tooltip-container"></span># Basic health check
+</span><span line-number="2" class=""><span class="tooltip-container"></span>curl http://localhost:8080/health
+</span><span line-number="3" class=""><span class="tooltip-container"></span>
+</span><span line-number="4" class=""><span class="tooltip-container"></span># Comprehensive health check
+</span><span line-number="5" class=""><span class="tooltip-container"></span>curl http://localhost:8080/health-deep
+</span><span line-number="6" class=""><span class="tooltip-container"></span>
+</span><span line-number="7" class=""><span class="tooltip-container"></span># Echo endpoint
+</span><span line-number="8" class=""><span class="tooltip-container"></span>curl -X POST http://localhost:8080/echo -d "Hello, World!"
+</span><span line-number="9" class=""><span class="tooltip-container"></span>
+</span><span line-number="10" class=""><span class="tooltip-container"></span># Root endpoint
+</span><span line-number="11" class=""><span class="tooltip-container"></span>curl http://localhost:8080/
+</span></code></pre>
+   <div class="buttons"></div>
+  </div>
+  <h2><a href="#configuration" id="configuration">Configuration</a></h2>
+  <h3><a href="#environment-variables" id="environment-variables">Environment Variables</a></h3>
+  <p>The application requires configuration via environment variables. Create a <code>.env</code> file based on <code>.env.example</code>:</p>
+  <h4><a href="#required-configuration" id="required-configuration">Required Configuration</a></h4>
+  <div class="snippet mono-small-block">
+   <pre><code class="language-bash"><span line-number="1" class=""><span class="tooltip-container"></span># Database Configuration (REQUIRED - app will not start without these)
+</span><span line-number="2" class=""><span class="tooltip-container"></span>DATABASE_HOST=localhost
+</span><span line-number="3" class=""><span class="tooltip-container"></span>DATABASE_PORT=5432
+</span><span line-number="4" class=""><span class="tooltip-container"></span>DATABASE_NAME=postgres
+</span><span line-number="5" class=""><span class="tooltip-container"></span>DATABASE_USER=your_username
+</span><span line-number="6" class=""><span class="tooltip-container"></span>DATABASE_PASSWORD=your_password
+</span></code></pre>
+   <div class="buttons"></div>
+  </div>
+  <h4><a href="#optional-configuration" id="optional-configuration">Optional Configuration</a></h4>
+  <div class="snippet mono-small-block">
+   <pre><code class="language-bash"><span line-number="1" class=""><span class="tooltip-container"></span># AWS Configuration (optional - required for S3 health check)
+</span><span line-number="2" class=""><span class="tooltip-container"></span>AWS_ACCESS_KEY_ID=&lt;your-key-id&gt;
+</span><span line-number="3" class=""><span class="tooltip-container"></span>AWS_SECRET_ACCESS_KEY=&lt;your-secret-key&gt;
+</span><span line-number="4" class=""><span class="tooltip-container"></span>AWS_DEFAULT_REGION=us-east-1
+</span></code></pre>
+   <div class="buttons"></div>
+  </div>
+  <p><em>Note</em>*: Database credentials are mandatory. The application will fail to start without them. AWS credentials are optional; the <code>/health-deep</code> endpoint will report S3 as unhealthy if missing, but the application will continue running.</p>
+  <h2><a href="#docker-deployment" id="docker-deployment">Docker Deployment</a></h2>
+  <h3><a href="#quick-start-with-docker" id="quick-start-with-docker">Quick Start with Docker</a></h3>
+  <p>Start the application with docker-compose:</p>
+  <div class="snippet mono-small-block">
+   <pre><code class="language-bash"><span line-number="1" class=""><span class="tooltip-container"></span>make docker-up
+</span></code></pre>
+   <div class="buttons"></div>
+  </div>
+  <p>This will:</p>
+  <ul>
+   <li>Start a PostgreSQL database container</li>
+   <li>Build and start the application container</li>
+   <li>Expose the API on <a href="http://localhost:8080">http://localhost:8080</a></li>
+  </ul>
+  <p>Stop the services:</p>
+  <div class="snippet mono-small-block">
+   <pre><code class="language-bash"><span line-number="1" class=""><span class="tooltip-container"></span>make docker-down
+</span></code></pre>
+   <div class="buttons"></div>
+  </div>
+  <h3><a href="#build-your-own-image" id="build-your-own-image">Build Your Own Image</a></h3>
+  <p>Build the Docker image:</p>
+  <div class="snippet mono-small-block">
+   <pre><code class="language-bash"><span line-number="1" class=""><span class="tooltip-container"></span>make docker-build
+</span></code></pre>
+   <div class="buttons"></div>
+  </div>
+  <p>Run directly with Docker:</p>
+  <div class="snippet mono-small-block">
+   <pre><code class="language-bash"><span line-number="1" class=""><span class="tooltip-container"></span>make docker-run
+</span></code></pre>
+   <div class="buttons"></div>
+  </div>
+  <h2><a href="#contributing" id="contributing">Contributing</a></h2>
+  <p>Contributions are welcome! Please see <a href="./CONTRIBUTING.md">CONTRIBUTING.md</a> for:</p>
+  <ul>
+   <li>Development workflow</li>
+   <li>Branch naming conventions</li>
+   <li>Testing requirements</li>
+   <li>Code quality standards</li>
+   <li>Pull request process</li>
+  </ul>
+  <h2><a href="#documentation" id="documentation">Documentation</a></h2>
+  <ul>
+   <li><strong><a href="./README.md">README.md</a></strong> (this file): What the project is and how to use it</li>
+   <li><strong><a href="./CONTRIBUTING.md">CONTRIBUTING.md</a></strong>: How to contribute and development workflow</li>
+   <li><strong><a href="./CLAUDE.md">CLAUDE.md</a></strong>: Implementation details and architectural decisions</li>
+  </ul>
+ </div>
+ <section id="attributes">
+  <h2 class="h500">Attributes</h2>
+  <dl class="attributes"></dl>
+ </section>
+</div>
 <section id="members-list">
  <h2 class="h500">Members list</h2>
  <div class="documentableFilter">
@@ -7,88 +182,26 @@
  <div class="membersList expand">
   <div class="tabs">
    <div class="contents">
-    <section id="Type-members">
-     <div data-togglable="Type members" class="tab expand">
-      <div class="member-group-header">
-       <h3 data-togglable="Type members" class="h400">Type members</h3>
-      </div>
-      <section id="Classlikes">
-       <div class="documentableList expand">
-        <div class="documentableList-expander">
-         <button class="icon-button show-content expand"></button>
-         <h4 class="groupHeader h200">Classlikes</h4>
-        </div>
-        <div class="documentableElement">
-         <div class="documentableElement-expander">
-          <button class="icon-button ar show-content"></button>
-          <div class="header monospace mono-medium">
-           <div class="signature">
-            <span class="signature-short"><span class="modifiers"></span><span class="kind"><span t="k">object </span></span><a href="$lessempty$greater$/Main$.html" t="n" class="documentableName ">Main</a><span t="k"> extends </span><span data-unresolved-link="" t="t">ZIOAppDefault</span></span><span class="signature-long"></span>
-           </div>
-          </div>
-         </div>
-         <div class="docs">
-          <span class="modifiers"></span>
-          <div>
-           <div class="originInfo"></div>
-           <div class="memberDocumentation">
-            <div class="documentableBrief doc">
-             <p>Main application entry point demonstrating ZIO 2 with Scala 3.</p>
-            </div>
-            <div class="cover">
-             <div class="doc">
-              <p>Main application entry point demonstrating ZIO 2 with Scala 3.</p>
-              <p>This is a simple console application that prints welcome messages using ZIO's effect system with proper error handling.</p>
-             </div>
-             <h2 class="h200">Attributes</h2>
-             <dl class="attributes attributes-small">
-              <dt class="body-small">
-               Supertypes
-              </dt>
-              <dd class="body-medium">
-               <div class="mono-small-block supertypes">
-                <div>
-                 trait <span data-unresolved-link="" t="n">ZIOAppDefault</span>
-                </div>
-                <div>
-                 trait <span data-unresolved-link="" t="n">ZIOApp</span>
-                </div>
-                <div>
-                 trait <span data-unresolved-link="" t="n">ZIOAppVersionSpecific</span>
-                </div>
-                <div>
-                 class <span data-unresolved-link="" t="n">Object</span>
-                </div>
-                <div>
-                 trait <span data-unresolved-link="" t="n">Matchable</span>
-                </div>
-                <div>
-                 class <span data-unresolved-link="" t="n">Any</span>
-                </div><span class="show-all-code show-content text-button h100">Show all</span>
-               </div>
-              </dd>
-              <dt class="body-small">
-               Self type
-              </dt>
-              <dd class="body-medium">
-               <div class="mono-small-block supertypes">
-                <span></span>
-                <div>
-                 <a href="$lessempty$greater$/Main$.html" t="n">Main</a>.<span t="k">type</span>
-                </div>
-               </div>
-              </dd>
-             </dl>
-            </div>
-           </div>
+    <section id="Packages">
+     <div data-togglable="packages" class="tab expand">
+      <div class="documentableList expand">
+       <div class="documentableList-expander">
+        <button class="icon-button show-content expand"></button>
+        <h3 class="groupHeader h400">Packages</h3>
+       </div>
+       <div class="documentableElement">
+        <div class="documentableElement-expander">
+         <div class="header monospace mono-medium">
+          <div class="signature">
+           <span class="modifiers"></span><span class="kind"><span t="k">package </span></span><a href="org/roland/scala3_zio_template.html" t="n" class="documentableName ">org.roland.scala3_zio_template</a>
           </div>
          </div>
         </div>
        </div>
-      </section>
+      </div>
      </div>
     </section>
    </div>
   </div>
  </div>
-</section></div><div id="toc" class="body-small"><div id="toc-container"><span class="toc-title h200">In this article</span><nav class="toc-nav"><ul class="toc-list"><li><a href="#members-list">Members list</a><ul><li><a href="#Type-members">Type members</a><ul><li><a href="#Classlikes">Classlikes</a></li></ul></li></ul></li></ul></nav></div></div></div><div id="footer" class="body-small mobile-footer"><div class="left-container">Generated with</div><div class="right-container"><div class="text"></div></div><div class="text-mobile"></div></div></div></div></body></html>
+</section></div><div id="toc" class="body-small"><div id="toc-container"><span class="toc-title h200">In this article</span><nav class="toc-nav"><ul class="toc-list"><li><a href="#attributes">Attributes</a></li><li><a href="#members-list">Members list</a><ul><li><a href="#Packages">Packages</a></li></ul></li></ul></nav></div></div></div><div id="footer" class="body-small mobile-footer"><div class="left-container">Generated with</div><div class="right-container"><div class="text"></div></div><div class="text-mobile"></div></div></div></div></body></html>
