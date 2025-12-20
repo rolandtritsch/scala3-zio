@@ -17,9 +17,9 @@ import zio.test._
   *   - mockDbLayer: Provides a mock DatabaseService for testing
   *   - mockAwsLayer: Provides a mock AwsConfig for testing S3 integration
   *
-  * This approach ensures test isolation, determinism, and simplicity. Tests
-  * can provide different configurations for different test cases without
-  * affecting each other or depending on the environment.
+  * This approach ensures test isolation, determinism, and simplicity. Tests can
+  * provide different configurations for different test cases without affecting
+  * each other or depending on the environment.
   */
 object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
