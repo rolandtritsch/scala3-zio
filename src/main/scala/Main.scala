@@ -1,5 +1,6 @@
 package org.roland.scala3_zio_template
 
+import org.roland.scala3_zio_template.config.{AwsConfig, ServerConfig}
 import org.roland.scala3_zio_template.http._
 import org.roland.scala3_zio_template.service.DatabaseService
 
@@ -40,23 +41,24 @@ object Main extends ZIOAppDefault:
   override val bootstrap: ZLayer[ZIOAppArgs, Any, Any] =
     Runtime.removeDefaultLoggers >>> SLF4J.slf4j
 
-  /** Server configuration with production-ready settings.
+  /** Builds server configuration from ServerConfig.
     *
     * Configuration includes:
-    *   - Port 8080 for HTTP traffic
+    *   - Configurable port from SERVER_PORT environment variable (default: 8080)
     *   - Keep-alive connections enabled for better performance
     *   - 30-second idle timeout for inactive connections
     *   - 16 KB maximum header size to prevent header attacks
     *   - 30-second graceful shutdown timeout for clean termination
     */
-  val serverConfig = Server
-    .Config
-    .default
-    .port(8080)
-    .keepAlive(true)
-    .idleTimeout(30.seconds)
-    .maxHeaderSize(16 * 1024)
-    .gracefulShutdownTimeout(30.seconds)
+  def buildServerConfig(config: ServerConfig): Server.Config =
+    Server
+      .Config
+      .default
+      .port(config.port)
+      .keepAlive(true)
+      .idleTimeout(30.seconds)
+      .maxHeaderSize(16 * 1024)
+      .gracefulShutdownTimeout(30.seconds)
 
   /** Constructs the complete route table for the HTTP server.
     *
@@ -68,11 +70,11 @@ object Main extends ZIOAppDefault:
     *   Promise that will be completed when shutdown is requested via POST
     *   /shutdown
     * @return
-    *   Combined routes requiring DatabaseService dependency
+    *   Combined routes requiring DatabaseService and AwsConfig dependencies
     */
   def routes(
       shutdownPromise: Promise[Nothing, Unit]
-  ): Routes[DatabaseService, Nothing] =
+  ): Routes[DatabaseService & AwsConfig, Nothing] =
     Routes(
       EchoEndpoint.route,
       HealthEndpoint.route,
@@ -106,11 +108,12 @@ object Main extends ZIOAppDefault:
   /** Main application logic that starts the HTTP server and handles shutdown.
     *
     * This method orchestrates the entire application lifecycle:
-    *   1. Creates a shutdown promise for coordination 2. Configures all HTTP
-    *      routes 3. Starts the HTTP server on port 8080 4. Races server
-    *      execution against shutdown signal 5. Handles interrupt signals
-    *      (Ctrl+C) with graceful shutdown 6. Provides all required dependencies
-    *      (Server, DatabaseService)
+    *   1. Loads server configuration from environment variables 2. Creates a
+    *      shutdown promise for coordination 3. Configures all HTTP routes 4.
+    *      Starts the HTTP server on configured port 5. Races server execution
+    *      against shutdown signal 6. Handles interrupt signals (Ctrl+C) with
+    *      graceful shutdown 7. Provides all required dependencies (Server,
+    *      DatabaseService, AwsConfig)
     *
     * The server will continue running until either:
     *   - A POST request is made to /shutdown endpoint
@@ -118,14 +121,19 @@ object Main extends ZIOAppDefault:
     *
     * Both cases trigger graceful shutdown with a 30-second timeout.
     *
+    * The application will fail fast at startup if any required configuration is
+    * missing (DATABASE_USER, DATABASE_PASSWORD, AWS_ACCESS_KEY_ID,
+    * AWS_SECRET_ACCESS_KEY).
+    *
     * @return
     *   ZIO effect that runs the complete application
     */
-  def run =
+  def run: ZIO[ZIOAppArgs & Scope, Any, Any] =
     (for {
+      serverConfig <- ZIO.service[ServerConfig]
+      _ <- ZIO.logInfo(s"Starting server on port ${serverConfig.port}...")
       shutdownPromise <- Promise.make[Nothing, Unit]
       allRoutes = routes(shutdownPromise)
-      _ <- ZIO.logInfo("Starting server on port 8080...")
       server <- Server
         .serve(allRoutes)
         .race(shutdownPromise.await *> performGracefulShutdown)
@@ -137,7 +145,9 @@ object Main extends ZIOAppDefault:
         .fork
       _ <- server.join
     } yield ()).provide(
-      ZLayer.succeed(serverConfig),
+      ServerConfig.layer.mapError(e => new RuntimeException(e.getMessage)),
+      ZLayer.fromZIO(ZIO.service[ServerConfig].map(buildServerConfig)),
       Server.live,
-      DatabaseService.live
+      DatabaseService.live,
+      AwsConfig.layer.mapError(e => new RuntimeException(e.getMessage))
     )

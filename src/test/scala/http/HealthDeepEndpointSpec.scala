@@ -1,5 +1,6 @@
 package org.roland.scala3_zio_template.http
 
+import org.roland.scala3_zio_template.config.AwsConfig
 import org.roland.scala3_zio_template.service.DatabaseService
 
 import zio._
@@ -15,14 +16,13 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
       if shouldSucceed then ZIO.succeed(true)
       else ZIO.fail(new RuntimeException("Mock database failure"))
 
-    override def execute(sql: String): ZIO[Any, Throwable, Unit] = ZIO.unit
-    override def selectOne[T](sql: String): ZIO[Any, Throwable, Option[T]] = ZIO
-      .succeed(None)
-    override def selectAll[T](sql: String): ZIO[Any, Throwable, List[T]] = ZIO
-      .succeed(List.empty)
-
   private val mockDbLayer = ZLayer
     .succeed[DatabaseService](MockDatabaseService(shouldSucceed = true))
+
+  private val mockAwsLayer = ZLayer
+    .succeed[AwsConfig](
+      AwsConfig("test-access-key", "test-secret-key", "us-east-1")
+    )
 
   private def routes = Routes(HealthDeepEndpoint.route)
 
@@ -53,7 +53,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
       for {
         response <- routes(request)
-          .provide(mockDbLayer, ZLayer.succeed(Scope.global))
+          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
         body <- response.body.asString
         result <- ZIO.fromEither(body.fromJson[HealthCheckResponse])
       } yield assertTrue(
@@ -72,7 +72,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
       for {
         response <- routes(request)
-          .provide(mockDbLayer, ZLayer.succeed(Scope.global))
+          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
         body <- response.body.asString
         result <- ZIO.fromEither(body.fromJson[HealthCheckResponse])
       } yield assertTrue(
@@ -90,7 +90,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
       for {
         response <- routes(request)
-          .provide(mockDbLayer, ZLayer.succeed(Scope.global))
+          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
         body <- response.body.asString
         result <- ZIO.fromEither(body.fromJson[HealthCheckResponse])
       } yield assertTrue(
@@ -104,7 +104,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
       for {
         response <- routes(request)
-          .provide(mockDbLayer, ZLayer.succeed(Scope.global))
+          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
         body <- response.body.asString
         result <- ZIO.fromEither(body.fromJson[HealthCheckResponse])
       } yield assertTrue(
@@ -118,7 +118,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
       for {
         response <- routes(request)
-          .provide(mockDbLayer, ZLayer.succeed(Scope.global))
+          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
         body <- response.body.asString
         result <- ZIO.fromEither(body.fromJson[HealthCheckResponse])
       } yield assertTrue(
@@ -133,7 +133,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
       for {
         response <- routes(request)
-          .provide(mockDbLayer, ZLayer.succeed(Scope.global))
+          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
       } yield assertTrue(
         response.status == Status.NotFound
       )
@@ -143,7 +143,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
       for {
         response <- routes(request)
-          .provide(mockDbLayer, ZLayer.succeed(Scope.global))
+          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
       } yield assertTrue(
         response.status == Status.NotFound
       )
@@ -153,7 +153,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
       for {
         response <- routes(request)
-          .provide(mockDbLayer, ZLayer.succeed(Scope.global))
+          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
       } yield assertTrue(
         response.status == Status.NotFound
       )
@@ -163,7 +163,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
       for {
         response <- routes(request)
-          .provide(mockDbLayer, ZLayer.succeed(Scope.global))
+          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
       } yield assertTrue(
         response.status == Status.NotFound
       )
@@ -174,7 +174,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
       for {
         responses <- ZIO.collectAll(
           List.fill(3)(
-            routes(request).provide(mockDbLayer, ZLayer.succeed(Scope.global))
+            routes(request).provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
           )
         )
       } yield assertTrue(

@@ -1,5 +1,6 @@
 package org.roland.scala3_zio_template.http
 
+import org.roland.scala3_zio_template.config.AwsConfig
 import org.roland.scala3_zio_template.service.DatabaseService
 import software.amazon.awssdk.auth.credentials.{
   AwsBasicCredentials,
@@ -89,48 +90,6 @@ object HealthDeepEndpoint:
   object HealthCheckResponse:
     given JsonEncoder[HealthCheckResponse] = DeriveJsonEncoder
       .gen[HealthCheckResponse]
-
-  /** AWS configuration loaded from environment variables.
-    *
-    * @param accessKeyId
-    *   AWS access key ID
-    * @param secretAccessKey
-    *   AWS secret access key
-    * @param region
-    *   AWS region (default: us-east-1)
-    */
-  case class AwsConfig(
-      accessKeyId: String,
-      secretAccessKey: String,
-      region: String
-  )
-
-  /** Loads AWS configuration from environment variables.
-    *
-    * Required environment variables:
-    *   - AWS_ACCESS_KEY_ID
-    *   - AWS_SECRET_ACCESS_KEY
-    *   - AWS_REGION (optional, defaults to us-east-1)
-    *
-    * @return
-    *   ZIO effect that succeeds with AwsConfig or fails with error message
-    */
-  private def loadAwsConfig: IO[String, AwsConfig] =
-    (for {
-      accessKeyId <- ZIO
-        .attempt(java.lang.System.getenv("AWS_ACCESS_KEY_ID"))
-        .filterOrFail(Option(_).exists(_.nonEmpty))("Missing AWS_ACCESS_KEY_ID")
-      secretAccessKey <- ZIO
-        .attempt(java.lang.System.getenv("AWS_SECRET_ACCESS_KEY"))
-        .filterOrFail(Option(_).exists(_.nonEmpty))(
-          "Missing AWS_SECRET_ACCESS_KEY"
-        )
-      region <- ZIO
-        .attempt(java.lang.System.getenv("AWS_REGION"))
-        .filterOrFail(Option(_).exists(_.nonEmpty))("Missing AWS_REGION")
-        .orElse(ZIO.succeed("us-east-1"))
-    } yield AwsConfig(accessKeyId, secretAccessKey, region))
-      .mapError(_.toString)
 
   /** Creates a ZLayer for AWS S3 client with the given configuration.
     *
@@ -287,67 +246,46 @@ object HealthDeepEndpoint:
     * response.
     *
     * This handler:
-    *   1. Loads AWS configuration from environment variables 2. Runs URL, S3,
-    *      and database checks in sequence 3. Combines results into a JSON
-    *      response 4. Returns HTTP 200 if all checks pass, HTTP 500 if any fail
-    *
-    * If AWS configuration is missing, returns HTTP 500 with configuration
-    * error.
+    *   1. Gets AWS configuration from the environment 2. Runs URL, S3, and
+    *      database checks in sequence 3. Combines results into a JSON response
+    *      4. Returns HTTP 200 if all checks pass, HTTP 500 if any fail
     */
   protected final val handler
-      : Handler[DatabaseService, Nothing, Request, Response] =
+      : Handler[DatabaseService & AwsConfig, Nothing, Request, Response] =
     Handler.fromFunctionZIO[Request] { _ =>
-      loadAwsConfig
-        .flatMap { awsConfig =>
-          val s3Layer = createS3Layer(awsConfig)
+      ZIO.service[AwsConfig].flatMap { awsConfig =>
+        val s3Layer = createS3Layer(awsConfig)
 
-          // Run all three checks in parallel
-          val urlCheck = checkUrl("https://tedn.life")
-            .provideLayer(Client.default ++ Scope.default)
-          val s3Check = checkS3(s3Layer)
+        // Run all three checks
+        val urlCheck: ZIO[Any, Nothing, ServiceHealthCheck] =
+          checkUrl("https://tedn.life")
+            .provideLayer((Client.default ++ Scope.default).orDie)
+        val s3Check: ZIO[Any, Nothing, ServiceHealthCheck] =
+          checkS3(s3Layer)
 
-          for {
-            urlResult <- urlCheck
-            s3Result <- s3Check
-            dbResult <- checkDatabase
-            response = HealthCheckResponse(
-              url = urlResult,
-              s3 = s3Result,
-              database = dbResult
-            )
-            isHealthy = urlResult.status == "healthy" &&
-              s3Result.status == "healthy" &&
-              dbResult.status == "healthy"
-            statusCode =
-              if isHealthy then Status.Ok else Status.InternalServerError
-          } yield Response.json(response.toJson).copy(status = statusCode)
-        }
-        .catchAll { missingConfigError =>
-          val errorResponse = HealthCheckResponse(
-            url = ServiceHealthCheck(
-              "unhealthy",
-              "Check skipped due to configuration error"
-            ),
-            s3 = ServiceHealthCheck(
-              "unhealthy",
-              s"Configuration error: $missingConfigError"
-            ),
-            database = ServiceHealthCheck(
-              "unhealthy",
-              "Check skipped due to configuration error"
-            )
+        for {
+          urlResult <- urlCheck
+          s3Result <- s3Check
+          dbResult <- checkDatabase
+
+          response = HealthCheckResponse(
+            url = urlResult,
+            s3 = s3Result,
+            database = dbResult
           )
-          ZIO.succeed(
-            Response
-              .json(errorResponse.toJson)
-              .copy(status = Status.InternalServerError)
-          )
-        }
+          isHealthy = urlResult.status == "healthy" &&
+            s3Result.status == "healthy" &&
+            dbResult.status == "healthy"
+          statusCode =
+            if isHealthy then Status.Ok else Status.InternalServerError
+        } yield Response.json(response.toJson).copy(status = statusCode)
+      }
     }
 
   /** Route definition mapping GET /health-deep to the health check handler.
     *
-    * This route requires DatabaseService to be provided in the environment.
+    * This route requires DatabaseService and AwsConfig to be provided in the
+    * environment.
     */
-  val route: Route[DatabaseService, Nothing] =
+  val route: Route[DatabaseService & AwsConfig, Nothing] =
     Method.GET / "health-deep" -> handler

@@ -1,5 +1,6 @@
 package org.roland.scala3_zio_template
 
+import org.roland.scala3_zio_template.config.{AwsConfig, ServerConfig}
 import org.roland.scala3_zio_template.service.DatabaseService
 
 import zio._
@@ -13,14 +14,16 @@ object MainSpec extends ZIOSpecDefault:
     override def healthCheck(): ZIO[Any, Throwable, Boolean] =
       if shouldSucceed then ZIO.succeed(true)
       else ZIO.fail(new RuntimeException("Mock database failure"))
-    override def execute(sql: String): ZIO[Any, Throwable, Unit] = ZIO.unit
-    override def selectOne[T](sql: String): ZIO[Any, Throwable, Option[T]] = ZIO
-      .succeed(None)
-    override def selectAll[T](sql: String): ZIO[Any, Throwable, List[T]] = ZIO
-      .succeed(List.empty)
 
   private val mockDbLayer = ZLayer
     .succeed[DatabaseService](MockDatabaseService(shouldSucceed = true))
+
+  private val mockAwsLayer = ZLayer
+    .succeed[AwsConfig](
+      AwsConfig("test-access-key", "test-secret-key", "us-east-1")
+    )
+
+  private val testServerConfig = ServerConfig(port = 8080)
 
   def spec = suite("Main")(
     test("routes should include EchoEndpoint") {
@@ -30,7 +33,7 @@ object MainSpec extends ZIOSpecDefault:
         promise <- Promise.make[Nothing, Unit]
         routes = Main.routes(promise)
         response <- routes(request)
-          .provide(mockDbLayer, ZLayer.succeed(Scope.global))
+          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
         body <- response.body.asString
       } yield assertTrue(
         response.status == Status.Ok,
@@ -44,7 +47,7 @@ object MainSpec extends ZIOSpecDefault:
         promise <- Promise.make[Nothing, Unit]
         routes = Main.routes(promise)
         response <- routes(request)
-          .provide(mockDbLayer, ZLayer.succeed(Scope.global))
+          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
       } yield assertTrue(
         response.status == Status.Ok
       )
@@ -56,7 +59,7 @@ object MainSpec extends ZIOSpecDefault:
         promise <- Promise.make[Nothing, Unit]
         routes = Main.routes(promise)
         response <- routes(request)
-          .provide(mockDbLayer, ZLayer.succeed(Scope.global))
+          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
       } yield assertTrue(
         response.status == Status.Ok || response.status == Status
           .InternalServerError
@@ -69,7 +72,7 @@ object MainSpec extends ZIOSpecDefault:
         promise <- Promise.make[Nothing, Unit]
         routes = Main.routes(promise)
         response <- routes(request)
-          .provide(mockDbLayer, ZLayer.succeed(Scope.global))
+          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
         body <- response.body.asString
       } yield assertTrue(
         response.status == Status.Ok,
@@ -83,7 +86,7 @@ object MainSpec extends ZIOSpecDefault:
         promise <- Promise.make[Nothing, Unit]
         routes = Main.routes(promise)
         response <- routes(request)
-          .provide(mockDbLayer, ZLayer.succeed(Scope.global))
+          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
       } yield assertTrue(
         response.status == Status.NotFound
       )
@@ -95,29 +98,33 @@ object MainSpec extends ZIOSpecDefault:
         promise <- Promise.make[Nothing, Unit]
         routes = Main.routes(promise)
         response <- routes(request)
-          .provide(mockDbLayer, ZLayer.succeed(Scope.global))
+          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
       } yield assertTrue(
         response.status == Status.NotFound
       )
     },
-    test("serverConfig should have port 8080") {
+    test("buildServerConfig should have port from ServerConfig") {
+      val config = Main.buildServerConfig(testServerConfig)
       assertTrue(
-        Main.serverConfig.address.getPort == 8080
+        config.address.getPort == 8080
       )
     },
-    test("serverConfig should have keepAlive enabled") {
+    test("buildServerConfig should have keepAlive enabled") {
+      val config = Main.buildServerConfig(testServerConfig)
       assertTrue(
-        Main.serverConfig.keepAlive
+        config.keepAlive
       )
     },
-    test("serverConfig should have idleTimeout of 30 seconds") {
+    test("buildServerConfig should have idleTimeout of 30 seconds") {
+      val config = Main.buildServerConfig(testServerConfig)
       assertTrue(
-        Main.serverConfig.idleTimeout.contains(30.seconds)
+        config.idleTimeout.contains(30.seconds)
       )
     },
-    test("serverConfig should have maxHeaderSize of 16KB") {
+    test("buildServerConfig should have maxHeaderSize of 16KB") {
+      val config = Main.buildServerConfig(testServerConfig)
       assertTrue(
-        Main.serverConfig.maxHeaderSize == 16 * 1024
+        config.maxHeaderSize == 16 * 1024
       )
     },
     test("routes should handle multiple echo requests") {
@@ -129,7 +136,7 @@ object MainSpec extends ZIOSpecDefault:
         responses <- ZIO.foreach(messages) { msg =>
           val request = Request.post(URL.root / "echo", Body.fromString(msg))
           routes(request)
-            .provide(mockDbLayer, ZLayer.succeed(Scope.global))
+            .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
             .flatMap { response =>
               response.body.asString.map(body => (response.status, body))
             }
@@ -147,7 +154,7 @@ object MainSpec extends ZIOSpecDefault:
         routes = Main.routes(promise)
         responses <- ZIO.foreach(healthPaths) { path =>
           val request = Request.get(URL.root / path)
-          routes(request).provide(mockDbLayer, ZLayer.succeed(Scope.global))
+          routes(request).provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
         }
       } yield assertTrue(
         responses.forall(r =>
@@ -155,21 +162,24 @@ object MainSpec extends ZIOSpecDefault:
         )
       )
     },
-    test("serverConfig should have gracefulShutdownTimeout of 30 seconds") {
+    test("buildServerConfig should have gracefulShutdownTimeout of 30 seconds") {
+      val config = Main.buildServerConfig(testServerConfig)
       assertTrue(
-        Main.serverConfig.gracefulShutdownTimeout == 30.seconds
+        config.gracefulShutdownTimeout == 30.seconds
       )
     },
     test("server should handle graceful shutdown") {
+      val testConfig = Main.buildServerConfig(ServerConfig(port = 8081))
       val serverFiber = for {
         promise <- Promise.make[Nothing, Unit]
         routes = Main.routes(promise)
         fiber <- Server
           .serve(routes)
           .provide(
-            ZLayer.succeed(Main.serverConfig.port(8081)),
+            ZLayer.succeed(testConfig),
             Server.live,
-            mockDbLayer
+            mockDbLayer,
+            mockAwsLayer
           )
           .fork
         _ <- TestClock.adjust(100.millis)

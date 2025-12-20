@@ -7,6 +7,7 @@ This document explains the implementation details and architectural decisions of
 - **Scala 3.7.4** - Modern Scala with improved syntax and type system
 - **ZIO 2.1.13** - Functional effect system for type-safe, composable programs
 - **ZIO HTTP 3.6.0** - High-performance HTTP server and client
+- **ZIO Config 4.0.2** - Type-safe configuration with automatic derivation
 - **ZIO AWS S3** - AWS S3 client integration
 - **ZIO Test** - Testing framework integrated with ZIO
 - **Quill 4.8.6** - Compile-time query generation for PostgreSQL
@@ -30,6 +31,8 @@ This document explains the implementation details and architectural decisions of
 ├── src/
 │   ├── main/scala/
 │   │   ├── Main.scala                    # Application entry point
+│   │   ├── config/                       # Configuration definitions
+│   │   │   └── AppConfig.scala           # ZIO Config case classes and layers
 │   │   ├── http/                         # HTTP endpoint definitions
 │   │   │   ├── EchoEndpoint.scala
 │   │   │   ├── Endpoint.scala            # Base endpoint trait
@@ -66,19 +69,27 @@ This is a production-ready ZIO HTTP service following these architectural patter
 
 #### Application Layers
 
-1. **HTTP Layer** (`http/` package):
+1. **Configuration Layer** (`config/` package):
+   - Type-safe configuration using ZIO Config
+   - `ServerConfig`: HTTP server settings (port, timeouts)
+   - `DatabaseConfig`: PostgreSQL connection parameters
+   - `AwsConfig`: AWS credentials and region
+   - Automatic validation and fail-fast error handling
+   - Loaded from environment variables with sensible defaults
+
+2. **HTTP Layer** (`http/` package):
    - RESTful endpoints using ZIO HTTP Routes
    - Each endpoint is a self-contained module with route definition and handler
    - Request/response logging for observability
    - Graceful shutdown coordination via Promise
 
-2. **Service Layer** (`service/` package):
+3. **Service Layer** (`service/` package):
    - `DatabaseService`: PostgreSQL interaction using Quill
    - Connection pooling via JDBC DataSource
    - Health check capabilities
-   - Configuration loading from environment variables
+   - Configuration injected via ZIO ZLayers
 
-3. **Infrastructure**:
+4. **Infrastructure**:
    - SLF4J logging with structured JSON output
    - AWS S3 client configuration with credential management
    - PostgreSQL connection management with startup validation
@@ -95,35 +106,76 @@ This is a production-ready ZIO HTTP service following these architectural patter
 
 ## Configuration
 
+This application uses **ZIO Config** for type-safe configuration with automatic validation and fail-fast error handling. Configuration is loaded from environment variables and validated at application startup.
+
+### Configuration Architecture
+
+Configuration is organized into three case classes defined in `config/AppConfig.scala`:
+
+- `ServerConfig`: HTTP server settings
+- `DatabaseConfig`: PostgreSQL connection parameters
+- `AwsConfig`: AWS credentials and region
+
+Each config has a corresponding `ZLayer` that loads from environment variables with sensible defaults:
+
+```scala
+import org.roland.scala3_zio_template.config.{ServerConfig, DatabaseConfig, AwsConfig}
+
+// Load individual configs
+ServerConfig.layer    // Loads server configuration
+DatabaseConfig.layer  // Loads database configuration
+AwsConfig.layer       // Loads AWS configuration
+```
+
+Services depend only on the configuration they need via ZIO's dependency injection:
+
+```scala
+val live: ZLayer[Any, Throwable, DatabaseService] =
+  ZLayer.make[DatabaseService](
+    DatabaseConfig.layer.mapError(e => new RuntimeException(e.getMessage)),
+    dataSourceLayer,
+    Quill.Postgres.fromNamingStrategy(SnakeCase),
+    serviceLayer
+  )
+```
+
 ### Environment Variables
 
-The application uses environment variables for configuration. See `.env.example` for a complete template.
+See `.env.example` for a complete configuration template.
 
-#### Required Variables
+#### Server Configuration
+
+- `SERVER_PORT` - HTTP server port (default: 8080)
+
+#### Database Configuration (Required)
 
 - `DATABASE_HOST` - PostgreSQL host (default: localhost)
 - `DATABASE_PORT` - PostgreSQL port (default: 5432)
 - `DATABASE_NAME` - Database name (default: postgres)
-- `DATABASE_USER` - Database username (required, no default)
-- `DATABASE_PASSWORD` - Database password (required, no default)
+- `DATABASE_USER` - Database username (**required**, no default)
+- `DATABASE_PASSWORD` - Database password (**required**, no default)
 
-#### Optional Variables
+#### AWS Configuration (Required)
 
-- `AWS_ACCESS_KEY_ID` - AWS access key for S3 operations
-- `AWS_SECRET_ACCESS_KEY` - AWS secret key for S3 operations
+- `AWS_ACCESS_KEY_ID` - AWS access key for S3 operations (**required**, no default)
+- `AWS_SECRET_ACCESS_KEY` - AWS secret key for S3 operations (**required**, no default)
 - `AWS_REGION` - AWS region (default: us-east-1)
 
-**Note**: Database credentials are mandatory. The application will fail to start without them. AWS credentials are optional; the `/health-deep` endpoint will report S3 as unhealthy if they're missing, but the application will continue running.
+**Fail-Fast Behavior**: The application refuses to start if any required configuration is missing. You'll see a clear error message indicating which variable is missing. Optional variables with defaults will use their default values if not specified.
 
-### Application Configuration
+### Application Configuration Defaults
 
-Server configuration is defined in Main.scala:288-295:
+When all required variables are provided, the following defaults apply:
 
-- **Port**: 8080
-- **Keep-Alive**: Enabled
+- **Server Port**: 8080 (configurable via `SERVER_PORT`)
+- **Server Keep-Alive**: Enabled
 - **Idle Timeout**: 30 seconds
 - **Max Header Size**: 16 KB
 - **Graceful Shutdown Timeout**: 30 seconds
+- **Database Host**: localhost
+- **Database Port**: 5432
+- **Database Name**: postgres
+- **AWS Region**: us-east-1
 
 ## Implementation Rationale
 
@@ -252,16 +304,30 @@ for
 yield assertCompletes
 ```
 
-**Environment Testing** (for configuration):
+**Configuration Testing** (using ZIO Config):
 
 ```scala
-test("reads config from environment") {
+import org.roland.scala3_zio_template.config.DatabaseConfig
+
+test("service uses provided config") {
+  val testConfig = DatabaseConfig(
+    host = "testhost",
+    port = 5433,
+    name = "testdb",
+    user = "testuser",
+    password = "testpass"
+  )
+
   for
-    _ <- TestSystem.putEnv("DATABASE_HOST", "testhost")
-    host <- System.env("DATABASE_HOST")
-  yield assertTrue(host.contains("testhost"))
-}
+    config <- ZIO.service[DatabaseConfig]
+  yield assertTrue(
+    config.host == "testhost",
+    config.port == 5433
+  )
+}.provide(ZLayer.succeed(testConfig))
 ```
+
+Tests provide configuration via `ZLayer.succeed` rather than environment variables, making tests isolated and deterministic.
 
 ### Why 80% Coverage?
 

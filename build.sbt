@@ -19,7 +19,10 @@ lazy val root = (project in file(".")).settings(
     "dev.zio" %% "zio-aws-s3" % "7.40.10.1",
     "dev.zio" %% "zio-aws-netty" % "7.40.10.1",
     "io.getquill" %% "quill-jdbc-zio" % "4.8.6",
-    "org.postgresql" % "postgresql" % "42.7.4"
+    "org.postgresql" % "postgresql" % "42.7.4",
+    "dev.zio" %% "zio-config" % "4.0.2",
+    "dev.zio" %% "zio-config-typesafe" % "4.0.2",
+    "dev.zio" %% "zio-config-magnolia" % "4.0.2"
   ),
   testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework"),
   scalacOptions ++= Seq(

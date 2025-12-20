@@ -1,5 +1,7 @@
 package org.roland.scala3_zio_template.service
 
+import org.roland.scala3_zio_template.config.DatabaseConfig
+
 import zio._
 import zio.test._
 
@@ -12,54 +14,13 @@ object DatabaseServiceSpec extends ZIOSpecDefault:
       else ZIO.fail(new RuntimeException("Mock database failure"))
 
   def spec = suite("DatabaseService")(
-    suite("loadConfig")(
-      test("should load config from environment variables") {
-        for {
-          _ <- TestSystem.putEnv("DATABASE_HOST", "testhost")
-          _ <- TestSystem.putEnv("DATABASE_PORT", "5433")
-          _ <- TestSystem.putEnv("DATABASE_NAME", "testdb")
-          _ <- TestSystem.putEnv("DATABASE_USER", "testuser")
-          _ <- TestSystem.putEnv("DATABASE_PASSWORD", "testpass")
-          config <- DatabaseService.loadConfig
-        } yield assertTrue(
-          config.host == "testhost",
-          config.port == 5433,
-          config.database == "testdb",
-          config.username == "testuser",
-          config.password == "testpass"
-        )
-      },
-      test("should use defaults for optional values") {
-        for {
-          _ <- TestSystem.putEnv("DATABASE_USER", "testuser")
-          _ <- TestSystem.putEnv("DATABASE_PASSWORD", "testpass")
-          config <- DatabaseService.loadConfig
-        } yield assertTrue(
-          config.host == "localhost",
-          config.port == 5432,
-          config.database == "postgres"
-        )
-      },
-      test("should fail when DATABASE_USER is missing") {
-        for {
-          _ <- TestSystem.putEnv("DATABASE_PASSWORD", "testpass")
-          result <- DatabaseService.loadConfig.exit
-        } yield assertTrue(result.isFailure)
-      },
-      test("should fail when DATABASE_PASSWORD is missing") {
-        for {
-          _ <- TestSystem.putEnv("DATABASE_USER", "testuser")
-          result <- DatabaseService.loadConfig.exit
-        } yield assertTrue(result.isFailure)
-      }
-    ),
     suite("DatabaseConfig")(
       test("should build correct JDBC URL") {
         val config = DatabaseConfig(
           host = "localhost",
           port = 5432,
-          database = "testdb",
-          username = "user",
+          name = "testdb",
+          user = "user",
           password = "pass"
         )
         assertTrue(config.jdbcUrl == "jdbc:postgresql://localhost:5432/testdb")

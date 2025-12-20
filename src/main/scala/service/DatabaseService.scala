@@ -4,44 +4,9 @@ import javax.sql.DataSource
 
 import io.getquill._
 import io.getquill.jdbczio.Quill
+import org.roland.scala3_zio_template.config.DatabaseConfig
 
 import zio._
-
-/** Configuration for PostgreSQL database connection.
-  *
-  * This case class holds all necessary parameters to establish a JDBC
-  * connection to a PostgreSQL database. Configuration values are typically
-  * loaded from environment variables via `DatabaseService.loadConfig`.
-  *
-  * @param host
-  *   PostgreSQL server hostname or IP address
-  * @param port
-  *   PostgreSQL server port (default: 5432)
-  * @param database
-  *   Name of the database to connect to
-  * @param username
-  *   Database user for authentication
-  * @param password
-  *   Database password for authentication
-  *
-  * @see
-  *   [[DatabaseService.loadConfig]] for loading from environment variables
-  */
-case class DatabaseConfig(
-    host: String,
-    port: Int,
-    database: String,
-    username: String,
-    password: String
-):
-  /** Constructs a JDBC URL from the configuration parameters.
-    *
-    * @return
-    *   JDBC connection string in the format:
-    *   jdbc:postgresql://host:port/database
-    */
-  def jdbcUrl: String =
-    s"jdbc:postgresql://$host:$port/$database"
 
 /** Service interface for PostgreSQL database operations.
   *
@@ -69,86 +34,36 @@ trait DatabaseService:
     */
   def healthCheck(): ZIO[Any, Throwable, Boolean]
 
-/** Companion object providing ZLayer construction and configuration loading.
+/** Companion object providing ZLayer construction.
   *
-  * This object contains factory methods for creating DatabaseService instances
-  * and loading configuration from environment variables. The `live` layer
-  * provides a complete, production-ready database service with connection
-  * pooling and startup validation.
+  * This object contains factory methods for creating DatabaseService instances.
+  * The `live` layer provides a complete, production-ready database service with
+  * connection pooling and startup validation.
   */
 object DatabaseService:
 
-  /** Loads database configuration from environment variables.
-    *
-    * The following environment variables are used:
-    *   - `DATABASE_HOST`: PostgreSQL hostname (default: localhost)
-    *   - `DATABASE_PORT`: PostgreSQL port (default: 5432)
-    *   - `DATABASE_NAME`: Database name (default: postgres)
-    *   - `DATABASE_USER`: Database username (required)
-    *   - `DATABASE_PASSWORD`: Database password (required)
-    *
-    * The user and password variables are required and the application will fail
-    * to start if they are not provided.
-    *
-    * @return
-    *   ZIO effect that succeeds with DatabaseConfig or fails with an error
-    *   message
-    */
-  def loadConfig: IO[String, DatabaseConfig] =
-    (for {
-      host <- ZIO
-        .attempt(java.lang.System.getenv("DATABASE_HOST"))
-        .filterOrFail(Option(_).exists(_.nonEmpty))("Missing DATABASE_HOST")
-        .orElse(ZIO.succeed("localhost"))
-
-      port <- ZIO
-        .attempt(java.lang.System.getenv("DATABASE_PORT"))
-        .flatMap(p => ZIO.attempt(p.toInt))
-        .catchAll(_ => ZIO.succeed(5432))
-
-      database <- ZIO
-        .attempt(java.lang.System.getenv("DATABASE_NAME"))
-        .filterOrFail(Option(_).exists(_.nonEmpty))("Missing DATABASE_NAME")
-        .orElse(ZIO.succeed("postgres"))
-
-      username <- ZIO
-        .attempt(java.lang.System.getenv("DATABASE_USER"))
-        .filterOrFail(Option(_).exists(_.nonEmpty))("Missing DATABASE_USER")
-
-      password <- ZIO
-        .attempt(java.lang.System.getenv("DATABASE_PASSWORD"))
-        .filterOrFail(Option(_).exists(_.nonEmpty))(
-          "Missing DATABASE_PASSWORD"
-        )
-
-    } yield DatabaseConfig(host, port, database, username, password))
-      .mapError(_.toString)
-
   /** ZLayer that provides a configured JDBC DataSource.
     *
-    * This layer loads the database configuration from environment variables and
-    * constructs a PostgreSQL DataSource with connection pooling. The DataSource
-    * is configured but not validated at this stage - validation happens in the
-    * service layer.
+    * This layer constructs a PostgreSQL DataSource with connection pooling from
+    * the provided DatabaseConfig. The DataSource is configured but not validated
+    * at this stage - validation happens in the service layer.
     *
     * @return
     *   ZLayer that provides a javax.sql.DataSource instance
     */
-  val dataSourceLayer: ZLayer[Any, Throwable, DataSource] =
+  val dataSourceLayer: ZLayer[DatabaseConfig, Throwable, DataSource] =
     ZLayer.fromZIO(
       for {
-        config <- loadConfig.mapError(e =>
-          new RuntimeException(s"Failed to load database config: $e")
-        )
+        config <- ZIO.service[DatabaseConfig]
         _ <- ZIO.logInfo(
-          s"Configuring DataSource for ${config.host}:${config.port}/${config.database}"
+          s"Configuring DataSource for ${config.host}:${config.port}/${config.name}"
         )
       } yield {
         val ds = new org.postgresql.ds.PGSimpleDataSource()
         ds.setServerNames(Array(config.host))
         ds.setPortNumbers(Array(config.port))
-        ds.setDatabaseName(config.database)
-        ds.setUser(config.username)
+        ds.setDatabaseName(config.name)
+        ds.setUser(config.user)
         ds.setPassword(config.password)
         ds
       }
@@ -217,7 +132,8 @@ object DatabaseService:
   /** Complete ZLayer stack that provides a production-ready DatabaseService.
     *
     * This layer combines:
-    *   - DataSource configuration from environment variables
+    *   - DatabaseConfig from environment variables
+    *   - DataSource configuration
     *   - Quill PostgreSQL context with SnakeCase naming strategy
     *   - Service implementation with startup validation
     *
@@ -226,10 +142,11 @@ object DatabaseService:
     * accessible before the application starts serving requests.
     *
     * @return
-    *   ZLayer that provides DatabaseService with no external dependencies
+    *   ZLayer that provides DatabaseService
     */
   val live: ZLayer[Any, Throwable, DatabaseService] =
     ZLayer.make[DatabaseService](
+      DatabaseConfig.layer.mapError(e => new RuntimeException(e.getMessage)),
       dataSourceLayer,
       Quill.Postgres.fromNamingStrategy(SnakeCase),
       serviceLayer
