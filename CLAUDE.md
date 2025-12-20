@@ -283,6 +283,7 @@ All endpoints follow a consistent pattern:
 5. **Route Definition**: Map HTTP method and path to handler
 
 This pattern ensures:
+
 - Consistent observability across all endpoints
 - Graceful error handling without crashes
 - Easy testing and debugging
@@ -464,6 +465,7 @@ server.install(routes)
 ```
 
 This ensures:
+
 1. In-flight requests complete successfully
 2. New requests are rejected after shutdown starts
 3. Resources are cleaned up properly
@@ -519,20 +521,24 @@ To add a new service (like `DatabaseService`):
 ### Common Issues
 
 **Database connection failed on startup**:
+
 - Verify DATABASE_* environment variables are set correctly
 - Check PostgreSQL is running and accessible
 - Verify credentials with: `psql -h $DATABASE_HOST -p $DATABASE_PORT -U $DATABASE_USER -d $DATABASE_NAME`
 
 **S3 health check always fails**:
+
 - Verify AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are set
 - Check the IAM user has `s3:ListAllMyBuckets` permission
 - Note: This won't prevent the application from starting
 
 **Docker build fails with merge conflicts**:
+
 - See [Assembly Merge Strategy](#assembly-merge-strategy) section above
 - Add specific merge rules to `build.sbt` for conflicting files
 
 **Tests fail with "Address already in use"**:
+
 - Another instance may be running on port 8080
 - Stop with: `docker-compose down` or kill the process using the port
 
@@ -563,3 +569,4 @@ These files reference each other but remain mutually exclusive in content.
 
 [README.md]: ./README.md
 [CONTRIBUTING.md]: ./CONTRIBUTING.md
+[CLAUDE.md]: ./CLAUDE.md

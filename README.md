@@ -45,7 +45,7 @@ The service provides the following endpoints:
 - `POST /echo` - Echo endpoint that returns the request body
 - `GET /health` - Basic health check (always returns 200)
 - `GET /health-deep` - Comprehensive health check validating:
-  - External URL connectivity (https://tedn.life)
+  - External URL connectivity (<https://tedn.life>)
   - AWS S3 access (list-buckets operation)
   - PostgreSQL database connection
 - `POST /shutdown` - Gracefully shutdown the server
@@ -61,14 +61,14 @@ git clone <repository-url>
 cd scala3-zio-template
 ```
 
-2. Set up environment variables:
+1. Set up environment variables:
 
 ```bash
 cp .env.example .env
 # Edit .env with your AWS and database credentials
 ```
 
-3. Run the application:
+1. Run the application:
 
 ```bash
 make run
