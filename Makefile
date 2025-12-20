@@ -1,6 +1,6 @@
-.DEFAULT_GOAL := help
-
 SCALA_VERSION := $(shell sbt -Dsbt.log.noformat=true -error 'print scalaVersion')
+
+.DEFAULT_GOAL := help
 
 .PHONY: help
 help: ## Show help for all targets
