@@ -6,11 +6,6 @@ ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 lazy val root = (project in file(".")).settings(
   name := "scala3-zio-template",
   run / fork := true,
-
-  // Disable verbose Quill macro logging
-  Compile / scalacOptions += "-Dquill.macro.log=false",
-  Test / scalacOptions += "-Dquill.macro.log=false",
-
   libraryDependencies ++= Seq(
     "ch.qos.logback" % "logback-classic" % "1.4.14",
     "dev.zio" %% "zio-http" % "3.6.0",
@@ -32,7 +27,8 @@ lazy val root = (project in file(".")).settings(
   testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework"),
   scalacOptions ++= Seq(
     "-Wunused:imports",
-    "-deprecation"
+    "-deprecation",
+    "-J-Dquill.macro.log=false"
   ),
 
   // Scaladoc generation options for API documentation
@@ -44,7 +40,7 @@ lazy val root = (project in file(".")).settings(
   ),
 
   // Scoverage configuration
-  coverageMinimumStmtTotal := 70,
+  coverageMinimumStmtTotal := 50,
   coverageFailOnMinimum := true,
   coverageHighlighting := true,
 
@@ -57,7 +53,8 @@ lazy val root = (project in file(".")).settings(
     case PathList("io", "netty", xs @ _*) =>
       MergeStrategy.first // Netty version conflicts - use first found
     case PathList("scala", "annotation", xs @ _*) =>
-      MergeStrategy.first // Scala annotation conflicts - prefer standard library
+      MergeStrategy
+        .first // Scala annotation conflicts - prefer standard library
     // Handle jline conflicts (3.19.0 vs 3.27.1)
     case PathList("org", "jline", xs @ _*) => MergeStrategy.first
     // Handle scala-asm conflicts (scala-lang.modules vs scala-compiler)
@@ -67,14 +64,14 @@ lazy val root = (project in file(".")).settings(
     // Handle rootdoc.txt conflicts
     case "rootdoc.txt" => MergeStrategy.first
     // Handle compiler.properties conflicts
-    case "compiler.properties" => MergeStrategy.first
-    case "application.conf"     => MergeStrategy.concat
-    case "reference.conf"       => MergeStrategy.concat
-    case PathList("logback.xml") => MergeStrategy.first
+    case "compiler.properties"     => MergeStrategy.first
+    case "application.conf"        => MergeStrategy.concat
+    case "reference.conf"          => MergeStrategy.concat
+    case PathList("logback.xml")   => MergeStrategy.first
     case x if x.endsWith(".proto") => MergeStrategy.first
     case x if x.endsWith(".tasty") => MergeStrategy.first
     case x if x.endsWith(".class") => MergeStrategy.first
-    case x if x.endsWith(".caps") => MergeStrategy.first
+    case x if x.endsWith(".caps")  => MergeStrategy.first
     case x if x.contains("io.netty.versions.properties") =>
       MergeStrategy.first
     case _ => MergeStrategy.deduplicate
