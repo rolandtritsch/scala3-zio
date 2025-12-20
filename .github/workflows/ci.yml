@@ -21,6 +21,9 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install markdownlint-cli2
+        run: npm install -g markdownlint-cli2
+
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
@@ -41,12 +44,6 @@ jobs:
           key: ${{ runner.os }}-sbt-${{ hashFiles('build.sbt', 'project/build.properties', 'project/plugins.sbt') }}
           restore-keys: |
             ${{ runner.os }}-sbt-
-
-      - name: Install markdownlint-cli2
-        run: npm install -g markdownlint-cli2
-
-      - name: Compile
-        run: make compile
 
       - name: Check markdown formatting
         run: make markdownlint-check
