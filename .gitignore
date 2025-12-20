@@ -1,7 +1,5 @@
 .bloop/
 .bsp/
-.claude/
-!.claude/settings.json
 .devcontainer
 .env
 .metals/
