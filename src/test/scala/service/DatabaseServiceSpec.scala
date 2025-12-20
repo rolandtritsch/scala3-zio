@@ -5,6 +5,19 @@ import org.roland.scala3_zio_template.config.DatabaseConfig
 import zio._
 import zio.test._
 
+/** Test suite for DatabaseService and DatabaseConfig.
+  *
+  * As of the config refactoring (commit bfef69f), tests provide configuration
+  * via direct case class instantiation rather than environment variables. This
+  * approach ensures:
+  *   - Test isolation (each test has its own config)
+  *   - Determinism (tests don't depend on environment)
+  *   - Simplicity (no need to mock environment variables)
+  *   - Type safety (configuration is validated at compile time)
+  *
+  * For integration tests requiring a real database connection, use
+  * ZLayer.succeed(DatabaseConfig(...)) to provide the test configuration.
+  */
 object DatabaseServiceSpec extends ZIOSpecDefault:
 
   case class MockDatabaseService(shouldSucceed: Boolean)

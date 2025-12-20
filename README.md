@@ -98,6 +98,18 @@ curl http://localhost:8080/
 
 ## Configuration
 
+This application uses a centralized, type-safe configuration system powered by ZIO Config. All configuration is loaded from environment variables and validated at startup, ensuring fail-fast behavior when required settings are missing.
+
+### Configuration Architecture
+
+Configuration is organized into three distinct areas:
+
+- **Server Configuration**: HTTP server settings
+- **Database Configuration**: PostgreSQL connection parameters
+- **AWS Configuration**: AWS credentials and region
+
+All configuration logic is centralized in `src/main/scala/config/AppConfig.scala`, making it easy to understand what the application requires and how it's configured.
+
 ### Environment Variables
 
 The application requires configuration via environment variables. Create a `.env` file based on `.env.example`:
@@ -111,18 +123,21 @@ DATABASE_PORT=5432
 DATABASE_NAME=postgres
 DATABASE_USER=your_username
 DATABASE_PASSWORD=your_password
+
+# AWS Configuration (REQUIRED - app will not start without these)
+AWS_ACCESS_KEY_ID=<your-key-id>
+AWS_SECRET_ACCESS_KEY=<your-secret-key>
+AWS_REGION=us-east-1
 ```
 
 #### Optional Configuration
 
 ```bash
-# AWS Configuration (optional - required for S3 health check)
-AWS_ACCESS_KEY_ID=<your-key-id>
-AWS_SECRET_ACCESS_KEY=<your-secret-key>
-AWS_DEFAULT_REGION=us-east-1
+# Server Configuration (optional - defaults shown)
+SERVER_PORT=8080
 ```
 
-**Note**: Database credentials are mandatory. The application will fail to start without them. AWS credentials are optional; the `/health-deep` endpoint will report S3 as unhealthy if missing, but the application will continue running.
+**Note**: The application uses a **fail-fast approach**. If any required configuration is missing, the application will refuse to start and display a clear error message indicating which variable is missing. This prevents runtime surprises and ensures proper configuration.
 
 ## Docker Deployment
 

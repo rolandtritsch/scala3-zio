@@ -110,11 +110,18 @@ This application uses **ZIO Config** for type-safe configuration with automatic 
 
 ### Configuration Architecture
 
+As of commit `bfef69f`, the application underwent a **major config refactoring** that centralized all configuration logic into `config/AppConfig.scala`. This refactoring:
+
+1. **Eliminated scattered config code**: Previously, configuration was loaded in multiple places (Main.scala, DatabaseService.scala, HealthDeepEndpoint.scala). Now all config loading is centralized.
+2. **Improved testability**: Tests now provide config via `ZLayer.succeed` rather than setting environment variables, making tests isolated and deterministic.
+3. **Added type safety**: Configuration is fully typed with case classes and validated at compile time.
+4. **Enabled fail-fast behavior**: Missing required config causes immediate application startup failure with clear error messages.
+
 Configuration is organized into three case classes defined in `config/AppConfig.scala`:
 
-- `ServerConfig`: HTTP server settings
-- `DatabaseConfig`: PostgreSQL connection parameters
-- `AwsConfig`: AWS credentials and region
+- `ServerConfig`: HTTP server settings (port)
+- `DatabaseConfig`: PostgreSQL connection parameters (host, port, name, user, password)
+- `AwsConfig`: AWS credentials and region (accessKeyId, secretAccessKey, region)
 
 Each config has a corresponding `ZLayer` that loads from environment variables with sensible defaults:
 
@@ -122,9 +129,9 @@ Each config has a corresponding `ZLayer` that loads from environment variables w
 import org.roland.scala3_zio_template.config.{ServerConfig, DatabaseConfig, AwsConfig}
 
 // Load individual configs
-ServerConfig.layer    // Loads server configuration
-DatabaseConfig.layer  // Loads database configuration
-AwsConfig.layer       // Loads AWS configuration
+ServerConfig.layer    // Loads server configuration from SERVER_PORT
+DatabaseConfig.layer  // Loads database configuration from DATABASE_*
+AwsConfig.layer       // Loads AWS configuration from AWS_*
 ```
 
 Services depend only on the configuration they need via ZIO's dependency injection:
@@ -138,6 +145,15 @@ val live: ZLayer[Any, Throwable, DatabaseService] =
     serviceLayer
   )
 ```
+
+The `DatabaseConfig` case class includes a helper method `jdbcUrl` that constructs the JDBC connection string:
+
+```scala
+case class DatabaseConfig(...):
+  def jdbcUrl: String = s"jdbc:postgresql://$host:$port/$name"
+```
+
+This eliminates duplication and ensures consistency across all database connections.
 
 ### Environment Variables
 
@@ -306,6 +322,13 @@ yield assertCompletes
 
 **Configuration Testing** (using ZIO Config):
 
+As of the config refactoring (commit `bfef69f`), all tests use `ZLayer.succeed` to provide configuration rather than relying on environment variables. This approach ensures:
+
+- **Test Isolation**: Each test has its own config that doesn't affect other tests
+- **Determinism**: Tests don't depend on the environment they run in
+- **Simplicity**: No need to mock environment variables or system properties
+- **Type Safety**: Configuration is fully typed and validated at compile time
+
 ```scala
 import org.roland.scala3_zio_template.config.DatabaseConfig
 
@@ -327,7 +350,19 @@ test("service uses provided config") {
 }.provide(ZLayer.succeed(testConfig))
 ```
 
-Tests provide configuration via `ZLayer.succeed` rather than environment variables, making tests isolated and deterministic.
+When testing services that depend on multiple configs, use `ZLayer.make` to compose them:
+
+```scala
+test("health check validates all services") {
+  for
+    result <- healthCheckLogic
+  yield assertTrue(result.isHealthy)
+}.provide(
+  ZLayer.succeed(DatabaseConfig(...)),
+  ZLayer.succeed(AwsConfig(...)),
+  DatabaseService.live
+)
+```
 
 ### Why 80% Coverage?
 
@@ -337,6 +372,17 @@ The 80% coverage threshold ensures:
 2. **Pragmatic**: Allows for boilerplate and trivial code
 3. **Enforceable**: Automated checks prevent coverage regression
 4. **Maintainable**: Not so high that tests become brittle
+
+### Quill Macro Logging
+
+As of commits `e0a0a7a` through `3442139`, Quill macro logging has been disabled to reduce build output noise. Quill performs compile-time query generation and by default logs extensive information about the generated SQL.
+
+This was disabled via two mechanisms:
+
+1. **Build Configuration** (`build.sbt`): Added Quill-specific compiler options to suppress macro logging
+2. **SBT Options** (`.sbtopts`): Added JVM properties to disable Quill logging at the JVM level
+
+This change significantly improves the developer experience by producing clean, readable build output while maintaining all of Quill's compile-time type safety and query validation.
 
 ## Docker Implementation Details
 

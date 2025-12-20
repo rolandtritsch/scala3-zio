@@ -1,1 +1,5 @@
+# Disable Quill macro logging to reduce build output noise
+# As of commits e0a0a7a through 3442139, Quill's compile-time query generation
+# logging is disabled to improve developer experience. This maintains all of
+# Quill's type safety and query validation while producing clean build output.
 -Dquill.macro.log=false

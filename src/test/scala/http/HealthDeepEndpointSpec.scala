@@ -8,6 +8,19 @@ import zio.http._
 import zio.json._
 import zio.test._
 
+/** Test suite for HealthDeepEndpoint.
+  *
+  * This test demonstrates the config refactoring approach (commit bfef69f)
+  * where tests provide configuration via ZLayer.succeed rather than environment
+  * variables. Mock services and configurations are created directly and
+  * provided via ZLayers:
+  *   - mockDbLayer: Provides a mock DatabaseService for testing
+  *   - mockAwsLayer: Provides a mock AwsConfig for testing S3 integration
+  *
+  * This approach ensures test isolation, determinism, and simplicity. Tests
+  * can provide different configurations for different test cases without
+  * affecting each other or depending on the environment.
+  */
 object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
   case class MockDatabaseService(shouldSucceed: Boolean)
@@ -16,6 +29,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
       if shouldSucceed then ZIO.succeed(true)
       else ZIO.fail(new RuntimeException("Mock database failure"))
 
+  // Mock layers demonstrating the config refactoring approach
   private val mockDbLayer = ZLayer
     .succeed[DatabaseService](MockDatabaseService(shouldSucceed = true))
 

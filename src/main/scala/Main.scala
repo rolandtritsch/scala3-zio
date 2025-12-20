@@ -146,6 +146,10 @@ object Main extends ZIOAppDefault:
         .fork
       _ <- server.join
     } yield ()).provide(
+      // Configuration layers: Load from environment variables with fail-fast error handling.
+      // As of the config refactoring (commit bfef69f), all config loading is centralized
+      // in config/AppConfig.scala. The mapError transforms Config.Error into RuntimeException
+      // for consistent error types across the application.
       ServerConfig.layer.mapError(e => new RuntimeException(e.getMessage)),
       ZLayer.fromZIO(ZIO.service[ServerConfig].map(buildServerConfig)),
       Server.live,

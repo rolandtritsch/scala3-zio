@@ -98,6 +98,10 @@ object HealthDeepEndpoint:
     *   - Configured AWS region
     *   - Netty HTTP client for async operations
     *
+    * As of the config refactoring (commit bfef69f), this method receives a
+    * centralized AwsConfig case class from config/AppConfig.scala rather than
+    * loading configuration directly from environment variables.
+    *
     * @param config
     *   AWS configuration containing credentials and region
     * @return

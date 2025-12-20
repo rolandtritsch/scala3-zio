@@ -258,6 +258,54 @@ make docker-down
 - Extend `ZIOSpecDefault` for test suites
 - Use test services (`TestConsole`, etc.) for testable I/O
 
+### Configuration in Tests
+
+As of the config refactoring, tests provide configuration using `ZLayer.succeed` rather than environment variables. This approach ensures:
+
+- **Test Isolation**: Each test has its own configuration
+- **Determinism**: Tests don't depend on the environment
+- **Simplicity**: No need to mock environment variables
+- **Type Safety**: Configuration is fully typed and validated at compile time
+
+Example:
+
+```scala
+import org.roland.scala3_zio_template.config.DatabaseConfig
+
+test("database service connects successfully") {
+  val testConfig = DatabaseConfig(
+    host = "localhost",
+    port = 5432,
+    name = "testdb",
+    user = "testuser",
+    password = "testpass"
+  )
+
+  for
+    service <- ZIO.service[DatabaseService]
+    result <- service.healthCheck
+  yield assertTrue(result.isHealthy)
+}.provide(
+  ZLayer.succeed(testConfig),
+  DatabaseService.live
+)
+```
+
+When testing code that requires multiple configurations, compose them with `ZLayer.make`:
+
+```scala
+test("health endpoint checks all services") {
+  for
+    response <- healthCheckEndpoint
+  yield assertTrue(response.status == 200)
+}.provide(
+  ZLayer.succeed(DatabaseConfig(...)),
+  ZLayer.succeed(AwsConfig(...)),
+  DatabaseService.live,
+  S3Service.live
+)
+```
+
 ### Coverage Requirements
 
 - **Minimum**: 80% statement coverage

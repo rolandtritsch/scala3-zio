@@ -132,14 +132,19 @@ object DatabaseService:
   /** Complete ZLayer stack that provides a production-ready DatabaseService.
     *
     * This layer combines:
-    *   - DatabaseConfig from environment variables
-    *   - DataSource configuration
+    *   - DatabaseConfig from environment variables (centralized in
+    *     config/AppConfig.scala as of commit bfef69f)
+    *   - DataSource configuration using DatabaseConfig.jdbcUrl helper
     *   - Quill PostgreSQL context with SnakeCase naming strategy
     *   - Service implementation with startup validation
     *
     * This is the primary layer to use when providing DatabaseService to your
     * application. It handles all dependency wiring and ensures the database is
     * accessible before the application starts serving requests.
+    *
+    * The config refactoring (commit bfef69f) centralized all configuration
+    * loading logic, making this service depend only on the DatabaseConfig case
+    * class rather than directly reading environment variables.
     *
     * @return
     *   ZLayer that provides DatabaseService
