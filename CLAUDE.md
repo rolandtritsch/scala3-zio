@@ -188,10 +188,6 @@ When all required variables are provided, the following defaults apply:
 - **Idle Timeout**: 30 seconds
 - **Max Header Size**: 16 KB
 - **Graceful Shutdown Timeout**: 30 seconds
-- **Database Host**: localhost
-- **Database Port**: 5432
-- **Database Name**: postgres
-- **AWS Region**: us-east-1
 
 ## Implementation Rationale
 
