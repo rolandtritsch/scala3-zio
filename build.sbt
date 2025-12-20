@@ -3,9 +3,6 @@ ThisBuild / organization := "org.tritsch"
 ThisBuild / semanticdbEnabled := true
 ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 
-// Set system property to disable Quill macro logging
-sys.props("quill.macro.log") = "false"
-
 lazy val root = (project in file(".")).settings(
   name := "scala3-zio-template",
   run / fork := true,
