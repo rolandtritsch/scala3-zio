@@ -25,8 +25,6 @@ This template solves the problem of building production-ready, cloud-native Scal
 - PostgreSQL (for database features)
 - AWS account with S3 access (for AWS features)
 
-[sbt-download]: https://www.scala-sbt.org/download.html
-
 ## Technology Stack
 
 - **Scala 3.7.4** - Modern Scala with improved syntax and type system
@@ -75,8 +73,6 @@ make run
 ```
 
 The server will start on [http://localhost:8080][]
-
-[http://localhost:8080]: http://localhost:8080
 
 ### Using the API
 
@@ -191,6 +187,8 @@ Contributions are welcome! Please see [CONTRIBUTING.md][] for:
 - **[CONTRIBUTING.md][]**: How to contribute and development workflow
 - **[CLAUDE.md][]**: Implementation details and architectural decisions
 
-[README.md]: ./README.md
-[CONTRIBUTING.md]: ./CONTRIBUTING.md
 [CLAUDE.md]: ./CLAUDE.md
+[CONTRIBUTING.md]: ./CONTRIBUTING.md
+[http://localhost:8080]: http://localhost:8080
+[README.md]: ./README.md
+[sbt-download]: https://www.scala-sbt.org/download.html
