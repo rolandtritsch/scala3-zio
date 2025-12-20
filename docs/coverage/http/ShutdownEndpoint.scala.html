@@ -1,0 +1,660 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          http/ShutdownEndpoint.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package org.roland.scala3_zio_template.http
+</span>2 <span style=''>
+</span>3 <span style=''>import zio._
+</span>4 <span style=''>import zio.http._
+</span>5 <span style=''>
+</span>6 <span style=''>/** HTTP endpoint that triggers graceful server shutdown.
+</span>7 <span style=''>  *
+</span>8 <span style=''>  * This endpoint accepts POST requests at `/shutdown` and initiates a graceful
+</span>9 <span style=''>  * shutdown sequence. When called:
+</span>10 <span style=''>  *   1. Immediately returns HTTP 202 Accepted 2. Signals the server to begin
+</span>11 <span style=''>  *      shutdown via the provided Promise 3. Allows in-flight requests to
+</span>12 <span style=''>  *      complete (30-second timeout) 4. Cleanly terminates the application
+</span>13 <span style=''>  *
+</span>14 <span style=''>  * '''Endpoint:''' POST /shutdown
+</span>15 <span style=''>  *
+</span>16 <span style=''>  * '''Response:''' HTTP 202 Accepted with &quot;Shutdown initiated&quot; message
+</span>17 <span style=''>  *
+</span>18 <span style=''>  * '''Security Note:''' This endpoint has no authentication. In production, you
+</span>19 <span style=''>  * should protect it with authentication/authorization or restrict access via
+</span>20 <span style=''>  * network policies.
+</span>21 <span style=''>  *
+</span>22 <span style=''>  * @see
+</span>23 <span style=''>  *   [[Main.performGracefulShutdown]] for the shutdown implementation
+</span>24 <span style=''>  */
+</span>25 <span style=''>object ShutdownEndpoint:
+</span>26 <span style=''>
+</span>27 <span style=''>  /** Creates a shutdown route that triggers graceful server shutdown
+</span>28 <span style=''>    *
+</span>29 <span style=''>    * @param shutdownPromise
+</span>30 <span style=''>    *   Promise to complete when shutdown is requested
+</span>31 <span style=''>    * @return
+</span>32 <span style=''>    *   Route that handles POST /shutdown requests
+</span>33 <span style=''>    */
+</span>34 <span style=''>  </span><span style='background: #AEF1AE'>def route</span><span style=''>(shutdownPromise: Promise[Nothing, Unit]): Route[Any, Nothing] =
+</span>35 <span style=''>    val baseHandler = </span><span style='background: #AEF1AE'>Handler.fromZIO {
+</span>36 <span style=''></span><span style='background: #AEF1AE'>      ZIO
+</span>37 <span style=''></span><span style='background: #AEF1AE'>        .logInfo(&quot;Shutdown endpoint called, initiating graceful shutdown...&quot;) *&gt;
+</span>38 <span style=''></span><span style='background: #AEF1AE'>        shutdownPromise.succeed(()).forkDaemon *&gt;
+</span>39 <span style=''></span><span style='background: #AEF1AE'>        ZIO.succeed(
+</span>40 <span style=''></span><span style='background: #AEF1AE'>          Response
+</span>41 <span style=''></span><span style='background: #AEF1AE'>            .status(Status.Accepted)
+</span>42 <span style=''></span><span style='background: #AEF1AE'>            .addHeader(Header.ContentType(MediaType.text.plain))
+</span>43 <span style=''></span><span style='background: #AEF1AE'>            .copy(body = Body.fromString(&quot;Shutdown initiated&quot;))
+</span>44 <span style=''></span><span style='background: #AEF1AE'>        )
+</span>45 <span style=''></span><span style='background: #AEF1AE'>    }</span><span style=''>
+</span>46 <span style=''>
+</span>47 <span style=''>    val handler = </span><span style='background: #AEF1AE'>Handler.fromFunctionZIO { (request: Request) =&gt;
+</span>48 <span style=''></span><span style='background: #AEF1AE'>      val method = request.method.toString
+</span>49 <span style=''></span><span style='background: #AEF1AE'>      val path = request.path.encode
+</span>50 <span style=''></span><span style='background: #AEF1AE'>
+</span>51 <span style=''></span><span style='background: #AEF1AE'>      ZIO.scoped {
+</span>52 <span style=''></span><span style='background: #AEF1AE'>        for {
+</span>53 <span style=''></span><span style='background: #AEF1AE'>          _ &lt;- ZIO.logInfo(s&quot;$method $path - Request started&quot;)
+</span>54 <span style=''></span><span style='background: #AEF1AE'>          startTime &lt;- Clock.nanoTime
+</span>55 <span style=''></span><span style='background: #AEF1AE'>          response &lt;- baseHandler(request)
+</span>56 <span style=''></span><span style='background: #AEF1AE'>          endTime &lt;- Clock.nanoTime
+</span>57 <span style=''></span><span style='background: #AEF1AE'>          durationMs = (endTime - startTime) / 1_000_000
+</span>58 <span style=''></span><span style='background: #AEF1AE'>          status = response.status.code
+</span>59 <span style=''></span><span style='background: #AEF1AE'>          _ &lt;- ZIO.logInfo(
+</span>60 <span style=''></span><span style='background: #AEF1AE'>            s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;
+</span>61 <span style=''></span><span style='background: #AEF1AE'>          )
+</span>62 <span style=''></span><span style='background: #AEF1AE'>        } yield response
+</span>63 <span style=''></span><span style='background: #AEF1AE'>      }
+</span>64 <span style=''></span><span style='background: #AEF1AE'>    }</span><span style=''>
+</span>65 <span style=''>
+</span>66 <span style=''>    </span><span style='background: #AEF1AE'>Method.POST / &quot;shutdown&quot; -&gt; handler</span><span style=''>
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Tests</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          185
+        </td>
+        <td>
+          1134
+          -
+          1143
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          route
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def route
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          163
+        </td>
+        <td>
+          1230
+          -
+          1610
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          fromZIO
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Handler.fromZIO {\n      ZIO\n        .logInfo(&quot;Shutdown endpoint called, initiating graceful shutdown...&quot;) *&gt;\n        shutdownPromise.succeed(()).forkDaemon *&gt;\n        ZIO.succeed(\n          Response\n            .status(Status.Accepted)\n            .addHeader(Header.ContentType(MediaType.text.plain))\n            .copy(body = Body.fromString(&quot;Shutdown initiated&quot;))\n        )\n    }
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          164
+        </td>
+        <td>
+          1254
+          -
+          1604
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          *&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          ZIO\n        .logInfo(&quot;Shutdown endpoint called, initiating graceful shutdown...&quot;) *&gt;\n        shutdownPromise.succeed(()).forkDaemon *&gt;\n        ZIO.succeed(\n          Response\n            .status(Status.Accepted)\n            .addHeader(Header.ContentType(MediaType.text.plain))\n            .copy(body = Body.fromString(&quot;Shutdown initiated&quot;))\n        )
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          165
+        </td>
+        <td>
+          1347
+          -
+          1385
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          forkDaemon
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          shutdownPromise.succeed(()).forkDaemon
+        </td>
+      </tr><tr>
+        <td>
+          47
+        </td>
+        <td>
+          166
+        </td>
+        <td>
+          1630
+          -
+          2231
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Handler.fromFunctionZIO { (request: Request) =&gt;\n      val method = request.method.toString\n      val path = request.path.encode\n\n      ZIO.scoped {\n        for {\n          _ &lt;- ZIO.logInfo(s&quot;$method $path - Request started&quot;)\n          startTime &lt;- Clock.nanoTime\n          response &lt;- baseHandler(request)\n          endTime &lt;- Clock.nanoTime\n          durationMs = (endTime - startTime) / 1_000_000\n          status = response.status.code\n          _ &lt;- ZIO.logInfo(\n            s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;\n          )\n        } yield response\n      }\n    }
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          167
+        </td>
+        <td>
+          1697
+          -
+          1720
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          toString
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          request.method.toString
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          169
+        </td>
+        <td>
+          1738
+          -
+          1757
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          encode
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          request.path.encode
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          168
+        </td>
+        <td>
+          1738
+          -
+          1750
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          path
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          request.path
+        </td>
+      </tr><tr>
+        <td>
+          51
+        </td>
+        <td>
+          170
+        </td>
+        <td>
+          1765
+          -
+          2225
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          ZIO.scoped {\n        for {\n          _ &lt;- ZIO.logInfo(s&quot;$method $path - Request started&quot;)\n          startTime &lt;- Clock.nanoTime\n          response &lt;- baseHandler(request)\n          endTime &lt;- Clock.nanoTime\n          durationMs = (endTime - startTime) / 1_000_000\n          status = response.status.code\n          _ &lt;- ZIO.logInfo(\n            s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;\n          )\n        } yield response\n      }
+        </td>
+      </tr><tr>
+        <td>
+          52
+        </td>
+        <td>
+          171
+        </td>
+        <td>
+          1786
+          -
+          2217
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          for {\n          _ &lt;- ZIO.logInfo(s&quot;$method $path - Request started&quot;)\n          startTime &lt;- Clock.nanoTime\n          response &lt;- baseHandler(request)\n          endTime &lt;- Clock.nanoTime\n          durationMs = (endTime - startTime) / 1_000_000\n          status = response.status.code\n          _ &lt;- ZIO.logInfo(\n            s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;\n          )\n        } yield response
+        </td>
+      </tr><tr>
+        <td>
+          53
+        </td>
+        <td>
+          172
+        </td>
+        <td>
+          1819
+          -
+          1853
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          s
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          s&quot;$method $path - Request started&quot;
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          173
+        </td>
+        <td>
+          1865
+          -
+          2217
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          startTime &lt;- Clock.nanoTime\n          response &lt;- baseHandler(request)\n          endTime &lt;- Clock.nanoTime\n          durationMs = (endTime - startTime) / 1_000_000\n          status = response.status.code\n          _ &lt;- ZIO.logInfo(\n            s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;\n          )\n        } yield response
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          182
+        </td>
+        <td>
+          1865
+          -
+          2217
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          startTime &lt;- Clock.nanoTime\n          response &lt;- baseHandler(request)\n          endTime &lt;- Clock.nanoTime\n          durationMs = (endTime - startTime) / 1_000_000\n          status = response.status.code\n          _ &lt;- ZIO.logInfo(\n            s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;\n          )\n        } yield response
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          174
+        </td>
+        <td>
+          1903
+          -
+          2217
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          response &lt;- baseHandler(request)\n          endTime &lt;- Clock.nanoTime\n          durationMs = (endTime - startTime) / 1_000_000\n          status = response.status.code\n          _ &lt;- ZIO.logInfo(\n            s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;\n          )\n        } yield response
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          175
+        </td>
+        <td>
+          1946
+          -
+          2217
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          endTime &lt;- Clock.nanoTime\n          durationMs = (endTime - startTime) / 1_000_000\n          status = response.status.code\n          _ &lt;- ZIO.logInfo(\n            s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;\n          )\n        } yield response
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          177
+        </td>
+        <td>
+          1946
+          -
+          2045
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          endTime &lt;- Clock.nanoTime\n          durationMs = (endTime - startTime) / 1_000_000\n          status
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          176
+        </td>
+        <td>
+          1995
+          -
+          2028
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          /
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (endTime - startTime) / 1_000_000
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          178
+        </td>
+        <td>
+          2079
+          -
+          2217
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _ &lt;- ZIO.logInfo(\n            s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;\n          )\n        } yield response
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          181
+        </td>
+        <td>
+          2079
+          -
+          2217
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _ &lt;- ZIO.logInfo(\n            s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;\n          )\n        } yield response
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          179
+        </td>
+        <td>
+          2109
+          -
+          2180
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          s
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          180
+        </td>
+        <td>
+          2209
+          -
+          2217
+        </td>
+        <td>
+          Ident
+        </td>
+        <td>
+          response
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          response
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          184
+        </td>
+        <td>
+          2251
+          -
+          2261
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          path
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;shutdown&quot;
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          183
+        </td>
+        <td>
+          2237
+          -
+          2272
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          -&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Method.POST / &quot;shutdown&quot; -&gt; handler
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

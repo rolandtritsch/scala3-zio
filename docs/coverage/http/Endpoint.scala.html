@@ -1,0 +1,524 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          http/Endpoint.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package org.roland.scala3_zio_template.http
+</span>2 <span style=''>
+</span>3 <span style=''>import zio._
+</span>4 <span style=''>import zio.http._
+</span>5 <span style=''>
+</span>6 <span style=''>/** Base class for HTTP endpoint implementations.
+</span>7 <span style=''>  *
+</span>8 <span style=''>  * This abstract class provides common functionality for all HTTP endpoints,
+</span>9 <span style=''>  * including automatic request logging with timing information. Concrete
+</span>10 <span style=''>  * endpoint implementations should extend this class and define their route and
+</span>11 <span style=''>  * handler.
+</span>12 <span style=''>  *
+</span>13 <span style=''>  * The `withLogging` method can be used to wrap any handler with automatic
+</span>14 <span style=''>  * logging of request start, completion, duration, and HTTP status code.
+</span>15 <span style=''>  *
+</span>16 <span style=''>  * @see
+</span>17 <span style=''>  *   [[withLogging]] for request logging functionality
+</span>18 <span style=''>  */
+</span>19 <span style=''>abstract class Endpoint:
+</span>20 <span style=''>  val route: Route[Any, Nothing]
+</span>21 <span style=''>  protected val handler: Handler[Any, Nothing, Request, Response]
+</span>22 <span style=''>
+</span>23 <span style=''>  /** Wraps a handler with request logging (start, end, duration, status)
+</span>24 <span style=''>    *
+</span>25 <span style=''>    * @param handler
+</span>26 <span style=''>    *   The handler to wrap with logging
+</span>27 <span style=''>    * @return
+</span>28 <span style=''>    *   A new handler that logs request start/end with timing and status
+</span>29 <span style=''>    */
+</span>30 <span style=''>  </span><span style='background: #AEF1AE'>protected def withLogging</span><span style=''>(
+</span>31 <span style=''>      handler: Handler[Any, Nothing, Request, Response]
+</span>32 <span style=''>  ): Handler[Any, Nothing, Request, Response] =
+</span>33 <span style=''>    </span><span style='background: #AEF1AE'>Handler.fromFunctionZIO { (request: Request) =&gt;
+</span>34 <span style=''></span><span style='background: #AEF1AE'>      val method = request.method.toString
+</span>35 <span style=''></span><span style='background: #AEF1AE'>      val path = request.path.encode
+</span>36 <span style=''></span><span style='background: #AEF1AE'>
+</span>37 <span style=''></span><span style='background: #AEF1AE'>      ZIO.scoped {
+</span>38 <span style=''></span><span style='background: #AEF1AE'>        for {
+</span>39 <span style=''></span><span style='background: #AEF1AE'>          _ &lt;- ZIO.logInfo(s&quot;$method $path - Request started&quot;)
+</span>40 <span style=''></span><span style='background: #AEF1AE'>          startTime &lt;- Clock.nanoTime
+</span>41 <span style=''></span><span style='background: #AEF1AE'>          response &lt;- handler(request)
+</span>42 <span style=''></span><span style='background: #AEF1AE'>          endTime &lt;- Clock.nanoTime
+</span>43 <span style=''></span><span style='background: #AEF1AE'>          durationMs = (endTime - startTime) / 1_000_000
+</span>44 <span style=''></span><span style='background: #AEF1AE'>          status = response.status.code
+</span>45 <span style=''></span><span style='background: #AEF1AE'>          _ &lt;- ZIO.logInfo(
+</span>46 <span style=''></span><span style='background: #AEF1AE'>            s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;
+</span>47 <span style=''></span><span style='background: #AEF1AE'>          )
+</span>48 <span style=''></span><span style='background: #AEF1AE'>        } yield response
+</span>49 <span style=''></span><span style='background: #AEF1AE'>      }
+</span>50 <span style=''></span><span style='background: #AEF1AE'>    }</span><span style=''>
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Tests</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          30
+        </td>
+        <td>
+          67
+        </td>
+        <td>
+          968
+          -
+          993
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          withLogging
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          protected def withLogging
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          50
+        </td>
+        <td>
+          1103
+          -
+          1700
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Handler.fromFunctionZIO { (request: Request) =&gt;\n      val method = request.method.toString\n      val path = request.path.encode\n\n      ZIO.scoped {\n        for {\n          _ &lt;- ZIO.logInfo(s&quot;$method $path - Request started&quot;)\n          startTime &lt;- Clock.nanoTime\n          response &lt;- handler(request)\n          endTime &lt;- Clock.nanoTime\n          durationMs = (endTime - startTime) / 1_000_000\n          status = response.status.code\n          _ &lt;- ZIO.logInfo(\n            s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;\n          )\n        } yield response\n      }\n    }
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          51
+        </td>
+        <td>
+          1170
+          -
+          1193
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          toString
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          request.method.toString
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          53
+        </td>
+        <td>
+          1211
+          -
+          1230
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          encode
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          request.path.encode
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          52
+        </td>
+        <td>
+          1211
+          -
+          1223
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          path
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          request.path
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          54
+        </td>
+        <td>
+          1238
+          -
+          1694
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          ZIO.scoped {\n        for {\n          _ &lt;- ZIO.logInfo(s&quot;$method $path - Request started&quot;)\n          startTime &lt;- Clock.nanoTime\n          response &lt;- handler(request)\n          endTime &lt;- Clock.nanoTime\n          durationMs = (endTime - startTime) / 1_000_000\n          status = response.status.code\n          _ &lt;- ZIO.logInfo(\n            s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;\n          )\n        } yield response\n      }
+        </td>
+      </tr><tr>
+        <td>
+          38
+        </td>
+        <td>
+          55
+        </td>
+        <td>
+          1259
+          -
+          1686
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          for {\n          _ &lt;- ZIO.logInfo(s&quot;$method $path - Request started&quot;)\n          startTime &lt;- Clock.nanoTime\n          response &lt;- handler(request)\n          endTime &lt;- Clock.nanoTime\n          durationMs = (endTime - startTime) / 1_000_000\n          status = response.status.code\n          _ &lt;- ZIO.logInfo(\n            s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;\n          )\n        } yield response
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          56
+        </td>
+        <td>
+          1292
+          -
+          1326
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          s
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          s&quot;$method $path - Request started&quot;
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          57
+        </td>
+        <td>
+          1338
+          -
+          1686
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          startTime &lt;- Clock.nanoTime\n          response &lt;- handler(request)\n          endTime &lt;- Clock.nanoTime\n          durationMs = (endTime - startTime) / 1_000_000\n          status = response.status.code\n          _ &lt;- ZIO.logInfo(\n            s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;\n          )\n        } yield response
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          66
+        </td>
+        <td>
+          1338
+          -
+          1686
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          startTime &lt;- Clock.nanoTime\n          response &lt;- handler(request)\n          endTime &lt;- Clock.nanoTime\n          durationMs = (endTime - startTime) / 1_000_000\n          status = response.status.code\n          _ &lt;- ZIO.logInfo(\n            s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;\n          )\n        } yield response
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          58
+        </td>
+        <td>
+          1376
+          -
+          1686
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          response &lt;- handler(request)\n          endTime &lt;- Clock.nanoTime\n          durationMs = (endTime - startTime) / 1_000_000\n          status = response.status.code\n          _ &lt;- ZIO.logInfo(\n            s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;\n          )\n        } yield response
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          59
+        </td>
+        <td>
+          1415
+          -
+          1686
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          endTime &lt;- Clock.nanoTime\n          durationMs = (endTime - startTime) / 1_000_000\n          status = response.status.code\n          _ &lt;- ZIO.logInfo(\n            s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;\n          )\n        } yield response
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          61
+        </td>
+        <td>
+          1415
+          -
+          1514
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          endTime &lt;- Clock.nanoTime\n          durationMs = (endTime - startTime) / 1_000_000\n          status
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          60
+        </td>
+        <td>
+          1464
+          -
+          1497
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          /
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          (endTime - startTime) / 1_000_000
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          62
+        </td>
+        <td>
+          1548
+          -
+          1686
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _ &lt;- ZIO.logInfo(\n            s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;\n          )\n        } yield response
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          65
+        </td>
+        <td>
+          1548
+          -
+          1686
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          _ &lt;- ZIO.logInfo(\n            s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;\n          )\n        } yield response
+        </td>
+      </tr><tr>
+        <td>
+          46
+        </td>
+        <td>
+          63
+        </td>
+        <td>
+          1578
+          -
+          1649
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          s
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          s&quot;$method $path - Request completed (${durationMs}ms, status: $status)&quot;
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          64
+        </td>
+        <td>
+          1678
+          -
+          1686
+        </td>
+        <td>
+          Ident
+        </td>
+        <td>
+          response
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          response
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

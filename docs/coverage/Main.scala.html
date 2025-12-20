@@ -1,0 +1,724 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          Main.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package org.roland.scala3_zio_template
+</span>2 <span style=''>
+</span>3 <span style=''>import org.roland.scala3_zio_template.config.{AwsConfig, ServerConfig}
+</span>4 <span style=''>import org.roland.scala3_zio_template.http._
+</span>5 <span style=''>import org.roland.scala3_zio_template.service.DatabaseService
+</span>6 <span style=''>
+</span>7 <span style=''>import zio._
+</span>8 <span style=''>import zio.http._
+</span>9 <span style=''>import zio.logging.backend.SLF4J
+</span>10 <span style=''>
+</span>11 <span style=''>/** Main application entry point for the ZIO HTTP server.
+</span>12 <span style=''>  *
+</span>13 <span style=''>  * This application provides a production-ready HTTP service with the following
+</span>14 <span style=''>  * features:
+</span>15 <span style=''>  *   - RESTful endpoints for echo, health checks, and graceful shutdown
+</span>16 <span style=''>  *   - PostgreSQL database integration with connection pooling
+</span>17 <span style=''>  *   - Structured JSON logging via SLF4J
+</span>18 <span style=''>  *   - Graceful shutdown coordination with configurable timeout
+</span>19 <span style=''>  *   - Request/response logging with timing metrics
+</span>20 <span style=''>  *
+</span>21 <span style=''>  * The server runs on port 8080 with a 30-second graceful shutdown timeout. All
+</span>22 <span style=''>  * endpoints are defined in the `http` package and registered in the `routes`
+</span>23 <span style=''>  * method.
+</span>24 <span style=''>  *
+</span>25 <span style=''>  * @see
+</span>26 <span style=''>  *   [[http.EchoEndpoint]] for request echo functionality
+</span>27 <span style=''>  * @see
+</span>28 <span style=''>  *   [[http.HealthEndpoint]] for basic health checks
+</span>29 <span style=''>  * @see
+</span>30 <span style=''>  *   [[http.HealthDeepEndpoint]] for comprehensive health checks
+</span>31 <span style=''>  * @see
+</span>32 <span style=''>  *   [[service.DatabaseService]] for database operations
+</span>33 <span style=''>  */
+</span>34 <span style=''>object Main extends ZIOAppDefault:
+</span>35 <span style=''>
+</span>36 <span style=''>  /** Bootstrap layer that configures structured JSON logging via SLF4J.
+</span>37 <span style=''>    *
+</span>38 <span style=''>    * Removes default console loggers and replaces them with SLF4J/Logback,
+</span>39 <span style=''>    * which provides structured JSON output configured in logback.xml.
+</span>40 <span style=''>    */
+</span>41 <span style=''>  override val bootstrap: ZLayer[ZIOAppArgs, Any, Any] =
+</span>42 <span style=''>    </span><span style='background: #AEF1AE'>Runtime.removeDefaultLoggers &gt;&gt;&gt; </span><span style='background: #F0ADAD'>SLF4J.slf4j</span><span style=''>
+</span>43 <span style=''>
+</span>44 <span style=''>  /** Builds server configuration from ServerConfig.
+</span>45 <span style=''>    *
+</span>46 <span style=''>    * Configuration includes:
+</span>47 <span style=''>    *   - Configurable port from SERVER_PORT environment variable (default:
+</span>48 <span style=''>    *     8080)
+</span>49 <span style=''>    *   - Keep-alive connections enabled for better performance
+</span>50 <span style=''>    *   - 30-second idle timeout for inactive connections
+</span>51 <span style=''>    *   - 16 KB maximum header size to prevent header attacks
+</span>52 <span style=''>    *   - 30-second graceful shutdown timeout for clean termination
+</span>53 <span style=''>    */
+</span>54 <span style=''>  </span><span style='background: #AEF1AE'>def buildServerConfig</span><span style=''>(config: ServerConfig): Server.Config =
+</span>55 <span style=''>    </span><span style='background: #AEF1AE'>Server
+</span>56 <span style=''></span><span style='background: #AEF1AE'>      .Config
+</span>57 <span style=''></span><span style='background: #AEF1AE'>      .default
+</span>58 <span style=''></span><span style='background: #AEF1AE'>      .port(config.port)
+</span>59 <span style=''></span><span style='background: #AEF1AE'>      .keepAlive(true)
+</span>60 <span style=''></span><span style='background: #AEF1AE'>      .idleTimeout(30.seconds)
+</span>61 <span style=''></span><span style='background: #AEF1AE'>      .maxHeaderSize(16 * 1024)
+</span>62 <span style=''></span><span style='background: #AEF1AE'>      .gracefulShutdownTimeout(30.seconds)</span><span style=''>
+</span>63 <span style=''>
+</span>64 <span style=''>  /** Constructs the complete route table for the HTTP server.
+</span>65 <span style=''>    *
+</span>66 <span style=''>    * All application endpoints are registered here and combined into a single
+</span>67 <span style=''>    * Routes object. The shutdown promise is passed to the shutdown endpoint to
+</span>68 <span style=''>    * enable graceful termination.
+</span>69 <span style=''>    *
+</span>70 <span style=''>    * @param shutdownPromise
+</span>71 <span style=''>    *   Promise that will be completed when shutdown is requested via POST
+</span>72 <span style=''>    *   /shutdown
+</span>73 <span style=''>    * @return
+</span>74 <span style=''>    *   Combined routes requiring DatabaseService and AwsConfig dependencies
+</span>75 <span style=''>    */
+</span>76 <span style=''>  </span><span style='background: #AEF1AE'>def routes</span><span style=''>(
+</span>77 <span style=''>      shutdownPromise: Promise[Nothing, Unit]
+</span>78 <span style=''>  ): Routes[DatabaseService &amp; AwsConfig, Nothing] =
+</span>79 <span style=''>    </span><span style='background: #AEF1AE'>Routes(
+</span>80 <span style=''></span><span style='background: #AEF1AE'>      EchoEndpoint.route,
+</span>81 <span style=''></span><span style='background: #AEF1AE'>      HealthEndpoint.route,
+</span>82 <span style=''></span><span style='background: #AEF1AE'>      HealthDeepEndpoint.route,
+</span>83 <span style=''></span><span style='background: #AEF1AE'>      RootEndpoint.route,
+</span>84 <span style=''></span><span style='background: #AEF1AE'>      ShutdownEndpoint.route(shutdownPromise)
+</span>85 <span style=''></span><span style='background: #AEF1AE'>    )</span><span style=''>
+</span>86 <span style=''>
+</span>87 <span style=''>  /** Performs graceful shutdown sequence with logging.
+</span>88 <span style=''>    *
+</span>89 <span style=''>    * This method handles the shutdown process by:
+</span>90 <span style=''>    *   1. Logging the shutdown initiation 2. Waiting briefly (1 second) for
+</span>91 <span style=''>    *      in-flight requests to complete 3. Logging successful completion 4.
+</span>92 <span style=''>    *      Preparing for application exit
+</span>93 <span style=''>    *
+</span>94 <span style=''>    * The 1-second delay allows the HTTP server to finish processing any
+</span>95 <span style=''>    * requests that were in flight when shutdown was triggered.
+</span>96 <span style=''>    *
+</span>97 <span style=''>    * @return
+</span>98 <span style=''>    *   ZIO effect that performs shutdown sequence and never fails
+</span>99 <span style=''>    */
+</span>100 <span style=''>  </span><span style='background: #F0ADAD'>private def performGracefulShutdown</span><span style=''>: UIO[Unit] =
+</span>101 <span style=''>    </span><span style='background: #F0ADAD'>ZIO.logInfo(&quot;Shutdown signal received, stopping server...&quot;) *&gt;
+</span>102 <span style=''></span><span style='background: #F0ADAD'>      ZIO.logInfo(
+</span>103 <span style=''></span><span style='background: #F0ADAD'>        &quot;Waiting for in-flight requests to complete (30s timeout)...&quot;
+</span>104 <span style=''></span><span style='background: #F0ADAD'>      ) *&gt;
+</span>105 <span style=''></span><span style='background: #F0ADAD'>      ZIO.sleep(1.second) *&gt;
+</span>106 <span style=''></span><span style='background: #F0ADAD'>      ZIO.logInfo(&quot;Server shutdown completed successfully&quot;) *&gt;
+</span>107 <span style=''></span><span style='background: #F0ADAD'>      ZIO.logInfo(&quot;Exiting application...&quot;)</span><span style=''>
+</span>108 <span style=''>
+</span>109 <span style=''>  /** Main application logic that starts the HTTP server and handles shutdown.
+</span>110 <span style=''>    *
+</span>111 <span style=''>    * This method orchestrates the entire application lifecycle:
+</span>112 <span style=''>    *   1. Loads server configuration from environment variables 2. Creates a
+</span>113 <span style=''>    *      shutdown promise for coordination 3. Configures all HTTP routes 4.
+</span>114 <span style=''>    *      Starts the HTTP server on configured port 5. Races server execution
+</span>115 <span style=''>    *      against shutdown signal 6. Handles interrupt signals (Ctrl+C) with
+</span>116 <span style=''>    *      graceful shutdown 7. Provides all required dependencies (Server,
+</span>117 <span style=''>    *      DatabaseService, AwsConfig)
+</span>118 <span style=''>    *
+</span>119 <span style=''>    * The server will continue running until either:
+</span>120 <span style=''>    *   - A POST request is made to /shutdown endpoint
+</span>121 <span style=''>    *   - An interrupt signal (Ctrl+C) is received
+</span>122 <span style=''>    *
+</span>123 <span style=''>    * Both cases trigger graceful shutdown with a 30-second timeout.
+</span>124 <span style=''>    *
+</span>125 <span style=''>    * The application will fail fast at startup if any required configuration is
+</span>126 <span style=''>    * missing (DATABASE_USER, DATABASE_PASSWORD, AWS_ACCESS_KEY_ID,
+</span>127 <span style=''>    * AWS_SECRET_ACCESS_KEY).
+</span>128 <span style=''>    *
+</span>129 <span style=''>    * @return
+</span>130 <span style=''>    *   ZIO effect that runs the complete application
+</span>131 <span style=''>    */
+</span>132 <span style=''>  </span><span style='background: #F0ADAD'>def run</span><span style=''>: ZIO[ZIOAppArgs &amp; Scope, Any, Any] =
+</span>133 <span style=''>    (for {
+</span>134 <span style=''>      serverConfig &lt;- ZIO.service[ServerConfig]
+</span>135 <span style=''>      _ &lt;- ZIO.logInfo(s&quot;Starting server on port ${serverConfig.port}...&quot;)
+</span>136 <span style=''>      shutdownPromise &lt;- Promise.make[Nothing, Unit]
+</span>137 <span style=''>      allRoutes = routes(shutdownPromise)
+</span>138 <span style=''>      server &lt;- Server
+</span>139 <span style=''>        .serve(allRoutes)
+</span>140 <span style=''>        .race(shutdownPromise.await *&gt; performGracefulShutdown)
+</span>141 <span style=''>        .onInterrupt(
+</span>142 <span style=''>          ZIO.logInfo(
+</span>143 <span style=''>            &quot;Interrupt received, shutting down...&quot;
+</span>144 <span style=''>          ) *&gt; performGracefulShutdown
+</span>145 <span style=''>        )
+</span>146 <span style=''>        .fork
+</span>147 <span style=''>      _ &lt;- server.join
+</span>148 <span style=''>    } yield ()).provide(
+</span>149 <span style=''>      ServerConfig.layer.mapError(e =&gt; new RuntimeException(e.getMessage)),
+</span>150 <span style=''>      ZLayer.fromZIO(ZIO.service[ServerConfig].map(buildServerConfig)),
+</span>151 <span style=''>      Server.live,
+</span>152 <span style=''>      DatabaseService.live,
+</span>153 <span style=''>      AwsConfig.layer.mapError(e =&gt; new RuntimeException(e.getMessage))
+</span>154 <span style=''>    )
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Tests</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          1
+        </td>
+        <td>
+          1559
+          -
+          1570
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          slf4j
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          SLF4J.slf4j
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          0
+        </td>
+        <td>
+          1526
+          -
+          1570
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &gt;&gt;&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Runtime.removeDefaultLoggers &gt;&gt;&gt; SLF4J.slf4j
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          9
+        </td>
+        <td>
+          2014
+          -
+          2035
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          buildServerConfig
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def buildServerConfig
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          4
+        </td>
+        <td>
+          2182
+          -
+          2192
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          seconds
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          30.seconds
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          3
+        </td>
+        <td>
+          2182
+          -
+          2184
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          durationInt
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          30
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          5
+        </td>
+        <td>
+          2215
+          -
+          2224
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          *
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          16 * 1024
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          6
+        </td>
+        <td>
+          2215
+          -
+          2217
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          16
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          8
+        </td>
+        <td>
+          2257
+          -
+          2267
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          seconds
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          30.seconds
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          2
+        </td>
+        <td>
+          2079
+          -
+          2268
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          gracefulShutdownTimeout
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Server\n      .Config\n      .default\n      .port(config.port)\n      .keepAlive(true)\n      .idleTimeout(30.seconds)\n      .maxHeaderSize(16 * 1024)\n      .gracefulShutdownTimeout(30.seconds)
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          7
+        </td>
+        <td>
+          2257
+          -
+          2259
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          durationInt
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          30
+        </td>
+      </tr><tr>
+        <td>
+          76
+        </td>
+        <td>
+          12
+        </td>
+        <td>
+          2761
+          -
+          2771
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          routes
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          def routes
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          10
+        </td>
+        <td>
+          2875
+          -
+          3046
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Routes(\n      EchoEndpoint.route,\n      HealthEndpoint.route,\n      HealthDeepEndpoint.route,\n      RootEndpoint.route,\n      ShutdownEndpoint.route(shutdownPromise)\n    )
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          11
+        </td>
+        <td>
+          3001
+          -
+          3040
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          route
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          ShutdownEndpoint.route(shutdownPromise)
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          20
+        </td>
+        <td>
+          3597
+          -
+          3632
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          performGracefulShutdown
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          private def performGracefulShutdown
+        </td>
+      </tr><tr>
+        <td>
+          101
+        </td>
+        <td>
+          13
+        </td>
+        <td>
+          3650
+          -
+          3948
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          *&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ZIO.logInfo(&quot;Shutdown signal received, stopping server...&quot;) *&gt;\n      ZIO.logInfo(\n        &quot;Waiting for in-flight requests to complete (30s timeout)...&quot;\n      ) *&gt;\n      ZIO.sleep(1.second) *&gt;\n      ZIO.logInfo(&quot;Server shutdown completed successfully&quot;) *&gt;\n      ZIO.logInfo(&quot;Exiting application...&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          14
+        </td>
+        <td>
+          3719
+          -
+          3809
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          logInfo
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ZIO.logInfo(\n        &quot;Waiting for in-flight requests to complete (30s timeout)...&quot;\n      )
+        </td>
+      </tr><tr>
+        <td>
+          105
+        </td>
+        <td>
+          17
+        </td>
+        <td>
+          3829
+          -
+          3837
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          second
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          1.second
+        </td>
+      </tr><tr>
+        <td>
+          105
+        </td>
+        <td>
+          16
+        </td>
+        <td>
+          3829
+          -
+          3830
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          durationInt
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          1
+        </td>
+      </tr><tr>
+        <td>
+          105
+        </td>
+        <td>
+          15
+        </td>
+        <td>
+          3819
+          -
+          3838
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          sleep
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ZIO.sleep(1.second)
+        </td>
+      </tr><tr>
+        <td>
+          106
+        </td>
+        <td>
+          18
+        </td>
+        <td>
+          3848
+          -
+          3901
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          logInfo
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ZIO.logInfo(&quot;Server shutdown completed successfully&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          107
+        </td>
+        <td>
+          19
+        </td>
+        <td>
+          3911
+          -
+          3948
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          logInfo
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ZIO.logInfo(&quot;Exiting application...&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          132
+        </td>
+        <td>
+          21
+        </td>
+        <td>
+          5036
+          -
+          5043
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          run
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          def run
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

@@ -1,0 +1,139 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          http/HealthEndpoint.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package org.roland.scala3_zio_template.http
+</span>2 <span style=''>
+</span>3 <span style=''>import zio.http._
+</span>4 <span style=''>
+</span>5 <span style=''>/** Basic health check endpoint for liveness probes.
+</span>6 <span style=''>  *
+</span>7 <span style=''>  * This endpoint always returns HTTP 200 OK when the server is running. It
+</span>8 <span style=''>  * performs no external checks and is intended for Kubernetes liveness probes
+</span>9 <span style=''>  * or load balancer health checks that only need to verify the process is
+</span>10 <span style=''>  * alive.
+</span>11 <span style=''>  *
+</span>12 <span style=''>  * '''Endpoint:''' GET /health
+</span>13 <span style=''>  *
+</span>14 <span style=''>  * '''Response:''' HTTP 200 OK
+</span>15 <span style=''>  *
+</span>16 <span style=''>  * For comprehensive health checks that validate external dependencies
+</span>17 <span style=''>  * (database, S3, etc.), use [[HealthDeepEndpoint]] instead.
+</span>18 <span style=''>  *
+</span>19 <span style=''>  * @see
+</span>20 <span style=''>  *   [[HealthDeepEndpoint]] for comprehensive health checks
+</span>21 <span style=''>  */
+</span>22 <span style=''>object HealthEndpoint extends Endpoint:
+</span>23 <span style=''>  override protected final val handler = </span><span style='background: #AEF1AE'>withLogging(Handler.ok)</span><span style=''>
+</span>24 <span style=''>  override val route =
+</span>25 <span style=''>    </span><span style='background: #AEF1AE'>Method.GET / &quot;health&quot; -&gt; handler</span><span style=''>
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Tests</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          23
+        </td>
+        <td>
+          157
+        </td>
+        <td>
+          732
+          -
+          755
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          withLogging
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          withLogging(Handler.ok)
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          158
+        </td>
+        <td>
+          783
+          -
+          815
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          -&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          Method.GET / &quot;health&quot; -&gt; handler
+        </td>
+      </tr><tr>
+        <td>
+          25
+        </td>
+        <td>
+          159
+        </td>
+        <td>
+          796
+          -
+          804
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          path
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;health&quot;
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

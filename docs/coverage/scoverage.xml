@@ -1,0 +1,904 @@
+<scoverage 
+statement-count="225" statements-invoked="132" statement-rate="58.67" branch-rate="37.93" version="1.0" timestamp="1766229927145">
+    <packages>
+        <package name="org.roland.scala3_zio_template" statement-count="22" statements-invoked="12" statement-rate="54.55">
+            <classes>
+                <class 
+                name="org.roland.scala3_zio_template.Main" filename="Main.scala" statement-count="22" statements-invoked="12" statement-rate="54.55" branch-rate="100.00">
+                    <methods>
+                        <method 
+                        name="org.roland.scala3_zio_template/Main/buildServerConfig" statement-count="8" statements-invoked="8" statement-rate="100.00" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="buildServerConfig" start="2257" end="2267" line="62" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="buildServerConfig" start="2079" end="2268" line="62" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="buildServerConfig" start="2215" end="2224" line="61" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="buildServerConfig" start="2182" end="2192" line="60" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="buildServerConfig" start="2257" end="2259" line="62" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="buildServerConfig" start="2014" end="2035" line="54" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="buildServerConfig" start="2182" end="2184" line="60" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="buildServerConfig" start="2215" end="2217" line="61" branch="false" invocation-count="1" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="org.roland.scala3_zio_template/Main/performGracefulShutdown" statement-count="8" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="performGracefulShutdown" start="3829" end="3837" line="105" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="performGracefulShutdown" start="3597" end="3632" line="100" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="performGracefulShutdown" start="3719" end="3809" line="102" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="performGracefulShutdown" start="3650" end="3948" line="101" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="performGracefulShutdown" start="3829" end="3830" line="105" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="performGracefulShutdown" start="3911" end="3948" line="107" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="performGracefulShutdown" start="3848" end="3901" line="106" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="performGracefulShutdown" start="3819" end="3838" line="105" branch="false" invocation-count="0" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="org.roland.scala3_zio_template/Main/routes" statement-count="3" statements-invoked="3" statement-rate="100.00" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="routes" start="3001" end="3040" line="84" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="routes" start="2875" end="3046" line="79" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="routes" start="2761" end="2771" line="76" branch="false" invocation-count="1" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="org.roland.scala3_zio_template/Main/&lt;init&gt;" statement-count="2" statements-invoked="1" statement-rate="50.00" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="&lt;init&gt;" start="1559" end="1570" line="42" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="&lt;init&gt;" start="1526" end="1570" line="42" branch="false" invocation-count="1" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="org.roland.scala3_zio_template/Main/run" statement-count="1" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template" class="Main" class-type="Object" full-class-name="org.roland.scala3_zio_template.Main" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/Main.scala" method="run" start="5036" end="5043" line="132" branch="false" invocation-count="0" ignored="false">
+</statement>
+                            </statements>
+</method>
+                    </methods>
+</class>
+            </classes>
+        </package>
+        <package 
+        name="org.roland.scala3_zio_template.config" statement-count="22" statements-invoked="5" statement-rate="22.73">
+            <classes>
+                <class 
+                name="org.roland.scala3_zio_template.config.ServerConfig" filename="config/AppConfig.scala" statement-count="4" statements-invoked="1" statement-rate="25.00" branch-rate="100.00">
+                    <methods>
+                        <method 
+                        name="org.roland.scala3_zio_template.config/ServerConfig/&lt;init&gt;" statement-count="3" statements-invoked="1" statement-rate="33.33" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="ServerConfig" class-type="Object" full-class-name="org.roland.scala3_zio_template.config.ServerConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="&lt;init&gt;" start="455" end="605" line="20" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="ServerConfig" class-type="Object" full-class-name="org.roland.scala3_zio_template.config.ServerConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="&lt;init&gt;" start="433" end="611" line="19" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="ServerConfig" class-type="Object" full-class-name="org.roland.scala3_zio_template.config.ServerConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="&lt;init&gt;" start="489" end="597" line="24" branch="false" invocation-count="0" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="org.roland.scala3_zio_template.config/ServerConfig/$anonfun" statement-count="1" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="ServerConfig" class-type="Object" full-class-name="org.roland.scala3_zio_template.config.ServerConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="$anonfun" start="578" end="596" line="24" branch="false" invocation-count="0" ignored="false">
+</statement>
+                            </statements>
+</method>
+                    </methods>
+</class>
+                <class 
+                name="org.roland.scala3_zio_template.config.DatabaseConfig" filename="config/AppConfig.scala" statement-count="11" statements-invoked="3" statement-rate="27.27" branch-rate="0.00">
+                    <methods>
+                        <method 
+                        name="org.roland.scala3_zio_template.config/DatabaseConfig/&lt;init&gt;" statement-count="7" statements-invoked="1" statement-rate="14.29" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="DatabaseConfig" class-type="Object" full-class-name="org.roland.scala3_zio_template.config.DatabaseConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="&lt;init&gt;" start="2001" end="2055" line="73" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="DatabaseConfig" class-type="Object" full-class-name="org.roland.scala3_zio_template.config.DatabaseConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="&lt;init&gt;" start="1821" end="2287" line="69" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="DatabaseConfig" class-type="Object" full-class-name="org.roland.scala3_zio_template.config.DatabaseConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="&lt;init&gt;" start="1940" end="1985" line="72" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="DatabaseConfig" class-type="Object" full-class-name="org.roland.scala3_zio_template.config.DatabaseConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="&lt;init&gt;" start="2117" end="2151" line="75" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="DatabaseConfig" class-type="Object" full-class-name="org.roland.scala3_zio_template.config.DatabaseConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="&lt;init&gt;" start="1799" end="2293" line="68" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="DatabaseConfig" class-type="Object" full-class-name="org.roland.scala3_zio_template.config.DatabaseConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="&lt;init&gt;" start="1857" end="2279" line="76" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="DatabaseConfig" class-type="Object" full-class-name="org.roland.scala3_zio_template.config.DatabaseConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="&lt;init&gt;" start="2071" end="2101" line="74" branch="false" invocation-count="0" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="org.roland.scala3_zio_template.config/DatabaseConfig/$anonfun" statement-count="2" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="DatabaseConfig" class-type="Object" full-class-name="org.roland.scala3_zio_template.config.DatabaseConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="$anonfun" start="2221" end="2269" line="77" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="DatabaseConfig" class-type="Object" full-class-name="org.roland.scala3_zio_template.config.DatabaseConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="$anonfun" start="2208" end="2269" line="76" branch="true" invocation-count="0" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="org.roland.scala3_zio_template.config/DatabaseConfig/jdbcUrl" statement-count="2" statements-invoked="2" statement-rate="100.00" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="DatabaseConfig" class-type="Class" full-class-name="org.roland.scala3_zio_template.config.DatabaseConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="jdbcUrl" start="1272" end="1310" line="55" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="DatabaseConfig" class-type="Class" full-class-name="org.roland.scala3_zio_template.config.DatabaseConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="jdbcUrl" start="1246" end="1257" line="54" branch="false" invocation-count="1" ignored="false">
+</statement>
+                            </statements>
+</method>
+                    </methods>
+</class>
+                <class 
+                name="org.roland.scala3_zio_template.config.AwsConfig" filename="config/AppConfig.scala" statement-count="7" statements-invoked="1" statement-rate="14.29" branch-rate="0.00">
+                    <methods>
+                        <method 
+                        name="org.roland.scala3_zio_template.config/AwsConfig/&lt;init&gt;" statement-count="5" statements-invoked="1" statement-rate="20.00" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="AwsConfig" class-type="Object" full-class-name="org.roland.scala3_zio_template.config.AwsConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="&lt;init&gt;" start="3120" end="3172" line="111" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="AwsConfig" class-type="Object" full-class-name="org.roland.scala3_zio_template.config.AwsConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="&lt;init&gt;" start="2973" end="3311" line="107" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="AwsConfig" class-type="Object" full-class-name="org.roland.scala3_zio_template.config.AwsConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="&lt;init&gt;" start="3066" end="3104" line="110" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="AwsConfig" class-type="Object" full-class-name="org.roland.scala3_zio_template.config.AwsConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="&lt;init&gt;" start="2951" end="3317" line="106" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="AwsConfig" class-type="Object" full-class-name="org.roland.scala3_zio_template.config.AwsConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="&lt;init&gt;" start="3004" end="3303" line="112" branch="false" invocation-count="0" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="org.roland.scala3_zio_template.config/AwsConfig/$anonfun" statement-count="2" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="AwsConfig" class-type="Object" full-class-name="org.roland.scala3_zio_template.config.AwsConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="$anonfun" start="3233" end="3293" line="112" branch="true" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.config" class="AwsConfig" class-type="Object" full-class-name="org.roland.scala3_zio_template.config.AwsConfig" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/config/AppConfig.scala" method="$anonfun" start="3246" end="3293" line="113" branch="false" invocation-count="0" ignored="false">
+</statement>
+                            </statements>
+</method>
+                    </methods>
+</class>
+            </classes>
+</package>
+        <package 
+        name="org.roland.scala3_zio_template.http" statement-count="142" statements-invoked="115" statement-rate="80.99">
+            <classes>
+                <class 
+                name="org.roland.scala3_zio_template.http.Endpoint" filename="http/Endpoint.scala" statement-count="18" statements-invoked="18" statement-rate="100.00" branch-rate="100.00">
+                    <methods>
+                        <method 
+                        name="org.roland.scala3_zio_template.http/Endpoint/withLogging" statement-count="2" statements-invoked="2" statement-rate="100.00" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="Endpoint" class-type="Class" full-class-name="org.roland.scala3_zio_template.http.Endpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/Endpoint.scala" method="withLogging" start="1103" end="1700" line="33" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="Endpoint" class-type="Class" full-class-name="org.roland.scala3_zio_template.http.Endpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/Endpoint.scala" method="withLogging" start="968" end="993" line="30" branch="false" invocation-count="1" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="org.roland.scala3_zio_template.http/Endpoint/$anonfun" statement-count="16" statements-invoked="16" statement-rate="100.00" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="Endpoint" class-type="Class" full-class-name="org.roland.scala3_zio_template.http.Endpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/Endpoint.scala" method="$anonfun" start="1415" end="1686" line="42" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="Endpoint" class-type="Class" full-class-name="org.roland.scala3_zio_template.http.Endpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/Endpoint.scala" method="$anonfun" start="1211" end="1230" line="35" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="Endpoint" class-type="Class" full-class-name="org.roland.scala3_zio_template.http.Endpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/Endpoint.scala" method="$anonfun" start="1548" end="1686" line="45" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="Endpoint" class-type="Class" full-class-name="org.roland.scala3_zio_template.http.Endpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/Endpoint.scala" method="$anonfun" start="1292" end="1326" line="39" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="Endpoint" class-type="Class" full-class-name="org.roland.scala3_zio_template.http.Endpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/Endpoint.scala" method="$anonfun" start="1548" end="1686" line="45" branch="true" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="Endpoint" class-type="Class" full-class-name="org.roland.scala3_zio_template.http.Endpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/Endpoint.scala" method="$anonfun" start="1678" end="1686" line="48" branch="true" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="Endpoint" class-type="Class" full-class-name="org.roland.scala3_zio_template.http.Endpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/Endpoint.scala" method="$anonfun" start="1259" end="1686" line="38" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="Endpoint" class-type="Class" full-class-name="org.roland.scala3_zio_template.http.Endpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/Endpoint.scala" method="$anonfun" start="1376" end="1686" line="41" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="Endpoint" class-type="Class" full-class-name="org.roland.scala3_zio_template.http.Endpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/Endpoint.scala" method="$anonfun" start="1211" end="1223" line="35" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="Endpoint" class-type="Class" full-class-name="org.roland.scala3_zio_template.http.Endpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/Endpoint.scala" method="$anonfun" start="1415" end="1514" line="42" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="Endpoint" class-type="Class" full-class-name="org.roland.scala3_zio_template.http.Endpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/Endpoint.scala" method="$anonfun" start="1464" end="1497" line="43" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="Endpoint" class-type="Class" full-class-name="org.roland.scala3_zio_template.http.Endpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/Endpoint.scala" method="$anonfun" start="1578" end="1649" line="46" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="Endpoint" class-type="Class" full-class-name="org.roland.scala3_zio_template.http.Endpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/Endpoint.scala" method="$anonfun" start="1238" end="1694" line="37" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="Endpoint" class-type="Class" full-class-name="org.roland.scala3_zio_template.http.Endpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/Endpoint.scala" method="$anonfun" start="1338" end="1686" line="40" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="Endpoint" class-type="Class" full-class-name="org.roland.scala3_zio_template.http.Endpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/Endpoint.scala" method="$anonfun" start="1338" end="1686" line="40" branch="true" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="Endpoint" class-type="Class" full-class-name="org.roland.scala3_zio_template.http.Endpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/Endpoint.scala" method="$anonfun" start="1170" end="1193" line="34" branch="false" invocation-count="1" ignored="false">
+</statement>
+                            </statements>
+</method>
+                    </methods>
+</class>
+                <class 
+                name="org.roland.scala3_zio_template.http.HealthEndpoint" filename="http/HealthEndpoint.scala" statement-count="3" statements-invoked="3" statement-rate="100.00" branch-rate="100.00">
+                    <methods>
+                        <method 
+                        name="org.roland.scala3_zio_template.http/HealthEndpoint/&lt;init&gt;" statement-count="3" statements-invoked="3" statement-rate="100.00" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthEndpoint.scala" method="&lt;init&gt;" start="783" end="815" line="25" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthEndpoint.scala" method="&lt;init&gt;" start="732" end="755" line="23" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthEndpoint.scala" method="&lt;init&gt;" start="796" end="804" line="25" branch="false" invocation-count="1" ignored="false">
+</statement>
+                            </statements>
+</method>
+                    </methods>
+</class>
+                <class 
+                name="org.roland.scala3_zio_template.http.EchoEndpoint" filename="http/EchoEndpoint.scala" statement-count="6" statements-invoked="6" statement-rate="100.00" branch-rate="100.00">
+                    <methods>
+                        <method 
+                        name="org.roland.scala3_zio_template.http/EchoEndpoint/&lt;init&gt;" statement-count="4" statements-invoked="4" statement-rate="100.00" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="EchoEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.EchoEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/EchoEndpoint.scala" method="&lt;init&gt;" start="669" end="799" line="21" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="EchoEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.EchoEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/EchoEndpoint.scala" method="&lt;init&gt;" start="837" end="843" line="26" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="EchoEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.EchoEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/EchoEndpoint.scala" method="&lt;init&gt;" start="686" end="795" line="22" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="EchoEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.EchoEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/EchoEndpoint.scala" method="&lt;init&gt;" start="823" end="854" line="26" branch="false" invocation-count="1" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="org.roland.scala3_zio_template.http/EchoEndpoint/$anonfun" statement-count="2" statements-invoked="2" statement-rate="100.00" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="EchoEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.EchoEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/EchoEndpoint.scala" method="$anonfun" start="772" end="788" line="23" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="EchoEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.EchoEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/EchoEndpoint.scala" method="$anonfun" start="740" end="789" line="23" branch="false" invocation-count="1" ignored="false">
+</statement>
+                            </statements>
+</method>
+                    </methods>
+</class>
+                <class 
+                name="org.roland.scala3_zio_template.http.RootEndpoint" filename="http/RootEndpoint.scala" statement-count="3" statements-invoked="3" statement-rate="100.00" branch-rate="100.00">
+                    <methods>
+                        <method 
+                        name="org.roland.scala3_zio_template.http/RootEndpoint/&lt;init&gt;" statement-count="3" statements-invoked="3" statement-rate="100.00" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="RootEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.RootEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/RootEndpoint.scala" method="&lt;init&gt;" start="491" end="549" line="16" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="RootEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.RootEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/RootEndpoint.scala" method="&lt;init&gt;" start="577" end="605" line="20" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="RootEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.RootEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/RootEndpoint.scala" method="&lt;init&gt;" start="508" end="545" line="17" branch="false" invocation-count="1" ignored="false">
+</statement>
+                            </statements>
+</method>
+                    </methods>
+</class>
+                <class 
+                name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" filename="http/HealthDeepEndpoint.scala" statement-count="89" statements-invoked="62" statement-rate="69.66" branch-rate="38.46">
+                    <methods>
+                        <method 
+                        name="org.roland.scala3_zio_template.http/HealthDeepEndpoint/&lt;init&gt;" statement-count="6" statements-invoked="6" statement-rate="100.00" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="&lt;init&gt;" start="9460" end="9497" line="293" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="&lt;init&gt;" start="8138" end="9208" line="255" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="&lt;init&gt;" start="7230" end="7239" line="227" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="&lt;init&gt;" start="7017" end="7676" line="221" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="&lt;init&gt;" start="9473" end="9486" line="293" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="&lt;init&gt;" start="7230" end="7231" line="227" branch="false" invocation-count="1" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="org.roland.scala3_zio_template.http/HealthDeepEndpoint/$anonfun" statement-count="58" statements-invoked="31" statement-rate="53.45" branch-rate="38.46">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="8466" end="8505" line="264" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="9076" end="9085" line="282" branch="true" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="4910" end="5037" line="156" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="4534" end="4555" line="145" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="6397" end="6412" line="202" branch="true" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="7280" end="7289" line="229" branch="true" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="4897" end="5037" line="155" branch="true" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="5766" end="5842" line="184" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="7397" end="7446" line="233" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="7076" end="7220" line="223" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="4643" end="4685" line="148" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="6126" end="6137" line="194" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="8662" end="9192" line="270" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="9136" end="9166" line="283" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="8184" end="9202" line="256" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="7182" end="7214" line="226" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="4776" end="4787" line="152" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="6358" end="6368" line="201" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="5932" end="5977" line="188" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="8744" end="8872" line="273" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="9136" end="9192" line="283" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="7155" end="7164" line="225" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="5905" end="5914" line="187" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="6072" end="6227" line="192" branch="true" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="6400" end="6412" line="202" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="8408" end="8506" line="263" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="4722" end="4878" line="150" branch="true" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="8990" end="9018" line="280" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="9136" end="9192" line="283" branch="true" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="4610" end="4619" line="147" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="4986" end="5025" line="158" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="8610" end="9192" line="268" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="7362" end="7373" line="232" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="8694" end="9041" line="271" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="5845" end="5857" line="185" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="6085" end="6227" line="193" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="4735" end="4878" line="151" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="9091" end="9117" line="282" branch="true" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="7321" end="7458" line="231" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="8582" end="8598" line="266" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="4556" end="4697" line="145" branch="true" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="9150" end="9165" line="283" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="7308" end="7458" line="230" branch="true" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="8694" end="9192" line="271" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="5870" end="5983" line="186" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="6161" end="6215" line="195" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="7120" end="7220" line="224" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="4811" end="4866" line="153" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="8944" end="8972" line="279" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="9136" end="9171" line="283" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="5870" end="5983" line="186" branch="true" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="8272" end="8296" line="259" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="6355" end="6368" line="201" branch="true" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="4569" end="4697" line="146" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="4951" end="4962" line="157" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="6044" end="6053" line="191" branch="true" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="9136" end="9171" line="283" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="$anonfun" start="8897" end="9018" line="278" branch="false" invocation-count="1" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="org.roland.scala3_zio_template.http/HealthDeepEndpoint/checkUrl" statement-count="5" statements-invoked="5" statement-rate="100.00" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="checkUrl" start="4450" end="4466" line="142" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="checkUrl" start="4483" end="4492" line="143" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="checkUrl" start="4428" end="5250" line="141" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="checkUrl" start="4328" end="4348" line="138" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="checkUrl" start="4483" end="4484" line="143" branch="false" invocation-count="1" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="org.roland.scala3_zio_template.http/HealthDeepEndpoint/checkS3" statement-count="9" statements-invoked="9" statement-rate="100.00" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="checkS3" start="5792" end="5810" line="184" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="checkS3" start="5993" end="6003" line="189" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="checkS3" start="5792" end="5812" line="184" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="checkS3" start="5792" end="5810" line="184" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="checkS3" start="5993" end="5995" line="189" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="checkS3" start="5753" end="6579" line="183" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="checkS3" start="5641" end="5660" line="180" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="checkS3" start="5792" end="5810" line="184" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="checkS3" start="5792" end="5810" line="184" branch="false" invocation-count="1" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="org.roland.scala3_zio_template.http/HealthDeepEndpoint/createS3Layer" statement-count="11" statements-invoked="11" statement-rate="100.00" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="createS3Layer" start="3892" end="3924" line="126" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="createS3Layer" start="3416" end="3504" line="107" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="createS3Layer" start="3643" end="3673" line="118" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="createS3Layer" start="3846" end="3936" line="125" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="createS3Layer" start="3707" end="3752" line="119" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="createS3Layer" start="3847" end="3886" line="125" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="createS3Layer" start="3551" end="3834" line="117" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="createS3Layer" start="3319" end="3344" line="106" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="createS3Layer" start="3529" end="3840" line="112" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="createS3Layer" start="3648" end="3672" line="118" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="HealthDeepEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.HealthDeepEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/HealthDeepEndpoint.scala" method="createS3Layer" start="3846" end="3924" line="125" branch="false" invocation-count="1" ignored="false">
+</statement>
+                            </statements>
+</method>
+                    </methods>
+</class>
+                <class 
+                name="org.roland.scala3_zio_template.http.ShutdownEndpoint" filename="http/ShutdownEndpoint.scala" statement-count="23" statements-invoked="23" statement-rate="100.00" branch-rate="100.00">
+                    <methods>
+                        <method 
+                        name="org.roland.scala3_zio_template.http/ShutdownEndpoint/$anonfun" statement-count="16" statements-invoked="16" statement-rate="100.00" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="$anonfun" start="1865" end="2217" line="54" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="$anonfun" start="1865" end="2217" line="54" branch="true" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="$anonfun" start="1995" end="2028" line="57" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="$anonfun" start="1697" end="1720" line="48" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="$anonfun" start="1946" end="2217" line="56" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="$anonfun" start="1738" end="1757" line="49" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="$anonfun" start="2079" end="2217" line="59" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="$anonfun" start="2079" end="2217" line="59" branch="true" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="$anonfun" start="1819" end="1853" line="53" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="$anonfun" start="2209" end="2217" line="62" branch="true" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="$anonfun" start="1903" end="2217" line="55" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="$anonfun" start="1738" end="1750" line="49" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="$anonfun" start="1946" end="2045" line="56" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="$anonfun" start="1786" end="2217" line="52" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="$anonfun" start="2109" end="2180" line="60" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="$anonfun" start="1765" end="2225" line="51" branch="false" invocation-count="1" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="org.roland.scala3_zio_template.http/ShutdownEndpoint/route" statement-count="7" statements-invoked="7" statement-rate="100.00" branch-rate="100.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="route" start="1254" end="1604" line="36" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="route" start="1134" end="1143" line="34" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="route" start="2251" end="2261" line="66" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="route" start="1630" end="2231" line="47" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="route" start="1230" end="1610" line="35" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="route" start="2237" end="2272" line="66" branch="false" invocation-count="1" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.http" class="ShutdownEndpoint" class-type="Object" full-class-name="org.roland.scala3_zio_template.http.ShutdownEndpoint" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/http/ShutdownEndpoint.scala" method="route" start="1347" end="1385" line="38" branch="false" invocation-count="1" ignored="false">
+</statement>
+                            </statements>
+</method>
+                    </methods>
+</class>
+            </classes>
+</package>
+        <package 
+        name="org.roland.scala3_zio_template.service" statement-count="39" statements-invoked="0" statement-rate="0.00">
+            <classes>
+                <class 
+                name="org.roland.scala3_zio_template.service.$anon" filename="service/DatabaseService.scala" statement-count="3" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                    <methods>
+                        <method 
+                        name="org.roland.scala3_zio_template.service/$anon/healthCheck" statement-count="2" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="$anon" class-type="Class" full-class-name="org.roland.scala3_zio_template.service.$anon" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="healthCheck" start="4157" end="4304" line="123" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="$anon" class-type="Class" full-class-name="org.roland.scala3_zio_template.service.$anon" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="healthCheck" start="4086" end="4110" line="122" branch="false" invocation-count="0" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="org.roland.scala3_zio_template.service/$anon/$anonfun" statement-count="1" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="$anon" class-type="Class" full-class-name="org.roland.scala3_zio_template.service.$anon" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="4258" end="4288" line="126" branch="false" invocation-count="0" ignored="false">
+</statement>
+                            </statements>
+</method>
+                    </methods>
+</class>
+                <class 
+                name="org.roland.scala3_zio_template.service.DatabaseService" filename="service/DatabaseService.scala" statement-count="36" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                    <methods>
+                        <method 
+                        name="org.roland.scala3_zio_template.service/DatabaseService/&lt;init&gt;" statement-count="4" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="&lt;init&gt;" start="3179" end="4336" line="92" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="&lt;init&gt;" start="1962" end="2433" line="56" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="&lt;init&gt;" start="3157" end="4342" line="91" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="&lt;init&gt;" start="1940" end="2439" line="55" branch="false" invocation-count="0" ignored="false">
+</statement>
+                            </statements>
+</method>
+                        <method 
+                        name="org.roland.scala3_zio_template.service/DatabaseService/$anonfun" statement-count="32" statements-invoked="0" statement-rate="0.00" branch-rate="0.00">
+                            <statements>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="3582" end="3625" line="103" branch="true" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="2219" end="2256" line="63" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="2283" end="2301" line="64" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="2265" end="2302" line="64" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="3673" end="3793" line="107" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="3333" end="4336" line="97" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="4329" end="4336" line="129" branch="true" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="3502" end="3531" line="102" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="3866" end="3878" line="113" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="2351" end="2374" line="66" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="3600" end="3609" line="104" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="3948" end="4336" line="117" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="2168" end="2210" line="62" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="2050" end="2124" line="59" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="3563" end="3580" line="103" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="3924" end="3938" line="116" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="2149" end="2433" line="61" branch="true" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="3649" end="3811" line="106" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="2237" end="2255" line="63" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="3252" end="4336" line="94" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="3429" end="3841" line="100" branch="true" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="4020" end="4314" line="119" branch="true" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="2311" end="2342" line="65" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="3456" end="3478" line="101" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="4020" end="4027" line="119" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="3394" end="3412" line="99" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="3631" end="3827" line="105" branch="true" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="2022" end="2433" line="58" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="3850" end="3892" line="112" branch="true" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="3948" end="4336" line="117" branch="true" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="2383" end="2414" line="67" branch="false" invocation-count="0" ignored="false">
+</statement>
+                                <statement 
+                                package="org.roland.scala3_zio_template.service" class="DatabaseService" class-type="Object" full-class-name="org.roland.scala3_zio_template.service.DatabaseService" source="/home/yoda/Development/Home/scala3-zio-template/src/main/scala/service/DatabaseService.scala" method="$anonfun" start="3550" end="3580" line="103" branch="false" invocation-count="0" ignored="false">
+</statement>
+                            </statements>
+</method>
+                    </methods>
+</class>
+            </classes>
+</package>
+    </packages>
+</scoverage>

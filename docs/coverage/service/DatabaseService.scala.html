@@ -1,0 +1,1131 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          service/DatabaseService.scala.html
+        </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier, monospace;'>1 <span style=''>package org.roland.scala3_zio_template.service
+</span>2 <span style=''>
+</span>3 <span style=''>import javax.sql.DataSource
+</span>4 <span style=''>
+</span>5 <span style=''>import io.getquill._
+</span>6 <span style=''>import io.getquill.jdbczio.Quill
+</span>7 <span style=''>import org.roland.scala3_zio_template.config.DatabaseConfig
+</span>8 <span style=''>
+</span>9 <span style=''>import zio._
+</span>10 <span style=''>
+</span>11 <span style=''>/** Service interface for PostgreSQL database operations.
+</span>12 <span style=''>  *
+</span>13 <span style=''>  * This trait defines the contract for database interactions, providing methods
+</span>14 <span style=''>  * for health checks and query execution. Implementations should be created via
+</span>15 <span style=''>  * the companion object's `live` layer.
+</span>16 <span style=''>  *
+</span>17 <span style=''>  * All methods return ZIO effects to ensure type-safe error handling and
+</span>18 <span style=''>  * resource management. Database operations are executed using Quill for
+</span>19 <span style=''>  * compile-time query validation.
+</span>20 <span style=''>  *
+</span>21 <span style=''>  * @see
+</span>22 <span style=''>  *   [[DatabaseService.live]] for the production implementation
+</span>23 <span style=''>  */
+</span>24 <span style=''>trait DatabaseService:
+</span>25 <span style=''>  /** Performs a basic database health check by executing SELECT 1.
+</span>26 <span style=''>    *
+</span>27 <span style=''>    * This method validates that the database connection is alive and can
+</span>28 <span style=''>    * execute queries. It's used by the /health-deep endpoint to verify database
+</span>29 <span style=''>    * availability.
+</span>30 <span style=''>    *
+</span>31 <span style=''>    * @return
+</span>32 <span style=''>    *   ZIO effect that succeeds with true if the database is healthy, or fails
+</span>33 <span style=''>    *   with an error
+</span>34 <span style=''>    */
+</span>35 <span style=''>  def healthCheck(): ZIO[Any, Throwable, Boolean]
+</span>36 <span style=''>
+</span>37 <span style=''>/** Companion object providing ZLayer construction.
+</span>38 <span style=''>  *
+</span>39 <span style=''>  * This object contains factory methods for creating DatabaseService instances.
+</span>40 <span style=''>  * The `live` layer provides a complete, production-ready database service with
+</span>41 <span style=''>  * connection pooling and startup validation.
+</span>42 <span style=''>  */
+</span>43 <span style=''>object DatabaseService:
+</span>44 <span style=''>
+</span>45 <span style=''>  /** ZLayer that provides a configured JDBC DataSource.
+</span>46 <span style=''>    *
+</span>47 <span style=''>    * This layer constructs a PostgreSQL DataSource with connection pooling from
+</span>48 <span style=''>    * the provided DatabaseConfig. The DataSource is configured but not
+</span>49 <span style=''>    * validated at this stage - validation happens in the service layer.
+</span>50 <span style=''>    *
+</span>51 <span style=''>    * @return
+</span>52 <span style=''>    *   ZLayer that provides a javax.sql.DataSource instance
+</span>53 <span style=''>    */
+</span>54 <span style=''>  val dataSourceLayer: ZLayer[DatabaseConfig, Throwable, DataSource] =
+</span>55 <span style=''>    </span><span style='background: #F0ADAD'>ZLayer.fromZIO(
+</span>56 <span style=''></span><span style='background: #F0ADAD'>      for {
+</span>57 <span style=''></span><span style='background: #F0ADAD'>        config &lt;- ZIO.service[DatabaseConfig]
+</span>58 <span style=''></span><span style='background: #F0ADAD'>        _ &lt;- ZIO.logInfo(
+</span>59 <span style=''></span><span style='background: #F0ADAD'>          s&quot;Configuring DataSource for ${config.host}:${config.port}/${config.name}&quot;
+</span>60 <span style=''></span><span style='background: #F0ADAD'>        )
+</span>61 <span style=''></span><span style='background: #F0ADAD'>      } yield {
+</span>62 <span style=''></span><span style='background: #F0ADAD'>        val ds = new org.postgresql.ds.PGSimpleDataSource()
+</span>63 <span style=''></span><span style='background: #F0ADAD'>        ds.setServerNames(Array(config.host))
+</span>64 <span style=''></span><span style='background: #F0ADAD'>        ds.setPortNumbers(Array(config.port))
+</span>65 <span style=''></span><span style='background: #F0ADAD'>        ds.setDatabaseName(config.name)
+</span>66 <span style=''></span><span style='background: #F0ADAD'>        ds.setUser(config.user)
+</span>67 <span style=''></span><span style='background: #F0ADAD'>        ds.setPassword(config.password)
+</span>68 <span style=''></span><span style='background: #F0ADAD'>        ds
+</span>69 <span style=''></span><span style='background: #F0ADAD'>      }
+</span>70 <span style=''></span><span style='background: #F0ADAD'>    )</span><span style=''>
+</span>71 <span style=''>
+</span>72 <span style=''>  /** ZLayer that provides the DatabaseService implementation.
+</span>73 <span style=''>    *
+</span>74 <span style=''>    * This layer requires both a Quill context and a DataSource to be provided.
+</span>75 <span style=''>    * It performs connection validation at startup by executing a simple SELECT
+</span>76 <span style=''>    * 1 query. If validation fails, the application will not start.
+</span>77 <span style=''>    *
+</span>78 <span style=''>    * The returned service implementation provides:
+</span>79 <span style=''>    *   - Health check via SELECT 1
+</span>80 <span style=''>    *   - Raw SQL execution (for future use)
+</span>81 <span style=''>    *   - Query methods (not yet implemented)
+</span>82 <span style=''>    *
+</span>83 <span style=''>    * @return
+</span>84 <span style=''>    *   ZLayer that provides DatabaseService, requiring Quill and DataSource
+</span>85 <span style=''>    */
+</span>86 <span style=''>  private val serviceLayer: ZLayer[
+</span>87 <span style=''>    Quill.Postgres[SnakeCase.type] &amp; DataSource,
+</span>88 <span style=''>    Throwable,
+</span>89 <span style=''>    DatabaseService
+</span>90 <span style=''>  ] =
+</span>91 <span style=''>    </span><span style='background: #F0ADAD'>ZLayer.fromZIO(
+</span>92 <span style=''></span><span style='background: #F0ADAD'>      for {
+</span>93 <span style=''></span><span style='background: #F0ADAD'>        ctx &lt;- ZIO.service[Quill.Postgres[SnakeCase.type]]
+</span>94 <span style=''></span><span style='background: #F0ADAD'>        ds &lt;- ZIO.service[DataSource]
+</span>95 <span style=''></span><span style='background: #F0ADAD'>
+</span>96 <span style=''></span><span style='background: #F0ADAD'>        // Validate connection at startup
+</span>97 <span style=''></span><span style='background: #F0ADAD'>        _ &lt;- ZIO
+</span>98 <span style=''></span><span style='background: #F0ADAD'>          .attemptBlocking {
+</span>99 <span style=''></span><span style='background: #F0ADAD'>            val conn = ds.getConnection()
+</span>100 <span style=''></span><span style='background: #F0ADAD'>            try {
+</span>101 <span style=''></span><span style='background: #F0ADAD'>              val stmt = conn.createStatement()
+</span>102 <span style=''></span><span style='background: #F0ADAD'>              val rs = stmt.executeQuery(&quot;SELECT 1&quot;)
+</span>103 <span style=''></span><span style='background: #F0ADAD'>              if (rs.next() &amp;&amp; rs.getInt(1) == 1) {
+</span>104 <span style=''></span><span style='background: #F0ADAD'>                Right(())
+</span>105 <span style=''></span><span style='background: #F0ADAD'>              } else {
+</span>106 <span style=''></span><span style='background: #F0ADAD'>                Left(
+</span>107 <span style=''></span><span style='background: #F0ADAD'>                  new RuntimeException(
+</span>108 <span style=''></span><span style='background: #F0ADAD'>                    &quot;Database connection validation failed: unexpected result&quot;
+</span>109 <span style=''></span><span style='background: #F0ADAD'>                  )
+</span>110 <span style=''></span><span style='background: #F0ADAD'>                )
+</span>111 <span style=''></span><span style='background: #F0ADAD'>              }
+</span>112 <span style=''></span><span style='background: #F0ADAD'>            } finally {
+</span>113 <span style=''></span><span style='background: #F0ADAD'>              conn.close()
+</span>114 <span style=''></span><span style='background: #F0ADAD'>            }
+</span>115 <span style=''></span><span style='background: #F0ADAD'>          }
+</span>116 <span style=''></span><span style='background: #F0ADAD'>          .flatMap(ZIO.fromEither)
+</span>117 <span style=''></span><span style='background: #F0ADAD'>        _ &lt;- ZIO.logInfo(&quot;Database connection validated successfully&quot;)
+</span>118 <span style=''></span><span style='background: #F0ADAD'>
+</span>119 <span style=''></span><span style='background: #F0ADAD'>        service = new DatabaseService {
+</span>120 <span style=''></span><span style='background: #F0ADAD'>          import ctx._
+</span>121 <span style=''></span><span style='background: #F0ADAD'>
+</span>122 <span style=''></span><span style='background: #F0ADAD'>          override def healthCheck(): ZIO[Any, Throwable, Boolean] =
+</span>123 <span style=''></span><span style='background: #F0ADAD'>            ctx
+</span>124 <span style=''></span><span style='background: #F0ADAD'>              .run(sql&quot;SELECT 1&quot;.as[Query[Int]])
+</span>125 <span style=''></span><span style='background: #F0ADAD'>              .map { results =&gt;
+</span>126 <span style=''></span><span style='background: #F0ADAD'>                results.headOption.contains(1)
+</span>127 <span style=''></span><span style='background: #F0ADAD'>              }
+</span>128 <span style=''></span><span style='background: #F0ADAD'>        }
+</span>129 <span style=''></span><span style='background: #F0ADAD'>      } yield service
+</span>130 <span style=''></span><span style='background: #F0ADAD'>    )</span><span style=''>
+</span>131 <span style=''>
+</span>132 <span style=''>  /** Complete ZLayer stack that provides a production-ready DatabaseService.
+</span>133 <span style=''>    *
+</span>134 <span style=''>    * This layer combines:
+</span>135 <span style=''>    *   - DatabaseConfig from environment variables
+</span>136 <span style=''>    *   - DataSource configuration
+</span>137 <span style=''>    *   - Quill PostgreSQL context with SnakeCase naming strategy
+</span>138 <span style=''>    *   - Service implementation with startup validation
+</span>139 <span style=''>    *
+</span>140 <span style=''>    * This is the primary layer to use when providing DatabaseService to your
+</span>141 <span style=''>    * application. It handles all dependency wiring and ensures the database is
+</span>142 <span style=''>    * accessible before the application starts serving requests.
+</span>143 <span style=''>    *
+</span>144 <span style=''>    * @return
+</span>145 <span style=''>    *   ZLayer that provides DatabaseService
+</span>146 <span style=''>    */
+</span>147 <span style=''>  val live: ZLayer[Any, Throwable, DatabaseService] =
+</span>148 <span style=''>    ZLayer.make[DatabaseService](
+</span>149 <span style=''>      DatabaseConfig.layer.mapError(e =&gt; new RuntimeException(e.getMessage)),
+</span>150 <span style=''>      dataSourceLayer,
+</span>151 <span style=''>      Quill.Postgres.fromNamingStrategy(SnakeCase),
+</span>152 <span style=''>      serviceLayer
+</span>153 <span style=''>    )
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Tests</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          186
+        </td>
+        <td>
+          1940
+          -
+          2439
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          fromZIO
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ZLayer.fromZIO(\n      for {\n        config &lt;- ZIO.service[DatabaseConfig]\n        _ &lt;- ZIO.logInfo(\n          s&quot;Configuring DataSource for ${config.host}:${config.port}/${config.name}&quot;\n        )\n      } yield {\n        val ds = new org.postgresql.ds.PGSimpleDataSource()\n        ds.setServerNames(Array(config.host))\n        ds.setPortNumbers(Array(config.port))\n        ds.setDatabaseName(config.name)\n        ds.setUser(config.user)\n        ds.setPassword(config.password)\n        ds\n      }\n    )
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          187
+        </td>
+        <td>
+          1962
+          -
+          2433
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          for {\n        config &lt;- ZIO.service[DatabaseConfig]\n        _ &lt;- ZIO.logInfo(\n          s&quot;Configuring DataSource for ${config.host}:${config.port}/${config.name}&quot;\n        )\n      } yield {\n        val ds = new org.postgresql.ds.PGSimpleDataSource()\n        ds.setServerNames(Array(config.host))\n        ds.setPortNumbers(Array(config.port))\n        ds.setDatabaseName(config.name)\n        ds.setUser(config.user)\n        ds.setPassword(config.password)\n        ds\n      }
+        </td>
+      </tr><tr>
+        <td>
+          58
+        </td>
+        <td>
+          188
+        </td>
+        <td>
+          2022
+          -
+          2433
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          _ &lt;- ZIO.logInfo(\n          s&quot;Configuring DataSource for ${config.host}:${config.port}/${config.name}&quot;\n        )\n      } yield {\n        val ds = new org.postgresql.ds.PGSimpleDataSource()\n        ds.setServerNames(Array(config.host))\n        ds.setPortNumbers(Array(config.port))\n        ds.setDatabaseName(config.name)\n        ds.setUser(config.user)\n        ds.setPassword(config.password)\n        ds\n      }
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          189
+        </td>
+        <td>
+          2050
+          -
+          2124
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          s
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          s&quot;Configuring DataSource for ${config.host}:${config.port}/${config.name}&quot;
+        </td>
+      </tr><tr>
+        <td>
+          61
+        </td>
+        <td>
+          198
+        </td>
+        <td>
+          2149
+          -
+          2433
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          {\n        val ds = new org.postgresql.ds.PGSimpleDataSource()\n        ds.setServerNames(Array(config.host))\n        ds.setPortNumbers(Array(config.port))\n        ds.setDatabaseName(config.name)\n        ds.setUser(config.user)\n        ds.setPassword(config.password)\n        ds\n      }
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          190
+        </td>
+        <td>
+          2168
+          -
+          2210
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          new org.postgresql.ds.PGSimpleDataSource()
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          191
+        </td>
+        <td>
+          2219
+          -
+          2256
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          setServerNames
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ds.setServerNames(Array(config.host))
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          192
+        </td>
+        <td>
+          2237
+          -
+          2255
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Array(config.host)
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          194
+        </td>
+        <td>
+          2283
+          -
+          2301
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Array(config.port)
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          193
+        </td>
+        <td>
+          2265
+          -
+          2302
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          setPortNumbers
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ds.setPortNumbers(Array(config.port))
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          195
+        </td>
+        <td>
+          2311
+          -
+          2342
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          setDatabaseName
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ds.setDatabaseName(config.name)
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          196
+        </td>
+        <td>
+          2351
+          -
+          2374
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          setUser
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ds.setUser(config.user)
+        </td>
+      </tr><tr>
+        <td>
+          67
+        </td>
+        <td>
+          197
+        </td>
+        <td>
+          2383
+          -
+          2414
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          setPassword
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ds.setPassword(config.password)
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          199
+        </td>
+        <td>
+          3157
+          -
+          4342
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          fromZIO
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ZLayer.fromZIO(\n      for {\n        ctx &lt;- ZIO.service[Quill.Postgres[SnakeCase.type]]\n        ds &lt;- ZIO.service[DataSource]\n\n        // Validate connection at startup\n        _ &lt;- ZIO\n          .attemptBlocking {\n            val conn = ds.getConnection()\n            try {\n              val stmt = conn.createStatement()\n              val rs = stmt.executeQuery(&quot;SELECT 1&quot;)\n              if (rs.next() &amp;&amp; rs.getInt(1) == 1) {\n                Right(())\n              } else {\n                Left(\n                  new RuntimeException(\n                    &quot;Database connection validation failed: unexpected result&quot;\n                  )\n                )\n              }\n            } finally {\n              conn.close()\n            }\n          }\n          .flatMap(ZIO.fromEither)\n        _ &lt;- ZIO.logInfo(&quot;Database connection validated successfully&quot;)\n\n        service = new DatabaseService {\n          import ctx._\n\n          override def healthCheck(): ZIO[Any, Throwable, Boolean] =\n            ctx\n              .run(sql&quot;SELECT 1&quot;.as[Query[Int]])\n              .map { results =&gt;\n                results.headOption.contains(1)\n              }\n        }\n      } yield service\n    )
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          200
+        </td>
+        <td>
+          3179
+          -
+          4336
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          for {\n        ctx &lt;- ZIO.service[Quill.Postgres[SnakeCase.type]]\n        ds &lt;- ZIO.service[DataSource]\n\n        // Validate connection at startup\n        _ &lt;- ZIO\n          .attemptBlocking {\n            val conn = ds.getConnection()\n            try {\n              val stmt = conn.createStatement()\n              val rs = stmt.executeQuery(&quot;SELECT 1&quot;)\n              if (rs.next() &amp;&amp; rs.getInt(1) == 1) {\n                Right(())\n              } else {\n                Left(\n                  new RuntimeException(\n                    &quot;Database connection validation failed: unexpected result&quot;\n                  )\n                )\n              }\n            } finally {\n              conn.close()\n            }\n          }\n          .flatMap(ZIO.fromEither)\n        _ &lt;- ZIO.logInfo(&quot;Database connection validated successfully&quot;)\n\n        service = new DatabaseService {\n          import ctx._\n\n          override def healthCheck(): ZIO[Any, Throwable, Boolean] =\n            ctx\n              .run(sql&quot;SELECT 1&quot;.as[Query[Int]])\n              .map { results =&gt;\n                results.headOption.contains(1)\n              }\n        }\n      } yield service
+        </td>
+      </tr><tr>
+        <td>
+          94
+        </td>
+        <td>
+          201
+        </td>
+        <td>
+          3252
+          -
+          4336
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ds &lt;- ZIO.service[DataSource]\n\n        // Validate connection at startup\n        _ &lt;- ZIO\n          .attemptBlocking {\n            val conn = ds.getConnection()\n            try {\n              val stmt = conn.createStatement()\n              val rs = stmt.executeQuery(&quot;SELECT 1&quot;)\n              if (rs.next() &amp;&amp; rs.getInt(1) == 1) {\n                Right(())\n              } else {\n                Left(\n                  new RuntimeException(\n                    &quot;Database connection validation failed: unexpected result&quot;\n                  )\n                )\n              }\n            } finally {\n              conn.close()\n            }\n          }\n          .flatMap(ZIO.fromEither)\n        _ &lt;- ZIO.logInfo(&quot;Database connection validated successfully&quot;)\n\n        service = new DatabaseService {\n          import ctx._\n\n          override def healthCheck(): ZIO[Any, Throwable, Boolean] =\n            ctx\n              .run(sql&quot;SELECT 1&quot;.as[Query[Int]])\n              .map { results =&gt;\n                results.headOption.contains(1)\n              }\n        }\n      } yield service
+        </td>
+      </tr><tr>
+        <td>
+          97
+        </td>
+        <td>
+          202
+        </td>
+        <td>
+          3333
+          -
+          4336
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          flatMap
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          _ &lt;- ZIO\n          .attemptBlocking {\n            val conn = ds.getConnection()\n            try {\n              val stmt = conn.createStatement()\n              val rs = stmt.executeQuery(&quot;SELECT 1&quot;)\n              if (rs.next() &amp;&amp; rs.getInt(1) == 1) {\n                Right(())\n              } else {\n                Left(\n                  new RuntimeException(\n                    &quot;Database connection validation failed: unexpected result&quot;\n                  )\n                )\n              }\n            } finally {\n              conn.close()\n            }\n          }\n          .flatMap(ZIO.fromEither)\n        _ &lt;- ZIO.logInfo(&quot;Database connection validated successfully&quot;)\n\n        service = new DatabaseService {\n          import ctx._\n\n          override def healthCheck(): ZIO[Any, Throwable, Boolean] =\n            ctx\n              .run(sql&quot;SELECT 1&quot;.as[Query[Int]])\n              .map { results =&gt;\n                results.headOption.contains(1)\n              }\n        }\n      } yield service
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          203
+        </td>
+        <td>
+          3394
+          -
+          3412
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          getConnection
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ds.getConnection()
+        </td>
+      </tr><tr>
+        <td>
+          100
+        </td>
+        <td>
+          213
+        </td>
+        <td>
+          3429
+          -
+          3841
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          {\n              val stmt = conn.createStatement()\n              val rs = stmt.executeQuery(&quot;SELECT 1&quot;)\n              if (rs.next() &amp;&amp; rs.getInt(1) == 1) {\n                Right(())\n              } else {\n                Left(\n                  new RuntimeException(\n                    &quot;Database connection validation failed: unexpected result&quot;\n                  )\n                )\n              }\n            }
+        </td>
+      </tr><tr>
+        <td>
+          101
+        </td>
+        <td>
+          204
+        </td>
+        <td>
+          3456
+          -
+          3478
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          createStatement
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          conn.createStatement()
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          205
+        </td>
+        <td>
+          3502
+          -
+          3531
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          executeQuery
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          stmt.executeQuery(&quot;SELECT 1&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          103
+        </td>
+        <td>
+          209
+        </td>
+        <td>
+          3582
+          -
+          3625
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          {\n                Right(())\n              }
+        </td>
+      </tr><tr>
+        <td>
+          103
+        </td>
+        <td>
+          207
+        </td>
+        <td>
+          3563
+          -
+          3580
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          ==
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          rs.getInt(1) == 1
+        </td>
+      </tr><tr>
+        <td>
+          103
+        </td>
+        <td>
+          206
+        </td>
+        <td>
+          3550
+          -
+          3580
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &amp;&amp;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          rs.next() &amp;&amp; rs.getInt(1) == 1
+        </td>
+      </tr><tr>
+        <td>
+          104
+        </td>
+        <td>
+          208
+        </td>
+        <td>
+          3600
+          -
+          3609
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Right(())
+        </td>
+      </tr><tr>
+        <td>
+          105
+        </td>
+        <td>
+          212
+        </td>
+        <td>
+          3631
+          -
+          3827
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          {\n                Left(\n                  new RuntimeException(\n                    &quot;Database connection validation failed: unexpected result&quot;\n                  )\n                )\n              }
+        </td>
+      </tr><tr>
+        <td>
+          106
+        </td>
+        <td>
+          210
+        </td>
+        <td>
+          3649
+          -
+          3811
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          Left(\n                  new RuntimeException(\n                    &quot;Database connection validation failed: unexpected result&quot;\n                  )\n                )
+        </td>
+      </tr><tr>
+        <td>
+          107
+        </td>
+        <td>
+          211
+        </td>
+        <td>
+          3673
+          -
+          3793
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          &lt;init&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          new RuntimeException(\n                    &quot;Database connection validation failed: unexpected result&quot;\n                  )
+        </td>
+      </tr><tr>
+        <td>
+          112
+        </td>
+        <td>
+          215
+        </td>
+        <td>
+          3850
+          -
+          3892
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          {\n              conn.close()\n            }
+        </td>
+      </tr><tr>
+        <td>
+          113
+        </td>
+        <td>
+          214
+        </td>
+        <td>
+          3866
+          -
+          3878
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          close
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          conn.close()
+        </td>
+      </tr><tr>
+        <td>
+          116
+        </td>
+        <td>
+          216
+        </td>
+        <td>
+          3924
+          -
+          3938
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          fromEither
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ZIO.fromEither
+        </td>
+      </tr><tr>
+        <td>
+          117
+        </td>
+        <td>
+          217
+        </td>
+        <td>
+          3948
+          -
+          4336
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          _ &lt;- ZIO.logInfo(&quot;Database connection validated successfully&quot;)\n\n        service = new DatabaseService {\n          import ctx._\n\n          override def healthCheck(): ZIO[Any, Throwable, Boolean] =\n            ctx\n              .run(sql&quot;SELECT 1&quot;.as[Query[Int]])\n              .map { results =&gt;\n                results.headOption.contains(1)\n              }\n        }\n      } yield service
+        </td>
+      </tr><tr>
+        <td>
+          117
+        </td>
+        <td>
+          224
+        </td>
+        <td>
+          3948
+          -
+          4336
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          _ &lt;- ZIO.logInfo(&quot;Database connection validated successfully&quot;)\n\n        service = new DatabaseService {\n          import ctx._\n\n          override def healthCheck(): ZIO[Any, Throwable, Boolean] =\n            ctx\n              .run(sql&quot;SELECT 1&quot;.as[Query[Int]])\n              .map { results =&gt;\n                results.headOption.contains(1)\n              }\n        }\n      } yield service
+        </td>
+      </tr><tr>
+        <td>
+          119
+        </td>
+        <td>
+          222
+        </td>
+        <td>
+          4020
+          -
+          4314
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;none&gt;
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          service = new DatabaseService {\n          import ctx._\n\n          override def healthCheck(): ZIO[Any, Throwable, Boolean] =\n            ctx\n              .run(sql&quot;SELECT 1&quot;.as[Query[Int]])\n              .map { results =&gt;\n                results.headOption.contains(1)\n              }\n        }
+        </td>
+      </tr><tr>
+        <td>
+          119
+        </td>
+        <td>
+          221
+        </td>
+        <td>
+          4020
+          -
+          4027
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          apply
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          service
+        </td>
+      </tr><tr>
+        <td>
+          122
+        </td>
+        <td>
+          220
+        </td>
+        <td>
+          4086
+          -
+          4110
+        </td>
+        <td>
+          DefDef
+        </td>
+        <td>
+          healthCheck
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          override def healthCheck
+        </td>
+      </tr><tr>
+        <td>
+          123
+        </td>
+        <td>
+          218
+        </td>
+        <td>
+          4157
+          -
+          4304
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          map
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          ctx\n              .run(sql&quot;SELECT 1&quot;.as[Query[Int]])\n              .map { results =&gt;\n                results.headOption.contains(1)\n              }
+        </td>
+      </tr><tr>
+        <td>
+          126
+        </td>
+        <td>
+          219
+        </td>
+        <td>
+          4258
+          -
+          4288
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          contains
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          results.headOption.contains(1)
+        </td>
+      </tr><tr>
+        <td>
+          129
+        </td>
+        <td>
+          223
+        </td>
+        <td>
+          4329
+          -
+          4336
+        </td>
+        <td>
+          Typed
+        </td>
+        <td>
+          service
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #F0ADAD">
+          service
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>
