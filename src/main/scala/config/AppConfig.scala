@@ -115,6 +115,31 @@ object AwsConfig:
       )
     )
 
+/** Health check configuration.
+  *
+  * @param checkUrl
+  *   External URL to check for connectivity (default: https://tedn.life)
+  */
+case class HealthCheckConfig(
+    checkUrl: String
+)
+
+object HealthCheckConfig:
+  /** ZLayer that loads HealthCheckConfig from environment variables.
+    *
+    * Environment variables:
+    *   - HEALTH_CHECK_URL: External URL to check (default: https://tedn.life)
+    */
+  val layer: ZLayer[Any, Config.Error, HealthCheckConfig] =
+    ZLayer.fromZIO(
+      ZIO.config[HealthCheckConfig](
+        Config
+          .string("HEALTH_CHECK_URL")
+          .withDefault("https://tedn.life")
+          .map(url => HealthCheckConfig(url))
+      )
+    )
+
 /** Complete application configuration.
   *
   * @param server

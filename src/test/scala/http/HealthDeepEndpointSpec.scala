@@ -1,7 +1,11 @@
 package org.roland.scala3_zio_template.http
 
-import org.roland.scala3_zio_template.config.AwsConfig
-import org.roland.scala3_zio_template.service.DatabaseService
+import org.roland.scala3_zio_template.http.health_checks.{
+  HealthCheck,
+  HealthCheckRegistry,
+  HealthCheckResult,
+  HealthStatus
+}
 
 import zio._
 import zio.http._
@@ -10,48 +14,117 @@ import zio.test._
 
 /** Test suite for HealthDeepEndpoint.
   *
-  * This test demonstrates the config refactoring approach (commit bfef69f)
-  * where tests provide configuration via ZLayer.succeed rather than environment
-  * variables. Mock services and configurations are created directly and
-  * provided via ZLayers:
-  *   - mockDbLayer: Provides a mock DatabaseService for testing
-  *   - mockAwsLayer: Provides a mock AwsConfig for testing S3 integration
+  * This test suite verifies the refactored health check endpoint that uses the
+  * pluggable HealthCheckRegistry architecture. Tests provide mock health checks
+  * via ZLayer.succeed to enable isolated, deterministic testing.
   *
-  * This approach ensures test isolation, determinism, and simplicity. Tests can
-  * provide different configurations for different test cases without affecting
-  * each other or depending on the environment.
+  * The new response format uses an array-based structure:
+  * {{{
+  * {
+  *   "checks": [
+  *     {"name": "url", "status": "healthy", "message": "...", "durationMs": 245},
+  *     {"name": "s3", "status": "healthy", "message": "...", "durationMs": 523},
+  *     {"name": "database", "status": "healthy", "message": "...", "durationMs": 87}
+  *   ],
+  *   "overallStatus": "healthy",
+  *   "totalDurationMs": 523
+  * }
+  * }}}
   */
 object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
-  case class MockDatabaseService(shouldSucceed: Boolean)
-      extends DatabaseService:
-    override def healthCheck(): ZIO[Any, Throwable, Boolean] =
-      if shouldSucceed then ZIO.succeed(true)
-      else ZIO.fail(new RuntimeException("Mock database failure"))
+  /** Mock health check implementation for testing.
+    *
+    * @param checkName
+    *   Name of the check (e.g., "url", "s3", "database")
+    * @param checkStatus
+    *   Status to return (Healthy or Unhealthy)
+    * @param checkMessage
+    *   Message to include in the result
+    * @param checkDuration
+    *   Duration in milliseconds (for timing tests)
+    */
+  case class MockHealthCheck(
+      checkName: String,
+      checkStatus: HealthStatus,
+      checkMessage: String,
+      checkDuration: Long = 100
+  ) extends HealthCheck:
+    override def name: String = checkName
+    override def description: String = s"Mock health check for $checkName"
+    override def check: ZIO[Any, Nothing, HealthCheckResult] =
+      ZIO.succeed(
+        HealthCheckResult(
+          name = checkName,
+          status = checkStatus,
+          message = checkMessage,
+          durationMs = checkDuration
+        )
+      )
 
-  // Mock layers demonstrating the config refactoring approach
-  private val mockDbLayer = ZLayer
-    .succeed[DatabaseService](MockDatabaseService(shouldSucceed = true))
+  /** Creates a mock registry with all healthy checks */
+  private def mockHealthyRegistry = ZLayer.succeed[HealthCheckRegistry](
+    HealthCheckRegistry(
+      List(
+        MockHealthCheck(
+          "url",
+          HealthStatus.Healthy,
+          "URL returned status 200",
+          245
+        ),
+        MockHealthCheck(
+          "s3",
+          HealthStatus.Healthy,
+          "Successfully listed 5 bucket(s)",
+          523
+        ),
+        MockHealthCheck(
+          "database",
+          HealthStatus.Healthy,
+          "Database connection successful",
+          87
+        )
+      )
+    )
+  )
 
-  private val mockAwsLayer = ZLayer.succeed[AwsConfig](
-    AwsConfig("test-access-key", "test-secret-key", "us-east-1")
+  /** Creates a mock registry with one unhealthy check (S3) */
+  private def mockUnhealthyRegistry = ZLayer.succeed[HealthCheckRegistry](
+    HealthCheckRegistry(
+      List(
+        MockHealthCheck("url", HealthStatus.Healthy, "URL returned status 200"),
+        MockHealthCheck(
+          "s3",
+          HealthStatus.Unhealthy,
+          "S3 check failed: check credentials"
+        ),
+        MockHealthCheck(
+          "database",
+          HealthStatus.Healthy,
+          "Database connection successful"
+        )
+      )
+    )
   )
 
   private def routes = Routes(HealthDeepEndpoint.route)
 
-  case class ServiceHealthCheck(
+  // JSON decoders for the new response format
+  case class HealthCheckResultJson(
+      name: String,
       status: String,
-      message: String
+      message: String,
+      durationMs: Long
   )
 
-  object ServiceHealthCheck:
-    given JsonDecoder[ServiceHealthCheck] = DeriveJsonDecoder
-      .gen[ServiceHealthCheck]
+  object HealthCheckResultJson:
+    given JsonDecoder[HealthCheckResultJson] = DeriveJsonDecoder
+      .gen[HealthCheckResultJson]
 
   case class HealthCheckResponse(
-      url: ServiceHealthCheck,
-      s3: ServiceHealthCheck,
-      database: ServiceHealthCheck
+      checks: List[HealthCheckResultJson],
+      overallStatus: String,
+      totalDurationMs: Long
   )
 
   object HealthCheckResponse:
@@ -60,56 +133,94 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
   def spec = suite("HealthDeepEndpoint")(
     test(
-      "should respond with JSON body containing url, s3, and database checks"
+      "should respond with JSON body containing checks array with url, s3, and database"
     ) {
       val request = Request.get(URL.root / "health-deep")
 
       for {
         response <- routes(request)
-          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
+          .provide(mockHealthyRegistry, ZLayer.succeed(Scope.global))
         body <- response.body.asString
         result <- ZIO.fromEither(body.fromJson[HealthCheckResponse])
       } yield assertTrue(
-        result.url.status == "healthy" || result.url.status == "unhealthy",
-        result.s3.status == "healthy" || result.s3.status == "unhealthy",
-        result.database.status == "healthy" || result
-          .database
-          .status == "unhealthy",
-        result.url.message.nonEmpty,
-        result.s3.message.nonEmpty,
-        result.database.message.nonEmpty
+        result.checks.size == 3,
+        result.checks.exists(_.name == "url"),
+        result.checks.exists(_.name == "s3"),
+        result.checks.exists(_.name == "database"),
+        result
+          .checks
+          .forall(c => c.status == "healthy" || c.status == "unhealthy"),
+        result.checks.forall(_.message.nonEmpty),
+        result.checks.forall(_.durationMs >= 0)
       )
     },
-    test("should respond with appropriate status code") {
+    test("should include overallStatus field") {
       val request = Request.get(URL.root / "health-deep")
 
       for {
         response <- routes(request)
-          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
+          .provide(mockHealthyRegistry, ZLayer.succeed(Scope.global))
         body <- response.body.asString
         result <- ZIO.fromEither(body.fromJson[HealthCheckResponse])
       } yield assertTrue(
-        response.status == Status.Ok || response.status == Status
-          .InternalServerError,
-        // If 500, at least one check should be unhealthy
-        response.status != Status.InternalServerError ||
-          result.url.status == "unhealthy" || result
-            .s3
-            .status == "unhealthy" || result.database.status == "unhealthy"
+        result.overallStatus == "healthy" || result.overallStatus == "unhealthy"
       )
     },
-    test("should include proper status field values") {
+    test("should include totalDurationMs field") {
       val request = Request.get(URL.root / "health-deep")
 
       for {
         response <- routes(request)
-          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
+          .provide(mockHealthyRegistry, ZLayer.succeed(Scope.global))
         body <- response.body.asString
         result <- ZIO.fromEither(body.fromJson[HealthCheckResponse])
       } yield assertTrue(
-        Set("healthy", "unhealthy").contains(result.url.status),
-        Set("healthy", "unhealthy").contains(result.s3.status),
-        Set("healthy", "unhealthy").contains(result.database.status)
+        result.totalDurationMs >= 0,
+        // Total duration should be max of individual durations since checks run in parallel
+        result.totalDurationMs == result.checks.map(_.durationMs).max
+      )
+    },
+    test("should return HTTP 200 when all checks are healthy") {
+      val request = Request.get(URL.root / "health-deep")
+
+      for {
+        response <- routes(request)
+          .provide(mockHealthyRegistry, ZLayer.succeed(Scope.global))
+        body <- response.body.asString
+        result <- ZIO.fromEither(body.fromJson[HealthCheckResponse])
+      } yield assertTrue(
+        response.status == Status.Ok,
+        result.overallStatus == "healthy",
+        result.checks.forall(_.status == "healthy")
+      )
+    },
+    test("should return HTTP 500 when any check is unhealthy") {
+      val request = Request.get(URL.root / "health-deep")
+
+      for {
+        response <- routes(request)
+          .provide(mockUnhealthyRegistry, ZLayer.succeed(Scope.global))
+        body <- response.body.asString
+        result <- ZIO.fromEither(body.fromJson[HealthCheckResponse])
+      } yield assertTrue(
+        response.status == Status.InternalServerError,
+        result.overallStatus == "unhealthy",
+        result.checks.exists(_.status == "unhealthy")
+      )
+    },
+    test("should include proper status field values (healthy or unhealthy)") {
+      val request = Request.get(URL.root / "health-deep")
+
+      for {
+        response <- routes(request)
+          .provide(mockHealthyRegistry, ZLayer.succeed(Scope.global))
+        body <- response.body.asString
+        result <- ZIO.fromEither(body.fromJson[HealthCheckResponse])
+      } yield assertTrue(
+        result
+          .checks
+          .forall(c => Set("healthy", "unhealthy").contains(c.status)),
+        Set("healthy", "unhealthy").contains(result.overallStatus)
       )
     },
     test("should include non-empty messages for all checks") {
@@ -117,28 +228,11 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
       for {
         response <- routes(request)
-          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
+          .provide(mockHealthyRegistry, ZLayer.succeed(Scope.global))
         body <- response.body.asString
         result <- ZIO.fromEither(body.fromJson[HealthCheckResponse])
       } yield assertTrue(
-        result.url.message.nonEmpty,
-        result.s3.message.nonEmpty,
-        result.database.message.nonEmpty
-      )
-    },
-    test("should include database check in response") {
-      val request = Request.get(URL.root / "health-deep")
-
-      for {
-        response <- routes(request)
-          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
-        body <- response.body.asString
-        result <- ZIO.fromEither(body.fromJson[HealthCheckResponse])
-      } yield assertTrue(
-        result.database.status == "healthy" || result
-          .database
-          .status == "unhealthy",
-        result.database.message.nonEmpty
+        result.checks.forall(_.message.nonEmpty)
       )
     },
     test("should not respond to POST requests") {
@@ -146,7 +240,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
       for {
         response <- routes(request)
-          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
+          .provide(mockHealthyRegistry, ZLayer.succeed(Scope.global))
       } yield assertTrue(
         response.status == Status.NotFound
       )
@@ -156,7 +250,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
       for {
         response <- routes(request)
-          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
+          .provide(mockHealthyRegistry, ZLayer.succeed(Scope.global))
       } yield assertTrue(
         response.status == Status.NotFound
       )
@@ -166,7 +260,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
       for {
         response <- routes(request)
-          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
+          .provide(mockHealthyRegistry, ZLayer.succeed(Scope.global))
       } yield assertTrue(
         response.status == Status.NotFound
       )
@@ -176,7 +270,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
 
       for {
         response <- routes(request)
-          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
+          .provide(mockHealthyRegistry, ZLayer.succeed(Scope.global))
       } yield assertTrue(
         response.status == Status.NotFound
       )
@@ -188,7 +282,7 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
         responses <- ZIO.collectAll(
           List.fill(3)(
             routes(request)
-              .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
+              .provide(mockHealthyRegistry, ZLayer.succeed(Scope.global))
           )
         )
       } yield assertTrue(

@@ -1,7 +1,12 @@
 package org.roland.scala3_zio_template
 
-import org.roland.scala3_zio_template.config.{AwsConfig, ServerConfig}
-import org.roland.scala3_zio_template.service.DatabaseService
+import org.roland.scala3_zio_template.config.ServerConfig
+import org.roland.scala3_zio_template.http.health_checks.{
+  HealthCheck,
+  HealthCheckRegistry,
+  HealthCheckResult,
+  HealthStatus
+}
 
 import zio._
 import zio.http._
@@ -9,17 +14,31 @@ import zio.test._
 
 object MainSpec extends ZIOSpecDefault:
 
-  case class MockDatabaseService(shouldSucceed: Boolean)
-      extends DatabaseService:
-    override def healthCheck(): ZIO[Any, Throwable, Boolean] =
-      if shouldSucceed then ZIO.succeed(true)
-      else ZIO.fail(new RuntimeException("Mock database failure"))
+  /** Mock health check for testing */
+  case class MockHealthCheck(
+      checkName: String,
+      checkStatus: HealthStatus = HealthStatus.Healthy
+  ) extends HealthCheck:
+    override def name: String = checkName
+    override def description: String = s"Mock $checkName check"
+    override def check: ZIO[Any, Nothing, HealthCheckResult] =
+      ZIO.succeed(
+        HealthCheckResult(
+          name = checkName,
+          status = checkStatus,
+          message = s"Mock $checkName check result",
+          durationMs = 100
+        )
+      )
 
-  private val mockDbLayer = ZLayer
-    .succeed[DatabaseService](MockDatabaseService(shouldSucceed = true))
-
-  private val mockAwsLayer = ZLayer.succeed[AwsConfig](
-    AwsConfig("test-access-key", "test-secret-key", "us-east-1")
+  private val mockHealthyRegistry = ZLayer.succeed[HealthCheckRegistry](
+    HealthCheckRegistry(
+      List(
+        MockHealthCheck("url"),
+        MockHealthCheck("s3"),
+        MockHealthCheck("database")
+      )
+    )
   )
 
   private val testServerConfig = ServerConfig(port = 8080)
@@ -32,7 +51,7 @@ object MainSpec extends ZIOSpecDefault:
         promise <- Promise.make[Nothing, Unit]
         routes = Main.routes(promise)
         response <- routes(request)
-          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
+          .provide(mockHealthyRegistry, ZLayer.succeed(Scope.global))
         body <- response.body.asString
       } yield assertTrue(
         response.status == Status.Ok,
@@ -46,7 +65,7 @@ object MainSpec extends ZIOSpecDefault:
         promise <- Promise.make[Nothing, Unit]
         routes = Main.routes(promise)
         response <- routes(request)
-          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
+          .provide(mockHealthyRegistry, ZLayer.succeed(Scope.global))
       } yield assertTrue(
         response.status == Status.Ok
       )
@@ -58,7 +77,7 @@ object MainSpec extends ZIOSpecDefault:
         promise <- Promise.make[Nothing, Unit]
         routes = Main.routes(promise)
         response <- routes(request)
-          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
+          .provide(mockHealthyRegistry, ZLayer.succeed(Scope.global))
       } yield assertTrue(
         response.status == Status.Ok || response.status == Status
           .InternalServerError
@@ -71,7 +90,7 @@ object MainSpec extends ZIOSpecDefault:
         promise <- Promise.make[Nothing, Unit]
         routes = Main.routes(promise)
         response <- routes(request)
-          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
+          .provide(mockHealthyRegistry, ZLayer.succeed(Scope.global))
         body <- response.body.asString
       } yield assertTrue(
         response.status == Status.Ok,
@@ -85,7 +104,7 @@ object MainSpec extends ZIOSpecDefault:
         promise <- Promise.make[Nothing, Unit]
         routes = Main.routes(promise)
         response <- routes(request)
-          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
+          .provide(mockHealthyRegistry, ZLayer.succeed(Scope.global))
       } yield assertTrue(
         response.status == Status.NotFound
       )
@@ -97,7 +116,7 @@ object MainSpec extends ZIOSpecDefault:
         promise <- Promise.make[Nothing, Unit]
         routes = Main.routes(promise)
         response <- routes(request)
-          .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
+          .provide(mockHealthyRegistry, ZLayer.succeed(Scope.global))
       } yield assertTrue(
         response.status == Status.NotFound
       )
@@ -135,7 +154,7 @@ object MainSpec extends ZIOSpecDefault:
         responses <- ZIO.foreach(messages) { msg =>
           val request = Request.post(URL.root / "echo", Body.fromString(msg))
           routes(request)
-            .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
+            .provide(mockHealthyRegistry, ZLayer.succeed(Scope.global))
             .flatMap { response =>
               response.body.asString.map(body => (response.status, body))
             }
@@ -154,7 +173,7 @@ object MainSpec extends ZIOSpecDefault:
         responses <- ZIO.foreach(healthPaths) { path =>
           val request = Request.get(URL.root / path)
           routes(request)
-            .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
+            .provide(mockHealthyRegistry, ZLayer.succeed(Scope.global))
         }
       } yield assertTrue(
         responses.forall(r =>
@@ -180,8 +199,8 @@ object MainSpec extends ZIOSpecDefault:
           .provide(
             ZLayer.succeed(testConfig),
             Server.live,
-            mockDbLayer,
-            mockAwsLayer
+            mockHealthyRegistry,
+            ZLayer.succeed(Scope.global)
           )
           .fork
         _ <- TestClock.adjust(100.millis)

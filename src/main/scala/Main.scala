@@ -1,7 +1,17 @@
 package org.roland.scala3_zio_template
 
-import org.roland.scala3_zio_template.config.{AwsConfig, ServerConfig}
+import org.roland.scala3_zio_template.config.{
+  AwsConfig,
+  HealthCheckConfig,
+  ServerConfig
+}
 import org.roland.scala3_zio_template.http._
+import org.roland.scala3_zio_template.http.health_checks.{
+  DatabaseHealthCheck,
+  HealthCheckRegistry,
+  S3HealthCheck,
+  UrlHealthCheck
+}
 import org.roland.scala3_zio_template.service.DatabaseService
 
 import zio._
@@ -71,11 +81,11 @@ object Main extends ZIOAppDefault:
     *   Promise that will be completed when shutdown is requested via POST
     *   /shutdown
     * @return
-    *   Combined routes requiring DatabaseService and AwsConfig dependencies
+    *   Combined routes requiring HealthCheckRegistry dependency
     */
   def routes(
       shutdownPromise: Promise[Nothing, Unit]
-  ): Routes[DatabaseService & AwsConfig, Nothing] =
+  ): Routes[HealthCheckRegistry, Nothing] =
     Routes(
       EchoEndpoint.route,
       HealthEndpoint.route,
@@ -151,8 +161,20 @@ object Main extends ZIOAppDefault:
       // in config/AppConfig.scala. The mapError transforms Config.Error into RuntimeException
       // for consistent error types across the application.
       ServerConfig.layer.mapError(e => new RuntimeException(e.getMessage)),
+      AwsConfig.layer.mapError(e => new RuntimeException(e.getMessage)),
+      HealthCheckConfig.layer.mapError(e => new RuntimeException(e.getMessage)),
+      // Infrastructure layers: Depend on config
       ZLayer.fromZIO(ZIO.service[ServerConfig].map(buildServerConfig)),
       Server.live,
       DatabaseService.live,
-      AwsConfig.layer.mapError(e => new RuntimeException(e.getMessage))
+      Client.default,
+      Scope.default,
+      // Health check layers: Depend on infrastructure
+      UrlHealthCheck.layer,
+      S3HealthCheck.layer,
+      DatabaseHealthCheck.layer,
+      // Registry layer: Depends on health checks
+      HealthCheckRegistry
+        .layer
+        .mapError(e => new RuntimeException(e.getMessage))
     )

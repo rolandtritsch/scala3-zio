@@ -1,297 +1,104 @@
 package org.roland.scala3_zio_template.http
 
-import org.roland.scala3_zio_template.config.AwsConfig
-import org.roland.scala3_zio_template.service.DatabaseService
-import software.amazon.awssdk.auth.credentials.{
-  AwsBasicCredentials,
-  StaticCredentialsProvider
+import org.roland.scala3_zio_template.http.health_checks.{
+  HealthCheckRegistry,
+  HealthCheckResponse,
+  HealthStatus
 }
-import software.amazon.awssdk.regions.Region
 
 import zio._
-import zio.aws.core.AwsError
-import zio.aws.core.config.{AwsConfig => ZioAwsConfig}
-import zio.aws.netty.NettyHttpClient
-import zio.aws.s3.S3
-import zio.aws.s3.model.ListBucketsRequest
 import zio.http._
 import zio.json._
 
 /** Comprehensive health check endpoint that validates all external
   * dependencies.
   *
-  * This endpoint performs deep health checks on:
-  *   - External URL availability (https://tedn.life)
+  * This endpoint performs deep health checks on all registered health checks
+  * including:
+  *   - External URL availability
   *   - AWS S3 connectivity and credentials
   *   - PostgreSQL database connectivity
   *
-  * Each check runs with a timeout and returns a detailed status. The endpoint
-  * returns HTTP 200 only if all checks pass, otherwise HTTP 500.
+  * All checks run in parallel for optimal performance. The endpoint returns
+  * HTTP 200 only if all checks pass, otherwise HTTP 500.
   *
   * '''Endpoint:''' GET /health-deep
   *
   * '''Response Format:'''
   * {{{
   * {
-  *   "url": {"status": "healthy", "message": "URL returned status 200"},
-  *   "s3": {"status": "healthy", "message": "Successfully listed 5 bucket(s)"},
-  *   "database": {"status": "healthy", "message": "Database connection successful"}
+  *   "checks": [
+  *     {"name": "url", "status": "healthy", "message": "URL returned status 200", "durationMs": 245},
+  *     {"name": "s3", "status": "healthy", "message": "Successfully listed 5 bucket(s)", "durationMs": 523},
+  *     {"name": "database", "status": "healthy", "message": "Database connection successful", "durationMs": 87}
+  *   ],
+  *   "overallStatus": "healthy",
+  *   "totalDurationMs": 523
   * }
   * }}}
   *
   * '''Configuration Required:'''
-  *   - `AWS_ACCESS_KEY_ID` - AWS access key (optional but required for S3
-  *     check)
-  *   - `AWS_SECRET_ACCESS_KEY` - AWS secret key (optional but required for S3
-  *     check)
+  *   - `HEALTH_CHECK_URL` - External URL to check (default: https://tedn.life)
+  *   - `AWS_ACCESS_KEY_ID` - AWS access key (required)
+  *   - `AWS_SECRET_ACCESS_KEY` - AWS secret key (required)
   *   - `AWS_REGION` - AWS region (default: us-east-1)
-  *   - Database credentials (always required, see
+  *   - Database credentials (required, see
   *     [[org.roland.scala3_zio_template.service.DatabaseService]])
   *
-  * If AWS credentials are missing, the endpoint returns HTTP 500 with error
-  * details but the application continues running.
+  * '''Adding New Health Checks:'''
+  *
+  * To add a new health check (e.g., Redis):
+  *   1. Create a new check implementation in `http/health_checks/` 2. Register
+  *      it in [[HealthCheckRegistry.layer]] 3. Wire dependencies in
+  *      `Main.scala`
+  *
+  * No changes needed to this endpoint - it automatically picks up new checks
+  * from the registry.
   *
   * @see
   *   [[HealthEndpoint]] for basic liveness checks without external dependencies
+  * @see
+  *   [[HealthCheckRegistry]] for health check orchestration
+  * @see
+  *   [[org.roland.scala3_zio_template.http.health_checks.HealthCheck]] for the
+  *   core health check abstraction
   */
 object HealthDeepEndpoint:
-
-  /** Health check result for a single service.
-    *
-    * @param status
-    *   Either "healthy" or "unhealthy"
-    * @param message
-    *   Descriptive message about the check result
-    */
-  case class ServiceHealthCheck(
-      status: String,
-      message: String
-  )
-
-  object ServiceHealthCheck:
-    given JsonEncoder[ServiceHealthCheck] = DeriveJsonEncoder
-      .gen[ServiceHealthCheck]
-
-  /** Complete health check response containing all service statuses.
-    *
-    * @param url
-    *   Health status of external URL check
-    * @param s3
-    *   Health status of AWS S3 connectivity check
-    * @param database
-    *   Health status of PostgreSQL database check
-    */
-  case class HealthCheckResponse(
-      url: ServiceHealthCheck,
-      s3: ServiceHealthCheck,
-      database: ServiceHealthCheck
-  )
-
-  object HealthCheckResponse:
-    given JsonEncoder[HealthCheckResponse] = DeriveJsonEncoder
-      .gen[HealthCheckResponse]
-
-  /** Creates a ZLayer for AWS S3 client with the given configuration.
-    *
-    * This layer sets up the S3 client with:
-    *   - Static credentials from the config
-    *   - Configured AWS region
-    *   - Netty HTTP client for async operations
-    *
-    * As of the config refactoring (commit bfef69f), this method receives a
-    * centralized AwsConfig case class from config/AppConfig.scala rather than
-    * loading configuration directly from environment variables.
-    *
-    * @param config
-    *   AWS configuration containing credentials and region
-    * @return
-    *   ZLayer that provides an S3 client instance
-    */
-  private def createS3Layer(config: AwsConfig): ZLayer[Any, Throwable, S3] =
-    val credentials = AwsBasicCredentials.create(
-      config.accessKeyId,
-      config.secretAccessKey
-    )
-
-    val commonConfig = ZLayer.succeed(
-      zio
-        .aws
-        .core
-        .config
-        .CommonAwsConfig(
-          region = Some(Region.of(config.region)),
-          credentialsProvider = StaticCredentialsProvider.create(credentials),
-          endpointOverride = None,
-          commonClientConfig = None
-        )
-    )
-
-    (NettyHttpClient.default ++ commonConfig) >>> ZioAwsConfig
-      .configured() >>> S3.live
-
-  /** Performs an HTTP health check on the specified URL.
-    *
-    * The check succeeds if the URL returns a successful HTTP status (2xx).
-    * Includes a 5-second timeout to prevent hanging on unresponsive servers.
-    *
-    * @param url
-    *   The URL to check (e.g., "https://tedn.life")
-    * @return
-    *   ZIO effect that always succeeds with a ServiceHealthCheck result
-    */
-  private def checkUrl(
-      url: String
-  ): ZIO[Client & Scope, Nothing, ServiceHealthCheck] =
-    Client
-      .batched(Request.get(url))
-      .timeout(5.seconds)
-      .map {
-        case Some(resp) if resp.status.isSuccess =>
-          ServiceHealthCheck(
-            status = "healthy",
-            message = s"URL returned status ${resp.status.code}"
-          )
-        case Some(resp) =>
-          ServiceHealthCheck(
-            status = "unhealthy",
-            message = s"URL returned non-success status: ${resp.status.code}"
-          )
-        case None =>
-          ServiceHealthCheck(
-            status = "unhealthy",
-            message = "URL request timed out after 5 seconds"
-          )
-      }
-      .catchAll { error =>
-        ZIO.succeed(
-          ServiceHealthCheck(
-            status = "unhealthy",
-            message = s"URL check failed: ${error.getMessage}"
-          )
-        )
-      }
-
-  /** Performs a health check on AWS S3 by listing buckets.
-    *
-    * The check succeeds if the S3 client can authenticate and list buckets.
-    * Includes a 10-second timeout to prevent hanging on network issues.
-    *
-    * @param s3Layer
-    *   ZLayer providing the configured S3 client
-    * @return
-    *   ZIO effect that always succeeds with a ServiceHealthCheck result
-    */
-  private def checkS3(
-      s3Layer: ZLayer[Any, Throwable, S3]
-  ): ZIO[Any, Nothing, ServiceHealthCheck] =
-    (for {
-      buckets <- S3.listBuckets(ListBucketsRequest()).runCollect
-      bucketCount = buckets.size
-    } yield ServiceHealthCheck(
-      status = "healthy",
-      message = s"Successfully listed $bucketCount bucket(s)"
-    )).timeout(10.seconds)
-      .map {
-        case Some(result) => result
-        case None =>
-          ServiceHealthCheck(
-            status = "unhealthy",
-            message = "S3 list-buckets operation timed out after 10 seconds"
-          )
-      }
-      .provideLayer(s3Layer)
-      .catchAll { error =>
-        val errorMsg = error match
-          case e: AwsError  => e.toString
-          case t: Throwable => t.getMessage
-        ZIO.succeed(
-          ServiceHealthCheck(
-            status = "unhealthy",
-            message = s"S3 check failed: $errorMsg"
-          )
-        )
-      }
-
-  /** Performs a health check on the PostgreSQL database.
-    *
-    * The check succeeds if the database can execute a simple SELECT 1 query.
-    * Includes a 5-second timeout to prevent hanging on connection issues.
-    *
-    * @return
-    *   ZIO effect that always succeeds with a ServiceHealthCheck result,
-    *   requires DatabaseService
-    */
-  private val checkDatabase: ZIO[DatabaseService, Nothing, ServiceHealthCheck] =
-    (for {
-      service <- ZIO.service[DatabaseService]
-      result <- service.healthCheck()
-    } yield ServiceHealthCheck(
-      status = "healthy",
-      message = "Database connection successful"
-    )).timeout(5.seconds)
-      .map {
-        case Some(result) => result
-        case None =>
-          ServiceHealthCheck(
-            status = "unhealthy",
-            message = "Database health check timed out after 5 seconds"
-          )
-      }
-      .catchAll { error =>
-        ZIO.succeed(
-          ServiceHealthCheck(
-            status = "unhealthy",
-            message = s"Database check failed: ${error.getMessage}"
-          )
-        )
-      }
 
   /** HTTP handler that performs all health checks and returns a combined
     * response.
     *
     * This handler:
-    *   1. Gets AWS configuration from the environment 2. Runs URL, S3, and
-    *      database checks in sequence 3. Combines results into a JSON response
-    *      4. Returns HTTP 200 if all checks pass, HTTP 500 if any fail
+    *   1. Retrieves the health check registry from the environment 2. Runs all
+    *      registered health checks in parallel 3. Aggregates results into a
+    *      JSON response 4. Returns HTTP 200 if all checks pass, HTTP 500 if any
+    *      fail 5. Logs request start and completion for observability
+    *
+    * The handler uses [[HealthCheckRegistry]] to orchestrate all checks,
+    * ensuring they run concurrently for optimal performance.
     */
   protected final val handler
-      : Handler[DatabaseService & AwsConfig, Nothing, Request, Response] =
+      : Handler[HealthCheckRegistry, Nothing, Request, Response] =
     Handler.fromFunctionZIO[Request] { _ =>
-      ZIO
-        .service[AwsConfig]
-        .flatMap { awsConfig =>
-          val s3Layer = createS3Layer(awsConfig)
-
-          // Run all three checks
-          val urlCheck: ZIO[Any, Nothing, ServiceHealthCheck] =
-            checkUrl("https://tedn.life")
-              .provideLayer((Client.default ++ Scope.default).orDie)
-          val s3Check: ZIO[Any, Nothing, ServiceHealthCheck] =
-            checkS3(s3Layer)
-
-          for {
-            urlResult <- urlCheck
-            s3Result <- s3Check
-            dbResult <- checkDatabase
-
-            response = HealthCheckResponse(
-              url = urlResult,
-              s3 = s3Result,
-              database = dbResult
-            )
-            isHealthy = urlResult.status == "healthy" &&
-              s3Result.status == "healthy" &&
-              dbResult.status == "healthy"
-            statusCode =
-              if isHealthy then Status.Ok else Status.InternalServerError
-          } yield Response.json(response.toJson).copy(status = statusCode)
-        }
+      for {
+        _ <- ZIO.logInfo("HealthDeepEndpoint: Request received")
+        registry <- ZIO.service[HealthCheckRegistry]
+        results <- registry.runAllChecks
+        response = HealthCheckResponse.fromResults(results)
+        statusCode =
+          if response.overallStatus == HealthStatus.Healthy then Status.Ok
+          else Status.InternalServerError
+        _ <- ZIO.logInfo(
+          s"HealthDeepEndpoint: Completed with status ${response.overallStatus}"
+        )
+      } yield Response.json(response.toJson).copy(status = statusCode)
     }
 
   /** Route definition mapping GET /health-deep to the health check handler.
     *
-    * This route requires DatabaseService and AwsConfig to be provided in the
-    * environment.
+    * This route requires [[HealthCheckRegistry]] to be provided in the
+    * environment. The registry automatically discovers and orchestrates all
+    * registered health checks.
     */
-  val route: Route[DatabaseService & AwsConfig, Nothing] =
+  val route: Route[HealthCheckRegistry, Nothing] =
     Method.GET / "health-deep" -> handler
