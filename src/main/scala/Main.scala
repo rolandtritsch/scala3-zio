@@ -44,7 +44,8 @@ object Main extends ZIOAppDefault:
   /** Builds server configuration from ServerConfig.
     *
     * Configuration includes:
-    *   - Configurable port from SERVER_PORT environment variable (default: 8080)
+    *   - Configurable port from SERVER_PORT environment variable (default:
+    *     8080)
     *   - Keep-alive connections enabled for better performance
     *   - 30-second idle timeout for inactive connections
     *   - 16 KB maximum header size to prevent header attacks

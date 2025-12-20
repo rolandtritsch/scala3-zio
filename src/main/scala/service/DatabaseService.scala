@@ -45,8 +45,8 @@ object DatabaseService:
   /** ZLayer that provides a configured JDBC DataSource.
     *
     * This layer constructs a PostgreSQL DataSource with connection pooling from
-    * the provided DatabaseConfig. The DataSource is configured but not validated
-    * at this stage - validation happens in the service layer.
+    * the provided DatabaseConfig. The DataSource is configured but not
+    * validated at this stage - validation happens in the service layer.
     *
     * @return
     *   ZLayer that provides a javax.sql.DataSource instance

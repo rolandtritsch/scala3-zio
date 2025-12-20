@@ -18,10 +18,9 @@ object MainSpec extends ZIOSpecDefault:
   private val mockDbLayer = ZLayer
     .succeed[DatabaseService](MockDatabaseService(shouldSucceed = true))
 
-  private val mockAwsLayer = ZLayer
-    .succeed[AwsConfig](
-      AwsConfig("test-access-key", "test-secret-key", "us-east-1")
-    )
+  private val mockAwsLayer = ZLayer.succeed[AwsConfig](
+    AwsConfig("test-access-key", "test-secret-key", "us-east-1")
+  )
 
   private val testServerConfig = ServerConfig(port = 8080)
 
@@ -154,7 +153,8 @@ object MainSpec extends ZIOSpecDefault:
         routes = Main.routes(promise)
         responses <- ZIO.foreach(healthPaths) { path =>
           val request = Request.get(URL.root / path)
-          routes(request).provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
+          routes(request)
+            .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
         }
       } yield assertTrue(
         responses.forall(r =>
@@ -162,7 +162,9 @@ object MainSpec extends ZIOSpecDefault:
         )
       )
     },
-    test("buildServerConfig should have gracefulShutdownTimeout of 30 seconds") {
+    test(
+      "buildServerConfig should have gracefulShutdownTimeout of 30 seconds"
+    ) {
       val config = Main.buildServerConfig(testServerConfig)
       assertTrue(
         config.gracefulShutdownTimeout == 30.seconds

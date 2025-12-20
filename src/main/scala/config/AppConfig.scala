@@ -1,7 +1,6 @@
 package org.roland.scala3_zio_template.config
 
-import zio._
-import zio.Config
+import zio.{Config, _}
 
 /** Server configuration.
   *

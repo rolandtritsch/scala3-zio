@@ -19,10 +19,9 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
   private val mockDbLayer = ZLayer
     .succeed[DatabaseService](MockDatabaseService(shouldSucceed = true))
 
-  private val mockAwsLayer = ZLayer
-    .succeed[AwsConfig](
-      AwsConfig("test-access-key", "test-secret-key", "us-east-1")
-    )
+  private val mockAwsLayer = ZLayer.succeed[AwsConfig](
+    AwsConfig("test-access-key", "test-secret-key", "us-east-1")
+  )
 
   private def routes = Routes(HealthDeepEndpoint.route)
 
@@ -174,7 +173,8 @@ object HealthDeepEndpointSpec extends ZIOSpecDefault:
       for {
         responses <- ZIO.collectAll(
           List.fill(3)(
-            routes(request).provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
+            routes(request)
+              .provide(mockDbLayer, mockAwsLayer, ZLayer.succeed(Scope.global))
           )
         )
       } yield assertTrue(

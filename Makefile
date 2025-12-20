@@ -42,7 +42,7 @@ format-check: ## Check if code is formatted correctly
 
 .PHONY: lint
 lint: ## Auto-fix linting issues
-	sbt scalafixAll
+	sbt -Dquill.macro.log=false scalafixAll
 
 .PHONY: lint-check
 lint-check: ## Check for linting issues (CI mode)

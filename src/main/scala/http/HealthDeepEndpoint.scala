@@ -253,33 +253,35 @@ object HealthDeepEndpoint:
   protected final val handler
       : Handler[DatabaseService & AwsConfig, Nothing, Request, Response] =
     Handler.fromFunctionZIO[Request] { _ =>
-      ZIO.service[AwsConfig].flatMap { awsConfig =>
-        val s3Layer = createS3Layer(awsConfig)
+      ZIO
+        .service[AwsConfig]
+        .flatMap { awsConfig =>
+          val s3Layer = createS3Layer(awsConfig)
 
-        // Run all three checks
-        val urlCheck: ZIO[Any, Nothing, ServiceHealthCheck] =
-          checkUrl("https://tedn.life")
-            .provideLayer((Client.default ++ Scope.default).orDie)
-        val s3Check: ZIO[Any, Nothing, ServiceHealthCheck] =
-          checkS3(s3Layer)
+          // Run all three checks
+          val urlCheck: ZIO[Any, Nothing, ServiceHealthCheck] =
+            checkUrl("https://tedn.life")
+              .provideLayer((Client.default ++ Scope.default).orDie)
+          val s3Check: ZIO[Any, Nothing, ServiceHealthCheck] =
+            checkS3(s3Layer)
 
-        for {
-          urlResult <- urlCheck
-          s3Result <- s3Check
-          dbResult <- checkDatabase
+          for {
+            urlResult <- urlCheck
+            s3Result <- s3Check
+            dbResult <- checkDatabase
 
-          response = HealthCheckResponse(
-            url = urlResult,
-            s3 = s3Result,
-            database = dbResult
-          )
-          isHealthy = urlResult.status == "healthy" &&
-            s3Result.status == "healthy" &&
-            dbResult.status == "healthy"
-          statusCode =
-            if isHealthy then Status.Ok else Status.InternalServerError
-        } yield Response.json(response.toJson).copy(status = statusCode)
-      }
+            response = HealthCheckResponse(
+              url = urlResult,
+              s3 = s3Result,
+              database = dbResult
+            )
+            isHealthy = urlResult.status == "healthy" &&
+              s3Result.status == "healthy" &&
+              dbResult.status == "healthy"
+            statusCode =
+              if isHealthy then Status.Ok else Status.InternalServerError
+          } yield Response.json(response.toJson).copy(status = statusCode)
+        }
     }
 
   /** Route definition mapping GET /health-deep to the health check handler.
