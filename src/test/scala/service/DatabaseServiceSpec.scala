@@ -11,18 +11,6 @@ object DatabaseServiceSpec extends ZIOSpecDefault:
       if shouldSucceed then ZIO.succeed(true)
       else ZIO.fail(new RuntimeException("Mock database failure"))
 
-    override def execute(sql: String): ZIO[Any, Throwable, Unit] =
-      if shouldSucceed then ZIO.unit
-      else ZIO.fail(new RuntimeException("Mock execute failure"))
-
-    override def selectOne[T](sql: String): ZIO[Any, Throwable, Option[T]] =
-      if shouldSucceed then ZIO.succeed(None)
-      else ZIO.fail(new RuntimeException("Mock selectOne failure"))
-
-    override def selectAll[T](sql: String): ZIO[Any, Throwable, List[T]] =
-      if shouldSucceed then ZIO.succeed(List.empty)
-      else ZIO.fail(new RuntimeException("Mock selectAll failure"))
-
   def spec = suite("DatabaseService")(
     suite("loadConfig")(
       test("should load config from environment variables") {
@@ -88,18 +76,6 @@ object DatabaseServiceSpec extends ZIOSpecDefault:
         val service = MockDatabaseService(shouldSucceed = false)
         for {
           result <- service.healthCheck().exit
-        } yield assertTrue(result.isFailure)
-      },
-      test("execute should succeed when configured to succeed") {
-        val service = MockDatabaseService(shouldSucceed = true)
-        for {
-          result <- service.execute("SELECT 1").exit
-        } yield assertTrue(result.isSuccess)
-      },
-      test("execute should fail when configured to fail") {
-        val service = MockDatabaseService(shouldSucceed = false)
-        for {
-          result <- service.execute("SELECT 1").exit
         } yield assertTrue(result.isFailure)
       }
     )

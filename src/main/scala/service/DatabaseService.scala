@@ -69,48 +69,6 @@ trait DatabaseService:
     */
   def healthCheck(): ZIO[Any, Throwable, Boolean]
 
-  /** Executes a raw SQL statement without returning results.
-    *
-    * Useful for DDL statements (CREATE, ALTER, DROP) or DML statements (INSERT,
-    * UPDATE, DELETE) where the return value is not needed.
-    *
-    * @param sql
-    *   Raw SQL statement to execute
-    * @return
-    *   ZIO effect that succeeds with Unit or fails with an error
-    */
-  def execute(sql: String): ZIO[Any, Throwable, Unit]
-
-  /** Executes a SQL query and returns at most one result.
-    *
-    * '''Note:''' This method is not yet implemented and will fail with
-    * UnsupportedOperationException. Use `healthCheck` for basic database
-    * validation.
-    *
-    * @param sql
-    *   Raw SQL query to execute
-    * @tparam T
-    *   The expected result type
-    * @return
-    *   ZIO effect that succeeds with Some(result) or None, or fails with an
-    *   error
-    */
-  def selectOne[T](sql: String): ZIO[Any, Throwable, Option[T]]
-
-  /** Executes a SQL query and returns all results as a list.
-    *
-    * '''Note:''' This method is not yet implemented and will fail with
-    * UnsupportedOperationException.
-    *
-    * @param sql
-    *   Raw SQL query to execute
-    * @tparam T
-    *   The expected result type
-    * @return
-    *   ZIO effect that succeeds with a list of results, or fails with an error
-    */
-  def selectAll[T](sql: String): ZIO[Any, Throwable, List[T]]
-
 /** Companion object providing ZLayer construction and configuration loading.
   *
   * This object contains factory methods for creating DatabaseService instances
@@ -252,27 +210,6 @@ object DatabaseService:
               .map { results =>
                 results.headOption.contains(1)
               }
-
-          override def execute(sql: String): ZIO[Any, Throwable, Unit] =
-            ctx.run(infix"#$sql".as[Action[Unit]]).unit
-
-          override def selectOne[T](
-              sql: String
-          ): ZIO[Any, Throwable, Option[T]] =
-            ZIO.fail(
-              new UnsupportedOperationException(
-                "selectOne with raw SQL not yet implemented - use healthCheck for now"
-              )
-            )
-
-          override def selectAll[T](
-              sql: String
-          ): ZIO[Any, Throwable, List[T]] =
-            ZIO.fail(
-              new UnsupportedOperationException(
-                "selectAll with raw SQL not yet implemented"
-              )
-            )
         }
       } yield service
     )

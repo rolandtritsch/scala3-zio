@@ -180,7 +180,7 @@ object HealthDeepEndpoint:
       url: String
   ): ZIO[Client & Scope, Nothing, ServiceHealthCheck] =
     Client
-      .request(Request.get(url))
+      .batched(Request.get(url))
       .timeout(5.seconds)
       .map {
         case Some(resp) if resp.status.isSuccess =>
