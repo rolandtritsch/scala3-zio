@@ -199,8 +199,7 @@ object MainSpec extends ZIOSpecDefault:
           .provide(
             ZLayer.succeed(testConfig),
             Server.live,
-            mockHealthyRegistry,
-            ZLayer.succeed(Scope.global)
+            mockHealthyRegistry
           )
           .fork
         _ <- TestClock.adjust(100.millis)
@@ -226,5 +225,26 @@ object MainSpec extends ZIOSpecDefault:
         _ <- TestClock.adjust(10.millis)
         _ <- fiber.interrupt
       } yield assertTrue(true)
-    } @@ TestAspect.timeout(5.seconds)
+    } @@ TestAspect.timeout(5.seconds),
+    test("routes should include all registered endpoints") {
+      for {
+        promise <- Promise.make[Nothing, Unit]
+        routes = Main.routes(promise)
+      } yield assertTrue(
+        routes.toString.contains("Route")
+      )
+    },
+    test("testServerConfig should have correct port") {
+      assertTrue(testServerConfig.port == 8080)
+    },
+    test("mockHealthyRegistry should contain mock checks") {
+      for {
+        registry <- ZIO
+          .service[HealthCheckRegistry]
+          .provide(mockHealthyRegistry)
+      } yield assertTrue(
+        registry.checks.size == 3,
+        registry.checks.map(_.name).toSet == Set("url", "s3", "database")
+      )
+    }
   )

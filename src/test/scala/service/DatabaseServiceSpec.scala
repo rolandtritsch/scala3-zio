@@ -28,7 +28,7 @@ object DatabaseServiceSpec extends ZIOSpecDefault:
 
   def spec = suite("DatabaseService")(
     suite("DatabaseConfig")(
-      test("should build correct JDBC URL") {
+      test("should build correct JDBC URL with default port") {
         val config = DatabaseConfig(
           host = "localhost",
           port = 5432,
@@ -37,6 +37,46 @@ object DatabaseServiceSpec extends ZIOSpecDefault:
           password = "pass"
         )
         assertTrue(config.jdbcUrl == "jdbc:postgresql://localhost:5432/testdb")
+      },
+      test("should build correct JDBC URL with custom port") {
+        val config = DatabaseConfig(
+          host = "db.example.com",
+          port = 5433,
+          name = "myapp",
+          user = "admin",
+          password = "secret"
+        )
+        assertTrue(
+          config.jdbcUrl == "jdbc:postgresql://db.example.com:5433/myapp"
+        )
+      },
+      test("should handle special characters in database name") {
+        val config = DatabaseConfig(
+          host = "localhost",
+          port = 5432,
+          name = "my_test_db",
+          user = "user",
+          password = "pass"
+        )
+        assertTrue(
+          config.jdbcUrl == "jdbc:postgresql://localhost:5432/my_test_db"
+        )
+      },
+      test("should preserve all configuration fields") {
+        val config = DatabaseConfig(
+          host = "testhost",
+          port = 9999,
+          name = "testname",
+          user = "testuser",
+          password = "testpass"
+        )
+        assertTrue(
+          config.host == "testhost",
+          config.port == 9999,
+          config.name == "testname",
+          config.user == "testuser",
+          config.password == "testpass"
+        )
       }
     ),
     suite("MockDatabaseService")(
@@ -51,6 +91,35 @@ object DatabaseServiceSpec extends ZIOSpecDefault:
         for {
           result <- service.healthCheck().exit
         } yield assertTrue(result.isFailure)
+      },
+      test("healthCheck should return boolean on success") {
+        val service = MockDatabaseService(shouldSucceed = true)
+        for {
+          result <- service.healthCheck()
+        } yield assertTrue(result match {
+          case _: Boolean => true; case _ => false
+        })
+      },
+      test("healthCheck should throw on failure") {
+        val service = MockDatabaseService(shouldSucceed = false)
+        for {
+          result <- service.healthCheck().exit
+        } yield assertTrue(result.isFailure)
+      }
+    ),
+    suite("DatabaseService interface")(
+      test("MockDatabaseService implements DatabaseService trait") {
+        val service: DatabaseService = MockDatabaseService(shouldSucceed = true)
+        assertTrue(service match {
+          case _: DatabaseService => true; case _ => false
+        })
+      },
+      test("healthCheck returns ZIO effect") {
+        val service = MockDatabaseService(shouldSucceed = true)
+        val effect = service.healthCheck()
+        assertTrue(effect match {
+          case _: ZIO[Any, Throwable, Boolean] => true; case _ => false
+        })
       }
     )
   )

@@ -40,7 +40,7 @@ lazy val root = (project in file(".")).settings(
   ),
 
   // Scoverage configuration
-  coverageMinimumStmtTotal := 50,
+  coverageMinimumStmtTotal := 55,
   coverageFailOnMinimum := true,
   coverageHighlighting := true,
 
